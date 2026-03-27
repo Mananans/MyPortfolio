@@ -69,7 +69,7 @@ function SubItem({ children }) {
   );
 }
 
-function Card({ children, style }) {
+function Card({ children, style = {} }) {
   return (
     <div style={{
       background: "rgba(255,255,255,0.04)",
