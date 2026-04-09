@@ -21,7 +21,7 @@ const PROJECTS = [
     desc: "AI + 자동화 리듬 게임",
     period: "2025.01 ~ 2025.03",
     highlight: "AI 기반 음악 채보 자동 생성 시스템",
-    tags: ["Unity", "C#", "Pyhton", "Bash"],
+    tags: ["Unity", "C#"],
     img: "/images/thumb/rhythm-2025.png",
     link: "/projects/teampo-2025-rhythm",
   },
@@ -51,7 +51,7 @@ const PROJECTS = [
     desc: "농장 운영 게임",
     period: "2025.09 ~ 2025.11",
     highlight: "Sprite Assets을 활용한 Animation",
-    tags: ["Unity", "C#", "Physics", "Editor"],
+    tags: ["Unity", "C#", "Editor"],
     img: "/images/thumb/farm-2025.png",
     link: "/projects/2dport-2025-farm",
   },
@@ -132,7 +132,7 @@ export default function Home() {
     }
   };
 
-  const allTags = ["전체", "Unity", "C#", "Bash", "Physics", "UGUI", "Pyhton", "Firebase", "Editor"];
+  const allTags = ["전체", "Unity", "C#", "UGUI", "Firebase", "Editor"];
   const filtered = filter === "전체" ? PROJECTS : PROJECTS.filter(p => p.tags.includes(filter));
   const modal = PROJECTS.find(p => p.id === activeModal);
 
@@ -318,7 +318,7 @@ export default function Home() {
             <div style={{ marginTop: "56px" }}>
               <p style={{ fontSize: "12px", opacity: 0.4, letterSpacing: "0.1em", marginBottom: "16px" }}>사용 기술</p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", justifyContent: "center" }}>
-                {["Unity", "AWS", "Firebase", "C#", "Bash", "Pyhton", "Git"].map(t => (
+                {["Unity", "AWS", "Firebase", "C#", "Git"].map(t => (
                   <span key={t} style={{
                     padding: "6px 16px", borderRadius: "999px",
                     border: "1px solid rgba(255,255,255,0.12)",
