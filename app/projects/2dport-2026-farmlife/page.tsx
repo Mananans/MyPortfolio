@@ -17,7 +17,7 @@ const HERO_IMAGE = "/images/farmlife-2026/hero.png";
 const GALLERY = [
   { src: "/images/farmlife-2026/gallery-1.png", label: "경작 화면" },
   { src: "/images/farmlife-2026/gallery-2.png", label: "NPC 스케줄 · 대화" },
-  { src: "/images/farmlife-2026/gallery-3.png", label: "상점" },
+  { src: "/images/farmlife-2026/gallery-3.png", label: "가판대" },
   { src: "/images/farmlife-2026/gallery-4.png", label: "전투 화면" },
 ];
 
