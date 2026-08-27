@@ -15,9 +15,9 @@ import Link from "next/link";
 const HERO_IMAGE = "/images/farmlife-2026/hero.png";
 
 const GALLERY = [
-  { src: "/images/farmlife-2026/gallery-1.png", label: "농장 / 경작 화면" },
+  { src: "/images/farmlife-2026/gallery-1.png", label: "경작 화면" },
   { src: "/images/farmlife-2026/gallery-2.png", label: "NPC 스케줄 · 대화" },
-  { src: "/images/farmlife-2026/gallery-3.png", label: "상점 / 가판대" },
+  { src: "/images/farmlife-2026/gallery-3.png", label: "상점" },
   { src: "/images/farmlife-2026/gallery-4.png", label: "전투 화면" },
 ];
 
@@ -621,9 +621,9 @@ export default function FarmLifePage() {
 
         {/* ── 데이터 흐름 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>데이터 흐름 — 클릭 한 번의 여정</h2>
+          <h2 style={SECTION_TITLE}>데이터 흐름</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
-            플레이어가 나무를 도끼로 클릭했을 때, 어떤 시스템이 어떤 순서로 협력하는지.
+            ex) 플레이어가 나무를 도끼로 클릭했을 때, 어떤 시스템이 어떤 순서로 이어지는지.
           </p>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
             <NumItem n={1}>
