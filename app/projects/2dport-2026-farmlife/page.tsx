@@ -521,11 +521,11 @@ export default function FarmLifePage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: "12px" }}>
             {[
               { t: "컴포지션 우선", d: "상속보다 조합. 기능은 컴포넌트를 붙여 확장" },
-              { t: "데이터가 진실", d: "문자열 키가 아니라 ScriptableObject 참조. 저장 시에만 이름을 id로" },
+              { t: "데이터 중심", d: "문자열 키가 아니라 ScriptableObject 참조. 저장 시에만 이름을 id로" },
               { t: "이벤트 기반 디커플링", d: "방송자는 구독자를 모름. 역방향 통신은 전부 이벤트" },
               { t: "단일 책임", d: "이질적 책임이 뭉치면 분리, 단일 목적이면 길어도 유지" },
               { t: "코드 기반 배선", d: "GameManager가 Init()으로 주입. 시스템끼리 인스펙터로 찾지 않음" },
-              { t: "UI는 구독만", d: "로직 → UI 참조는 금지. UI가 로직 이벤트를 구독" },
+              { t: "UI는 구독", d: "로직 → UI 참조는 금지. UI가 로직 이벤트를 구독" },
             ].map(p => (
               <div key={p.t} style={{
                 background: "rgba(45,212,191,0.05)",
