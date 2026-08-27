@@ -5,6 +5,36 @@ import { useRouter } from "next/navigation";
 
 // ── 프로젝트 데이터 ──────────────────────────────────────────
 const PROJECTS = [
+   {
+    id: "farmlife-2026",
+    title: "2DPort_2026_FarmLife",
+    desc: "스타듀밸리형 농사 · 생활 시뮬레이션",
+    period: "2026.07 ~ Present",
+    highlight: "계층 기반 아키텍처 설계 및 God Object 리팩터링",
+    tags: ["Unity", "C#", "Editor"],
+    img: "/images/thumb/farmlife-2026.png",
+    link: "/projects/2dport-2026-farmlife",
+  },
+  {
+    id: "ccd-2026",
+    title: "2DPort_2026_CCD",
+    desc: "카드 조합 디펜스 게임",
+    period: "2026.03 ~ Present",
+    highlight: "카드 조합 로직 및 타워 디펜스 구조 설계",
+    tags: ["Unity", "C#", "Editor"],
+    img: "/images/thumb/ccd-2026.png",
+    link: "/projects/2dport-2026-ccd",
+  },  
+  {
+    id: "farm-2025",
+    title: "2DPort_2025_Farm",
+    desc: "농장 운영 게임",
+    period: "2025.09 ~ 2025.11",
+    highlight: "Sprite Assets을 활용한 Animation",
+    tags: ["Unity", "C#", "Editor"],
+    img: "/images/thumb/farm-2025.png",
+    link: "/projects/2dport-2025-farm",
+  },
   {
     id: "2dport-2025",
     title: "2DPort 2025",
@@ -45,26 +75,6 @@ const PROJECTS = [
     img: "/images/thumb/mini-2025.png",
     link: "/projects/2dport-2025-mini",
   },
-  {
-    id: "farm-2025",
-    title: "2DPort_2025_Farm",
-    desc: "농장 운영 게임",
-    period: "2025.09 ~ 2025.11",
-    highlight: "Sprite Assets을 활용한 Animation",
-    tags: ["Unity", "C#", "Editor"],
-    img: "/images/thumb/farm-2025.png",
-    link: "/projects/2dport-2025-farm",
-  },
-  {
-    id: "ccd-2026",
-    title: "2DPort_2026_CCD",
-    desc: "카드 조합 디펜스 게임",
-    period: "2026.03 ~ Present",
-    highlight: "카드 조합 로직 및 타워 디펜스 구조 설계",
-    tags: ["Unity", "C#", "Editor"],
-    img: "/images/thumb/ccd-2026.png",
-    link: "/projects/2dport-2026-ccd",
-  },
 ];
 
 // ── 경력 데이터 ──────────────────────────────────────────────
@@ -101,6 +111,10 @@ export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
   const [filter, setFilter] = useState("전체");
 
+  // ── 프로젝트 캐러셀 상태 ──
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [perView, setPerView] = useState(3); // 화면 폭에 따라 1 / 2 / 3장
+
   // ✅ 마운트 시 body overflow 반드시 초기화 (뒤로가기로 돌아왔을 때 잔류 방지)
   useEffect(() => {
     document.body.style.overflow = "";
@@ -135,6 +149,32 @@ export default function Home() {
   const allTags = ["전체", "Unity", "C#", "UGUI", "Firebase", "Editor"];
   const filtered = filter === "전체" ? PROJECTS : PROJECTS.filter(p => p.tags.includes(filter));
   const modal = PROJECTS.find(p => p.id === activeModal);
+
+  // ── 캐러셀: 화면 폭에 따라 노출 장수 결정 (3 / 2 / 1) ──
+  useEffect(() => {
+    const calcPerView = () => {
+      const w = window.innerWidth;
+      setPerView(w < 720 ? 1 : w < 1040 ? 2 : 3);
+    };
+    calcPerView();
+    window.addEventListener("resize", calcPerView);
+    return () => window.removeEventListener("resize", calcPerView);
+  }, []);
+
+  const maxIndex = Math.max(0, filtered.length - perView);
+
+  // 필터 변경 / 창 크기 변경으로 범위를 벗어나면 보정
+  useEffect(() => {
+    setSlideIndex(i => Math.min(i, maxIndex));
+  }, [maxIndex]);
+
+  const slidePrev = () => setSlideIndex(i => Math.max(0, i - 1));
+  const slideNext = () => setSlideIndex(i => Math.min(maxIndex, i + 1));
+
+  const changeFilter = (t) => {
+    setFilter(t);
+    setSlideIndex(0);
+  };
 
   return (
     <>
@@ -227,6 +267,59 @@ export default function Home() {
           border-radius: 50%;
           border: 2px solid ${TEAL};
           background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6l3 3 5-5' stroke='%232dd4bf' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat;
+        }
+
+        .carousel-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: rgba(10,10,10,0.85);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(255,255,255,0.14);
+          color: #e8e8e8;
+          font-size: 18px;
+          line-height: 1;
+          cursor: pointer;
+          z-index: 5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: inherit;
+          transition: border-color 0.2s, color 0.2s, background 0.2s, opacity 0.2s;
+        }
+        .carousel-btn:hover:not(:disabled) {
+          border-color: ${TEAL};
+          color: ${TEAL};
+          background: rgba(45,212,191,0.12);
+        }
+        .carousel-btn:disabled {
+          opacity: 0.22;
+          cursor: default;
+        }
+        .carousel-btn.prev { left: -22px; }
+        .carousel-btn.next { right: -22px; }
+        @media (max-width: 1180px) {
+          .carousel-btn.prev { left: 4px; }
+          .carousel-btn.next { right: 4px; }
+        }
+
+        .carousel-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          border: none;
+          padding: 0;
+          background: rgba(255,255,255,0.18);
+          cursor: pointer;
+          transition: background 0.25s, width 0.25s;
+        }
+        .carousel-dot.active {
+          background: ${TEAL};
+          width: 20px;
+          border-radius: 999px;
         }
 
         @keyframes fadeIn {
@@ -377,49 +470,87 @@ export default function Home() {
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center", marginBottom: "40px" }}>
             {allTags.map(t => (
-              <button key={t} className={`filter-btn${filter === t ? " active" : ""}`} onClick={() => setFilter(t)}>
+              <button key={t} className={`filter-btn${filter === t ? " active" : ""}`} onClick={() => changeFilter(t)}>
                 {t}
               </button>
             ))}
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}>
-            {filtered.map(p => (
-              <div key={p.id} className="proj-card" onClick={() => setActiveModal(p.id)}>
-                <div style={{ position: "relative", height: "200px", background: "#1a1a2e", overflow: "hidden" }}>
-                  <img
-                    src={p.img} alt={p.title}
-                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                    onError={e => { e.currentTarget.style.display = "none"; }}
-                  />
-                  <div style={{
-                    position: "absolute", inset: 0, pointerEvents: "none",
-                    backgroundImage: "linear-gradient(rgba(45,212,191,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(45,212,191,0.05) 1px, transparent 1px)",
-                    backgroundSize: "24px 24px",
-                  }} />
-                  <div style={{ position: "absolute", top: "12px", left: "12px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                    {p.tags.map(t => (
-                      <span key={t} style={{
-                        padding: "3px 10px", borderRadius: "999px",
-                        background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)",
-                        fontSize: "11px", color: "#ccc", border: "1px solid rgba(255,255,255,0.1)",
-                      }}>{t}</span>
-                    ))}
+          {/* ── 캐러셀: 3장 노출 / 화살표로 1장씩 이동 ── */}
+          <div style={{ position: "relative" }}>
+            <button
+              className="carousel-btn prev"
+              onClick={slidePrev}
+              disabled={slideIndex === 0}
+              aria-label="이전 프로젝트"
+            >‹</button>
+            <button
+              className="carousel-btn next"
+              onClick={slideNext}
+              disabled={slideIndex >= maxIndex}
+              aria-label="다음 프로젝트"
+            >›</button>
+
+            <div style={{ overflow: "hidden", margin: "0 -10px" }}>
+              <div style={{
+                display: "flex",
+                transform: `translateX(-${slideIndex * (100 / perView)}%)`,
+                transition: "transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)",
+              }}>
+                {filtered.map(p => (
+                  <div key={p.id} style={{ flex: `0 0 ${100 / perView}%`, minWidth: 0, padding: "4px 10px", display: "flex" }}>
+                    <div className="proj-card" onClick={() => setActiveModal(p.id)} style={{ width: "100%" }}>
+                      <div style={{ position: "relative", height: "200px", background: "#1a1a2e", overflow: "hidden" }}>
+                        <img
+                          src={p.img} alt={p.title}
+                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                          onError={e => { e.currentTarget.style.display = "none"; }}
+                        />
+                        <div style={{
+                          position: "absolute", inset: 0, pointerEvents: "none",
+                          backgroundImage: "linear-gradient(rgba(45,212,191,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(45,212,191,0.05) 1px, transparent 1px)",
+                          backgroundSize: "24px 24px",
+                        }} />
+                        <div style={{ position: "absolute", top: "12px", left: "12px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                          {p.tags.map(t => (
+                            <span key={t} style={{
+                              padding: "3px 10px", borderRadius: "999px",
+                              background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)",
+                              fontSize: "11px", color: "#ccc", border: "1px solid rgba(255,255,255,0.1)",
+                            }}>{t}</span>
+                          ))}
+                        </div>
+                        <div style={{
+                          position: "absolute", bottom: 0, left: 0, right: 0, height: "60px",
+                          background: "linear-gradient(transparent, #161616)",
+                        }} />
+                      </div>
+                      <div style={{ padding: "20px" }}>
+                        <h3 style={{ fontSize: "17px", fontWeight: 700, marginBottom: "6px" }}>{p.title}</h3>
+                        <p style={{ fontSize: "13px", opacity: 0.5, marginBottom: "12px" }}>{p.period}</p>
+                        <p style={{ fontSize: "13px", color: TEAL, display: "flex", alignItems: "flex-start", gap: "6px", lineHeight: 1.6 }}>
+                          <span style={{ flexShrink: 0 }}>●</span> {p.highlight}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div style={{
-                    position: "absolute", bottom: 0, left: 0, right: 0, height: "60px",
-                    background: "linear-gradient(transparent, #161616)",
-                  }} />
-                </div>
-                <div style={{ padding: "20px" }}>
-                  <h3 style={{ fontSize: "17px", fontWeight: 700, marginBottom: "6px" }}>{p.title}</h3>
-                  <p style={{ fontSize: "13px", opacity: 0.5, marginBottom: "12px" }}>{p.period}</p>
-                  <p style={{ fontSize: "13px", color: TEAL, display: "flex", alignItems: "center", gap: "6px" }}>
-                    <span>●</span> {p.highlight}
-                  </p>
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* 현재 위치 표시 */}
+            {maxIndex > 0 && (
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", marginTop: "28px" }}>
+                {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+                  <button
+                    key={i}
+                    className={`carousel-dot${slideIndex === i ? " active" : ""}`}
+                    onClick={() => setSlideIndex(i)}
+                    aria-label={`${i + 1}번째 위치로 이동`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
