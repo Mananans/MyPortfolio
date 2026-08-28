@@ -505,7 +505,7 @@ export default function FarmLifePage() {
               "엔진: Unity 6 (2D URP) / 언어: C#",
               "네임스페이스: FarmGame.Core (에디터: FarmGame.EditorTools)",
               "구성: 9개 도메인 시스템 + IPersistentSystem 기반 세이브 · 로드",
-              "설계 문서: PROJECT_STATUS.md(무엇이 있나) / ARCHITECTURE.md(어떻게 연결되나) 병행 관리",
+              "설계 문서: PROJECT_STATUS.md / ARCHITECTURE.md",
             ].map(t => (
               <p key={t} style={{ fontSize: "14px", color: TEAL, opacity: 0.9, margin: 0 }}>• {t}</p>
             ))}
@@ -521,10 +521,10 @@ export default function FarmLifePage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: "12px" }}>
             {[
               { t: "컴포지션 우선", d: "상속보다 조합. 기능은 컴포넌트를 붙여 확장" },
-              { t: "데이터 중심", d: "문자열 키가 아니라 ScriptableObject 참조. 저장 시에만 이름을 id로" },
+              { t: "데이터 중심", d: "문자열 키가 아니라 ScriptableObject 참조." },
               { t: "이벤트 기반 디커플링", d: "방송자는 구독자를 모름. 역방향 통신은 전부 이벤트" },
               { t: "단일 책임", d: "이질적 책임이 뭉치면 분리, 단일 목적이면 길어도 유지" },
-              { t: "코드 기반 배선", d: "GameManager가 Init()으로 주입. 시스템끼리 인스펙터로 찾지 않음" },
+              { t: "코드 기반 배선", d: "Init()으로 주입. 시스템끼리 인스펙터로 찾지 않음" },
               { t: "UI는 구독", d: "로직 → UI 참조는 금지. UI가 로직 이벤트를 구독" },
             ].map(p => (
               <div key={p.t} style={{
@@ -572,7 +572,7 @@ export default function FarmLifePage() {
   drops.Bind(farm)                           // 채집됨 → 드랍 연출 (별개 구독)
   time.OnDayPassed += farm.GrowAllCrops      // 하루 경과 → 작물 성장`}</CodeBlock>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <NumItem n={1}>순수 로직 객체(Pathfinder)는 MonoBehaviour 없이 <code>new</code>로 생성해 주입</NumItem>
+            <NumItem n={1}>순수 로직 객체는 MonoBehaviour 없이 <code>new</code>로 생성해 주입</NumItem>
             <NumItem n={2}>참조 누락은 <code>ReferenceValidator</code>가 시작 시점에 일괄 보고 — 런타임 NullReference 추적 제거</NumItem>
             <NumItem n={3}>한 이벤트를 여러 구독자가 나눠 받도록 설계 (적재와 연출을 분리)</NumItem>
           </ul>
