@@ -470,7 +470,6 @@ function Roadmap() {
     { label: "완료", color: GREEN, items: ["호감도 · 선물 · 마일스톤 이벤트", "광산 — 절차 생성 · 층 이동 · 진행도", "요리 / 제작 — 레시피 해금 · 지급 방식 교체 · 음식 버프"] },
     { label: "다음", color: "#f87171", items: ["낚시 — 미니게임 + 물고기 도감", "동물 / 축산 — 닭·소, 알·우유, 축사", "커뮤니티 센터 / 번들 — 수집 목표 구조"] },
     { label: "이후", color: "#60a5fa", items: ["축제 — 정의·매니저는 있으나 미완성", "결혼 / 관계 심화 — 호감도 기반은 갖춰짐", "집 내부 가구 배치 · 캐릭터 커스터마이징"] },
-    { label: "보류", color: "#94a3b8", items: ["광산 벽 타일 정합 — RuleTile 모서리가 간헐적으로 어긋나나, 해결 비용 대비 효과가 낮아 더 손대지 않기로 결정"] },
   ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -722,9 +721,6 @@ export default function FarmLifePage() {
             </NumItem>
             <NumItem n={2}>
               각본은 <strong style={{ color: "#f0f0f0" }}>항상 대화에 이어 재생</strong> (시간 조건 무시)
-              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
-                <SubItem>씬 전환에만 조건을 걸어 “대화는 됐는데 아무 반응이 없는” 구간을 없앰</SubItem>
-              </ul>
             </NumItem>
             <NumItem n={3}>
               씬 조건 4종: 없음(즉시) / 시간만 / 장소 / 장소 + 시간
@@ -1007,7 +1003,7 @@ CraftDeliveryBase           추상 MonoBehaviour — 지급 방식의 계약
               { t: "풀링 적용", d: "드롭 아이템 · 타격 이펙트 · 연출 이펙트 · FloatingIcon", ok: true },
               { t: "NPC 탐색 개선", d: "FindObjectsByType 제거 → NpcRegistry 등록 방식", ok: true },
               { t: "광산 저장 용량", d: "시드 + 변경분 방식으로 층당 1~2KB", ok: true },
-              { t: "Projectile 풀링 미적용", d: "구조만 잡고 구현 보류 중이라 그대로 둠", ok: false },
+              { t: "Projectile 풀링 미적용", d: "풀링이 필요한 규모의 object 생성 및 재활용이 아직 없어 구현 보류중", ok: false },
             ].map(p => (
               <div key={p.t} style={{
                 background: p.ok ? "rgba(74,222,128,0.06)" : "rgba(255,255,255,0.03)",
