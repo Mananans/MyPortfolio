@@ -14,6 +14,10 @@ import Link from "next/link";
 //      ├── gallery-6.png  ← 외양간 내부 — 가축 5종
 //      ├── gallery-7.png  ← 대장간 내부 — 대장장이 NPC
 //      ├── gallery-8.png  ← 닭장 · 외양간 외관
+//      ├── gallery-9.png  ← 가공 기계 8종 · 작업대 · 반려동물
+//      ├── gallery-10.png ← 비 오는 날 — 우산 · 달팽이 (빗방울은 임시 제작 이미지)
+//      ├── gallery-11.png ← 가축 상점 앞 — 말 타기
+//      ├── gallery-12.png ← 숙련도 창
 //      ├── diagram-layer.png    ← 계층 구조 다이어그램
 //      ├── diagram-save.png     ← 세이브/로드 분기 다이어그램
 //      └── diagram-affinity.png ← 호감도 마일스톤 판정 다이어그램
@@ -34,6 +38,10 @@ const GALLERY = [
   { src: "/images/farmlife-2026/gallery-6.png", label: "외양간 — 소 · 염소 · 양 · 돼지 · 타조" },
   { src: "/images/farmlife-2026/gallery-7.png", label: "대장간 — 대장장이에게 제작 부탁" },
   { src: "/images/farmlife-2026/gallery-8.png", label: "닭장 · 외양간" },
+  { src: "/images/farmlife-2026/gallery-9.png", label: "가공 기계 8종 · 작업대 · 반려동물" },
+  { src: "/images/farmlife-2026/gallery-10.png", label: "비 오는 날 — 우산 · 달팽이 (빗방울은 리소스가 없어 임시로 만든 이미지)" },
+  { src: "/images/farmlife-2026/gallery-11.png", label: "가축 상점 앞 — 말 타기" },
+  { src: "/images/farmlife-2026/gallery-12.png", label: "숙련도 — 레벨 보너스 · 레시피 해금" },
 ];
 
 const TEAL = "#2dd4bf";
@@ -129,31 +137,31 @@ const LAYERS = [
     level: "도메인",
     color: GREEN,
     desc: "한 분야의 로직 소유",
-    items: ["FarmManager", "StallSystem", "NpcInteractionHandler", "CombatSystem", "CraftingSystem", "FishingSystem", "FurnitureSystem", "NpcCraftService", "SaveSystem"],
+    items: ["FarmManager", "StallSystem", "NpcInteractionHandler", "CombatSystem", "CraftingSystem", "FishingSystem", "FurnitureSystem", "NpcCraftService", "FestivalMinigameService", "LivestockManager", "MountSystem", "MachineSystem", "SkillPerks", "InsectSystem", "PetSystem", "WeatherSystem", "SaveSystem"],
   },
   {
     level: "엔티티 컨트롤러",
     color: "#60a5fa",
     desc: "개체 하나 · 흐름 하나를 제어",
-    items: ["NpcController", "MonsterController", "LivestockController", "MineManager"],
+    items: ["NpcController", "MonsterController", "LivestockController", "Mountable", "PetController", "MineManager"],
   },
   {
     level: "상태 시스템",
     color: TEAL,
     desc: "상태 소유 + API · 대부분 IPersistentSystem 구현",
-    items: ["InventorySystem", "ToolInventory", "EquipmentSystem", "QuickSlotSystem", "WalletSystem", "TimeSystem", "PlayerHealth", "BuffSystem", "ConsumableUser", "MovementSystem", "WalkabilityService", "OccupancyService", "ItemCollectionBook", "BundleBook", "AvatarCollectionBook"],
+    items: ["InventorySystem", "ToolInventory", "EquipmentSystem", "QuickSlotSystem", "WalletSystem", "TimeSystem", "PlayerHealth", "BuffSystem", "ConsumableUser", "MovementSystem", "WalkabilityService", "OccupancyService", "ItemCollectionBook", "BundleBook", "AvatarCollectionBook", "SkillSystem"],
   },
   {
     level: "데이터",
     color: "#a78bfa",
     desc: "SO 정의 + 런타임 인스턴스 + 저장 모델",
-    items: ["ItemData", "CropData", "HarvestableDefinition", "MonsterData", "NpcDefinition", "CraftingRecipe", "MineFloorTable", "LivestockData", "FurnitureData", "ToolItemData", "FarmTileData", "FurnitureTileData", "SaveData"],
+    items: ["ItemData", "CropData", "HarvestableDefinition", "MonsterData", "NpcDefinition", "CraftingRecipe", "MineFloorTable", "LivestockData", "FurnitureData", "ToolItemData", "MachineData", "SkillDefinition", "InsectData", "PetData", "FarmTileData", "FurnitureTileData", "MachineTileData", "SaveData"],
   },
   {
     level: "UI",
     color: "#94a3b8",
     desc: "로직의 이벤트를 구독만 · 로직은 UI를 참조하지 않음",
-    items: ["PlayerHealthBar", "QuickSlotBar", "AffinityHeartsUI", "CraftingUI", "FurnitureCatalogUI", "MineElevatorUI", "SystemMessage", "*Notifier"],
+    items: ["PlayerHealthBar", "QuickSlotBar", "AffinityHeartsUI", "CraftingUI", "FurnitureCatalogUI", "MineElevatorUI", "SkillWindowUI", "SystemMessage", "*Notifier"],
   },
 ];
 
@@ -242,15 +250,15 @@ function CodeBlock({ children }) {
 
 // 인터페이스 바인딩 표
 const INTERFACES = [
-  { name: "IPersistentSystem", contract: "SaveKey / InitializeNew / Capture / Restore", impl: "구현체 16개 — Inventory, ToolInventory, QuickSlot, Wallet, Time, PlayerHealth, Stall, PlayerPositionSaver, NpcSaveManager, MineManager, CraftingSystem, ItemCollectionBook, BundleBook, LivestockSaveManager, AvatarCollectionBook, PlayerAppearance" },
-  { name: "IItemAcquireHandler", contract: "TryHandleAcquire — 가방에 넣기 전 가로채기", impl: "AvatarCollectionBook(외형 파츠 → 즉시 해금) / ToolInventory(도구 아이템 → 도구 칸·등급 교체)" },
+  { name: "IPersistentSystem", contract: "SaveKey / InitializeNew / Capture / Restore", impl: "구현체 20종(씬 인스턴스 23개) — Inventory, ToolInventory, QuickSlot, Wallet, Time, PlayerHealth, Stall, PlayerPositionSaver, NpcSaveManager, MineManager, CraftingSystem, ItemCollectionBook, BundleBook, LivestockSaveManager, AvatarCollectionBook, PlayerAppearance, MountSystem, SkillSystem, PetSystem, WeatherSystem" },
+  { name: "IItemAcquireHandler", contract: "TryHandleAcquire — 가방에 넣기 전 가로채기", impl: "AvatarCollectionBook(외형 파츠 → 즉시 해금) / ToolInventory(도구 → 도구 칸·등급 교체) / LivestockManager(가축·사료통 → 축사로) / MountSystem(말 → 말뚝, 안장) / PetSystem(입양 → 마당으로)" },
   { name: "ITileDataStore", contract: "셀 데이터 조회 / 등록", impl: "TileDataStore" },
   { name: "IEffectPlayer", contract: "연출 재생", impl: "EffectSystem" },
   { name: "ICharacterAnimator", contract: "Play(action, dir)", impl: "CharacterAnimator / NpcAnimator / MonsterAnimator / NullCharacterAnimator" },
   { name: "IWalkableProvider", contract: "통행 판정 + 인접 칸 찾기", impl: "WalkabilityService" },
-  { name: "IInteractable", contract: "Interact / CanInteract", impl: "FurnitureInteractable / MineLadder" },
+  { name: "IInteractable", contract: "Interact / CanInteract", impl: "FurnitureInteractable / MineLadder / LivestockController / HorseStand / PetController" },
   { name: "IToolProvider", contract: "현재 장착 도구 제공", impl: "EquipmentSystem" },
-  { name: "ISaveable", contract: "ToSaveData(cell)", impl: "FarmTileData / GrassData / HarvestableData / FurnitureTileData" },
+  { name: "ISaveable", contract: "ToSaveData(cell)", impl: "FarmTileData / GrassData / HarvestableData / FurnitureTileData / MachineTileData" },
   { name: "IWarpConsent", contract: "AllowTriggerWarp", impl: "NpcController" },
   { name: "IHitAnimation", contract: "HitFrames / HitFps", impl: "HarvestableDefinition" },
 ];
@@ -402,6 +410,7 @@ const SYSTEMS = [
       "스타듀식 조작: 미리보기 · R 방향 회전 · 우클릭 회수 · 여러 칸 가구",
       "그림이 있을 때만 상호작용 — 벽난로 불꽃 · 커튼 · 옷장 · 냉장고 토글, 소파 앉기, 침대 수면",
       "불꽃 · 촛불 · 램프는 Light2D 광원 — 밤 표현을 전역 조명으로 전환",
+      "탁자 119종 위에 작은 가구 238종 — 그림 폭으로 차지할 자리를 계산해 탁자 크기에 맞춰 올림",
     ],
   },
   {
@@ -409,7 +418,9 @@ const SYSTEMS = [
     name: "가축 · 외양간",
     points: [
       "가축 7종(닭 · 오리 · 소 · 염소 · 양 · 돼지 · 타조)과 산출물(알 · 우유 · 양모 · 송로버섯)",
-      "LivestockData(SO) 하나로 배고픔 · 성장 단계 · 방향별 프레임 · 산출 주기 정의",
+      "LivestockData(SO) 하나로 배고픔 · 성장 단계 · 방향별 프레임 · 산출 주기 · 암수 모습 정의",
+      "가축 상점(목장주 NPC) — 산 가축은 가방이 아니라 바로 축사로, 사료통은 벽쪽 자리에 차례로",
+      "암수가 있는 종은 밤마다 번식, 고기 그림이 있는 4종만 도축",
       "닭장 · 외양간 내부는 먼 좌표에 텍스트 그리드로 굽고 워프로 연결",
     ],
   },
@@ -420,6 +431,59 @@ const SYSTEMS = [
       "광석 획득 → 주괴 레시피 해금 → 주괴 획득 → 그 등급 도구 · 무기 레시피 해금",
       "대장장이 NPC 대화 선택지 → 제작 목록, 모루(무기 작업대)에서도 제작",
       "도구 9종 × 10등급 = 90개 레시피, 가진 등급 이하는 제작 불가",
+    ],
+  },
+  {
+    icon: "🎪",
+    name: "축제 · 미니게임",
+    points: [
+      "사계절 축제를 별도 Scene으로 — 축제 날 9시부터 공원 입구로 들어가면 열림",
+      "미니게임 4종을 방식 클래스로(IFestivalMinigameMode: 모으기 · 타이밍 · 룰렛)",
+      "축제 한정 음식 20종 · 전용 NPC 2명(행상인 · 진행자)",
+    ],
+  },
+  {
+    icon: "🐎",
+    name: "탈것",
+    points: [
+      "말은 사서 안장을 얹고 타기, 타조는 탄 자세 + 타조 프레임 합성",
+      "탄 자세는 캐릭터 레이어 애니메이션에 동작만 추가 — 이동 시스템의 Idle/Walk를 Ride로 바꿔 재생",
+      "말 ×1.5 · 타조 ×1.4 이동 속도, F로 내리면 그 자리에 남음",
+    ],
+  },
+  {
+    icon: "🧀",
+    name: "가공 기계",
+    points: [
+      "8종(버터 · 치즈 · 잼 · 피클/간장 · 꿀 · 목재 · 포션 · 옷감) — 작업대에서 만들어 바깥에 설치",
+      "MachineData(SO)에 공정 목록(재료 · 결과 · 시간)만 두고 게임 시간으로 진행",
+      "가구와 같은 타일 데이터 저장소에 앵커만 저장 → 불러온 뒤 발자국 · 완성 아이콘 재구성",
+    ],
+  },
+  {
+    icon: "📈",
+    name: "숙련도",
+    points: [
+      "농사 · 채광 · 채집 · 낚시 · 전투 5종, Lv 10",
+      "도메인 이벤트(수확 · 처치 · 낚시 · 가공)를 구독해 경험치 — 도메인은 숙련도를 모름",
+      "레벨 보너스(추가 수확 · 공격력 · 낚시 구간)와 기계 레시피 해금을 SkillDefinition(SO)에",
+    ],
+  },
+  {
+    icon: "🦋",
+    name: "곤충 · 반려동물",
+    points: [
+      "곤충 36종 — 계절 · 시각 · 비 조건, 잠자리채 모션의 타격 프레임에서 잡기 판정, 곤충 도감",
+      "반려동물 9종(고양이 4 · 강아지 5) 입양 — 낮엔 마당, 밤엔 집 안에서 잠, 하루 한 번 쓰다듬기",
+    ],
+  },
+  {
+    icon: "🌧️",
+    name: "날씨",
+    points: [
+      "계절별 비 확률 → 정적 WeatherContext — 정하는 쪽은 WeatherSystem 하나, 나머지는 읽기/구독",
+      "비 오는 날 바깥 밭 자동 물주기 · 빗줄기 · 우산 자세 · 달팽이 출현",
+      "빗방울은 리소스가 없어 임시로 만든 이미지",
     ],
   },
 ];
@@ -460,7 +524,7 @@ function RefactorVerdict() {
   const rows = [
     { file: "NpcController", line: "", verdict: "분리", color: GREEN, reason: "상점 재고(NpcShop) · 호감도(NpcAffinity)라는 이질적 책임이 뭉쳐 있었음 → 각 컴포넌트로 분리하고 세이브는 위임" },
     { file: "CraftingSystem ↔ Delivery", line: "", verdict: "분리", color: GREEN, reason: "지급 방식이 로직에 박혀 있었음 → CraftDeliveryBase로 추상화하고 결과 지급은 콜백으로 역참조 제거" },
-    { file: "InteractionManager", line: "492", verdict: "유지", color: "#94a3b8", reason: "입력 → 실행 변환이라는 단일 목적. 실제 로직은 이미 각 도메인에 위임됨" },
+    { file: "InteractionManager", line: "776", verdict: "유지", color: "#94a3b8", reason: "입력 → 실행 변환이라는 단일 목적. 가구 · 기계 · 곤충 · 탈것 라우팅이 늘어 길어졌지만 실제 로직은 전부 각 도메인에 위임됨" },
     { file: "MonsterController", line: "", verdict: "유지", color: "#94a3b8", reason: "AI 상태기계 하나. 분리 시 상태 전이만 흩어짐" },
     { file: "QuickSlot / Inventory / Movement", line: "", verdict: "유지", color: "#94a3b8", reason: "각자 단일 목적. 코드량이 많은 것과 책임이 섞인 것은 다름" },
     { file: "RescanSpace", line: "", verdict: "유지", color: "#94a3b8", reason: "이미 SpaceScanner로 추출돼 호출부는 각각 한 줄" },
@@ -501,9 +565,10 @@ function Roadmap() {
       "호감도 · 선물 · 마일스톤 이벤트", "광산 — 절차 생성 · 층 이동 · 진행도", "요리 / 제작 — 레시피 해금 · 지급 방식 교체 · 음식 버프",
       "낚시 — 미니게임 + 물고기 도감", "커뮤니티 센터 / 번들", "봄 축제 — 별도 Scene", "캐릭터 외형 · 외형 도감",
       "작물 계절 · 가축 7종 · 외양간", "대장장이 · 도구/무기 레시피 해금 사슬", "집 가구 배치 · 카탈로그 · 가구 조명",
+      "사계절 축제 · 미니게임 4종 · 축제 한정 상품 · 날짜에 맞춰 열기", "가축 상점 · 암수 · 번식 · 도축 · 사료통", "탈것(말 · 타조) · 탁자 위 소품",
+      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비",
     ] },
-    { label: "다음", color: "#f87171", items: ["여름 · 가을 · 겨울 축제 — 봄 축제와 같은 구조 + 미니게임 · 특별 상품", "결혼 / 관계 심화 — 호감도 기반은 갖춰짐"] },
-    { label: "이후", color: "#60a5fa", items: ["탁자 위 소품 올리기 등 가구 배치 확장", "가축 구입 · 번식"] },
+    { label: "다음", color: "#f87171", items: ["점검에서 나온 정리 — 흩어진 ‘바깥 범위’ 정의를 한 곳으로"] },
   ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -602,7 +667,7 @@ export default function FarmLifePage() {
             {[
               "엔진: Unity 6 (2D URP · Renderer 2D / Light 2D) / 언어: C#",
               "네임스페이스: FarmGame.Core (에디터: FarmGame.EditorTools)",
-              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 등 도메인 시스템 + IPersistentSystem 16개 (스크립트 215개)",
+              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 20종 (런타임 스크립트 269개 + 에디터 48개)",
               "설계 문서: PROJECT_STATUS.md / ARCHITECTURE.md",
             ].map(t => (
               <p key={t} style={{ fontSize: "14px", color: TEAL, opacity: 0.9, margin: 0 }}>• {t}</p>
@@ -931,6 +996,39 @@ SaveSystem                   ObjectKind.Furniture (앵커만) → 불러온 뒤 
           </ul>
         </section>
 
+        {/* ── 숙련도 · 가공 기계 ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>숙련도 · 가공 기계 — 기존 경로에 얹기</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            새 기능을 넣으면서 기존 도메인을 고치지 않는 것을 목표로 했습니다.
+            숙련도는 <strong style={{ color: "#e0e0e0" }}>이미 있는 이벤트를 구독만</strong> 하고, 가공 기계는 <strong style={{ color: "#e0e0e0" }}>가구가 쓰는 타일 저장 경로</strong>를 그대로 탑니다.
+          </p>
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>숙련도 — 도메인은 숙련도를 모른다</h3>
+          <CodeBlock>{`FarmManager.OnHarvested            ─┐
+LivestockController.OnAnyHarvested ─┤
+MachineSystem.OnCollected          ─┼─▶ SkillPerks (규칙) ─▶ SkillSystem.AddXp (상태 · 저장)
+FishingSystem.OnFinished           ─┤                               │ OnLevelUp
+MonsterHealth.OnAnyDied            ─┘                               ▼
+                       SkillPerks: CraftingSystem.UnlockMany(SkillDefinition 의 레벨별 레시피)
+                                   CombatSystem.SkillAttackBonus · FishingSystem.SkillWidthBonus
+                       UI: SkillWindowUI(K) · SkillNotifier — 구독만`}</CodeBlock>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>상태(<code>SkillSystem</code> — 경험치 · 레벨 · 저장)와 규칙(<code>SkillPerks</code> — 무엇이 몇 점 · 보너스 · 해금)을 분리</NumItem>
+            <NumItem n={2}>보너스는 도메인에 <strong style={{ color: "#f0f0f0" }}>값 하나만</strong> 열어 두고(공격력 · 낚시 구간) 숙련도가 채움 — 도메인 쪽 분기 없음</NumItem>
+            <NumItem n={3}>기계 레시피는 처음엔 잠겨 있고, 해금은 기존 <code>CraftingSystem</code>의 해금 경로를 그대로 사용</NumItem>
+          </ul>
+          <h3 style={SUB_TITLE}>가공 기계 — 가구와 같은 모델 / 뷰</h3>
+          <CodeBlock>{`MachineData (ItemData)     공정[] = 재료 · 개수 → 결과 · 개수 · 시간  /  자동 산출(벌통) · 겨울 쉼
+       ▼  놓기(바깥 빈칸만)
+TileDataStore              MachineTileData(앵커: 공정 · 남은 시간 · 완성) + MachinePartData(나머지 칸)
+       ▼  TimeSystem.OnTimeChanged
+MachineSystem              시간만큼 진행 → 완성 아이콘 · 벌통 자동 재시작
+SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 RebuildAfterLoad`}</CodeBlock>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, margin: 0 }}>
+            점검에서 4대(작업 중 · 완성 · 대기 · 2칸)를 저장했다가 불러와 남은 시간 · 앵커 · 완성 아이콘이 그대로인 것을 실행으로 확인했습니다.
+          </p>
+        </section>
+
         {/* ── 데이터 흐름 ── */}
         <section style={{ marginBottom: "40px" }}>
           <h2 style={SECTION_TITLE}>데이터 흐름</h2>
@@ -985,7 +1083,7 @@ SaveSystem                   ObjectKind.Furniture (앵커만) → 불러온 뒤 
           <h2 style={SECTION_TITLE}>세이브 / 로드 아키텍처</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             시스템마다 저장 코드를 흩뿌리는 대신, <code>IPersistentSystem</code> 계약 하나로 통일했습니다.
-            현재 구현체는 16개입니다.
+            현재 구현체는 20종(씬 인스턴스 23개)입니다.
           </p>
           <Figure
             src={DIAGRAM_SAVE}
@@ -1170,6 +1268,9 @@ SaveSystem                   ObjectKind.Furniture (앵커만) → 불러온 뒤 
               "인터페이스 기반 결합",
               "이벤트 · 콜백 역결합",
               "매 프레임 GC 할당 없음",
+              "런타임 Find 탐색 없음",
+              "세이브 대상 23칸 누락 · 중복 키 0",
+              "저장 → 불러오기 실행 확인",
             ].map(t => (
               <span key={t} style={{
                 display: "inline-flex", alignItems: "center", gap: "7px",
