@@ -10,6 +10,10 @@ import Link from "next/link";
 //      ├── gallery-2.png  ← NPC 스케줄 · 대화 화면
 //      ├── gallery-3.png  ← 상점 / 가판대 화면
 //      ├── gallery-4.png  ← 전투 화면
+//      ├── gallery-5.png  ← 밤의 집 — 배치한 가구와 조명
+//      ├── gallery-6.png  ← 외양간 내부 — 가축 5종
+//      ├── gallery-7.png  ← 대장간 내부 — 대장장이 NPC
+//      ├── gallery-8.png  ← 닭장 · 외양간 외관
 //      ├── diagram-layer.png    ← 계층 구조 다이어그램
 //      ├── diagram-save.png     ← 세이브/로드 분기 다이어그램
 //      └── diagram-affinity.png ← 호감도 마일스톤 판정 다이어그램
@@ -26,6 +30,10 @@ const GALLERY = [
   { src: "/images/farmlife-2026/gallery-2.png", label: "NPC 스케줄 · 대화" },
   { src: "/images/farmlife-2026/gallery-3.png", label: "가판대" },
   { src: "/images/farmlife-2026/gallery-4.png", label: "전투 화면" },
+  { src: "/images/farmlife-2026/gallery-5.png", label: "밤의 집 — 배치한 가구 · 벽난로 · 촛불 조명" },
+  { src: "/images/farmlife-2026/gallery-6.png", label: "외양간 — 소 · 염소 · 양 · 돼지 · 타조" },
+  { src: "/images/farmlife-2026/gallery-7.png", label: "대장간 — 대장장이에게 제작 부탁" },
+  { src: "/images/farmlife-2026/gallery-8.png", label: "닭장 · 외양간" },
 ];
 
 const TEAL = "#2dd4bf";
@@ -121,31 +129,31 @@ const LAYERS = [
     level: "도메인",
     color: GREEN,
     desc: "한 분야의 로직 소유",
-    items: ["FarmManager", "StallSystem", "NpcInteractionHandler", "CombatSystem", "CraftingSystem", "SaveSystem"],
+    items: ["FarmManager", "StallSystem", "NpcInteractionHandler", "CombatSystem", "CraftingSystem", "FishingSystem", "FurnitureSystem", "NpcCraftService", "SaveSystem"],
   },
   {
     level: "엔티티 컨트롤러",
     color: "#60a5fa",
     desc: "개체 하나 · 흐름 하나를 제어",
-    items: ["NpcController", "MonsterController", "MineManager"],
+    items: ["NpcController", "MonsterController", "LivestockController", "MineManager"],
   },
   {
     level: "상태 시스템",
     color: TEAL,
     desc: "상태 소유 + API · 대부분 IPersistentSystem 구현",
-    items: ["InventorySystem", "ToolInventory", "EquipmentSystem", "QuickSlotSystem", "WalletSystem", "TimeSystem", "PlayerHealth", "BuffSystem", "ConsumableUser", "MovementSystem", "WalkabilityService", "OccupancyService"],
+    items: ["InventorySystem", "ToolInventory", "EquipmentSystem", "QuickSlotSystem", "WalletSystem", "TimeSystem", "PlayerHealth", "BuffSystem", "ConsumableUser", "MovementSystem", "WalkabilityService", "OccupancyService", "ItemCollectionBook", "BundleBook", "AvatarCollectionBook"],
   },
   {
     level: "데이터",
     color: "#a78bfa",
     desc: "SO 정의 + 런타임 인스턴스 + 저장 모델",
-    items: ["ItemData", "CropData", "HarvestableDefinition", "MonsterData", "NpcDefinition", "CraftingRecipe", "MineFloorTable", "FarmTileData", "SaveData"],
+    items: ["ItemData", "CropData", "HarvestableDefinition", "MonsterData", "NpcDefinition", "CraftingRecipe", "MineFloorTable", "LivestockData", "FurnitureData", "ToolItemData", "FarmTileData", "FurnitureTileData", "SaveData"],
   },
   {
     level: "UI",
     color: "#94a3b8",
     desc: "로직의 이벤트를 구독만 · 로직은 UI를 참조하지 않음",
-    items: ["PlayerHealthBar", "QuickSlotBar", "AffinityHeartsUI", "CraftingUI", "MineElevatorUI", "SystemMessage"],
+    items: ["PlayerHealthBar", "QuickSlotBar", "AffinityHeartsUI", "CraftingUI", "FurnitureCatalogUI", "MineElevatorUI", "SystemMessage", "*Notifier"],
   },
 ];
 
@@ -234,14 +242,15 @@ function CodeBlock({ children }) {
 
 // 인터페이스 바인딩 표
 const INTERFACES = [
-  { name: "IPersistentSystem", contract: "SaveKey / InitializeNew / Capture / Restore", impl: "구현체 12개 — Inventory, ToolInventory, QuickSlot, Wallet, Time, PlayerHealth, Stall, PlayerPositionSaver, NpcSaveManager, MineManager, CraftingSystem, GameFlow" },
+  { name: "IPersistentSystem", contract: "SaveKey / InitializeNew / Capture / Restore", impl: "구현체 16개 — Inventory, ToolInventory, QuickSlot, Wallet, Time, PlayerHealth, Stall, PlayerPositionSaver, NpcSaveManager, MineManager, CraftingSystem, ItemCollectionBook, BundleBook, LivestockSaveManager, AvatarCollectionBook, PlayerAppearance" },
+  { name: "IItemAcquireHandler", contract: "TryHandleAcquire — 가방에 넣기 전 가로채기", impl: "AvatarCollectionBook(외형 파츠 → 즉시 해금) / ToolInventory(도구 아이템 → 도구 칸·등급 교체)" },
   { name: "ITileDataStore", contract: "셀 데이터 조회 / 등록", impl: "TileDataStore" },
   { name: "IEffectPlayer", contract: "연출 재생", impl: "EffectSystem" },
   { name: "ICharacterAnimator", contract: "Play(action, dir)", impl: "CharacterAnimator / NpcAnimator / MonsterAnimator / NullCharacterAnimator" },
   { name: "IWalkableProvider", contract: "통행 판정 + 인접 칸 찾기", impl: "WalkabilityService" },
   { name: "IInteractable", contract: "Interact / CanInteract", impl: "FurnitureInteractable / MineLadder" },
   { name: "IToolProvider", contract: "현재 장착 도구 제공", impl: "EquipmentSystem" },
-  { name: "ISaveable", contract: "ToSaveData(cell)", impl: "FarmTileData / GrassData / HarvestableData" },
+  { name: "ISaveable", contract: "ToSaveData(cell)", impl: "FarmTileData / GrassData / HarvestableData / FurnitureTileData" },
   { name: "IWarpConsent", contract: "AllowTriggerWarp", impl: "NpcController" },
   { name: "IHitAnimation", contract: "HitFrames / HitFps", impl: "HarvestableDefinition" },
 ];
@@ -292,7 +301,9 @@ const SYSTEMS = [
     icon: "🌱",
     name: "농사 · 채집",
     points: [
-      "밭 갈기 → 씨앗 심기 → 일자 기반 성장 → 수확",
+      "밭 갈기 → 씨앗 심기 → 일자 기반 성장 → 수확 (작물 30종)",
+      "작물마다 실제 수확 계절(CropData.seasons) — 제철에만 심고, 계절이 바뀌면 시든다",
+      "제철이 아닌 씨앗은 ItemAvailability로 상점·드롭에서 자동 제외",
       "Tree 전용 코드를 걷어내고 HarvestableDefinition으로 통합",
       "requiredTool을 SO에 데이터로 지정 (하드코딩 제거)",
       "새 채집물은 SO만 추가하면 동작 — 코드 수정 불필요",
@@ -385,11 +396,30 @@ const SYSTEMS = [
   },
   {
     icon: "🪑",
-    name: "가구 상호작용",
+    name: "가구 배치",
     points: [
-      "FurnitureInteractable 하나로 모든 가구 대응 (내장 토글 + UnityEvent)",
-      "침대 = onInteract에 Sleep 연결, 벽난로 = 내장 토글 — 코드 없이 인스펙터 조립",
-      "문 = 가구 + WarpPoint 조합, 방향에 따라 자동 워프 on/off",
+      "가구 1,173종을 아이템(FurnitureData)으로 — 카탈로그 상점에서 구입해 집 안 타일맵에 배치",
+      "스타듀식 조작: 미리보기 · R 방향 회전 · 우클릭 회수 · 여러 칸 가구",
+      "그림이 있을 때만 상호작용 — 벽난로 불꽃 · 커튼 · 옷장 · 냉장고 토글, 소파 앉기, 침대 수면",
+      "불꽃 · 촛불 · 램프는 Light2D 광원 — 밤 표현을 전역 조명으로 전환",
+    ],
+  },
+  {
+    icon: "🐄",
+    name: "가축 · 외양간",
+    points: [
+      "가축 7종(닭 · 오리 · 소 · 염소 · 양 · 돼지 · 타조)과 산출물(알 · 우유 · 양모 · 송로버섯)",
+      "LivestockData(SO) 하나로 배고픔 · 성장 단계 · 방향별 프레임 · 산출 주기 정의",
+      "닭장 · 외양간 내부는 먼 좌표에 텍스트 그리드로 굽고 워프로 연결",
+    ],
+  },
+  {
+    icon: "🔨",
+    name: "대장 일",
+    points: [
+      "광석 획득 → 주괴 레시피 해금 → 주괴 획득 → 그 등급 도구 · 무기 레시피 해금",
+      "대장장이 NPC 대화 선택지 → 제작 목록, 모루(무기 작업대)에서도 제작",
+      "도구 9종 × 10등급 = 90개 레시피, 가진 등급 이하는 제작 불가",
     ],
   },
 ];
@@ -467,9 +497,13 @@ function RefactorVerdict() {
 // 로드맵
 function Roadmap() {
   const groups = [
-    { label: "완료", color: GREEN, items: ["호감도 · 선물 · 마일스톤 이벤트", "광산 — 절차 생성 · 층 이동 · 진행도", "요리 / 제작 — 레시피 해금 · 지급 방식 교체 · 음식 버프"] },
-    { label: "다음", color: "#f87171", items: ["낚시 — 미니게임 + 물고기 도감", "동물 / 축산 — 닭·소, 알·우유, 축사", "커뮤니티 센터 / 번들 — 수집 목표 구조"] },
-    { label: "이후", color: "#60a5fa", items: ["축제 — 정의·매니저는 있으나 미완성", "결혼 / 관계 심화 — 호감도 기반은 갖춰짐", "집 내부 가구 배치 · 캐릭터 커스터마이징"] },
+    { label: "완료", color: GREEN, items: [
+      "호감도 · 선물 · 마일스톤 이벤트", "광산 — 절차 생성 · 층 이동 · 진행도", "요리 / 제작 — 레시피 해금 · 지급 방식 교체 · 음식 버프",
+      "낚시 — 미니게임 + 물고기 도감", "커뮤니티 센터 / 번들", "봄 축제 — 별도 Scene", "캐릭터 외형 · 외형 도감",
+      "작물 계절 · 가축 7종 · 외양간", "대장장이 · 도구/무기 레시피 해금 사슬", "집 가구 배치 · 카탈로그 · 가구 조명",
+    ] },
+    { label: "다음", color: "#f87171", items: ["여름 · 가을 · 겨울 축제 — 봄 축제와 같은 구조 + 미니게임 · 특별 상품", "결혼 / 관계 심화 — 호감도 기반은 갖춰짐"] },
+    { label: "이후", color: "#60a5fa", items: ["탁자 위 소품 올리기 등 가구 배치 확장", "가축 구입 · 번식"] },
   ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -568,7 +602,7 @@ export default function FarmLifePage() {
             {[
               "엔진: Unity 6 (2D URP · Renderer 2D / Light 2D) / 언어: C#",
               "네임스페이스: FarmGame.Core (에디터: FarmGame.EditorTools)",
-              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 등 도메인 시스템 + IPersistentSystem 12개",
+              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 등 도메인 시스템 + IPersistentSystem 16개 (스크립트 215개)",
               "설계 문서: PROJECT_STATUS.md / ARCHITECTURE.md",
             ].map(t => (
               <p key={t} style={{ fontSize: "14px", color: TEAL, opacity: 0.9, margin: 0 }}>• {t}</p>
@@ -633,13 +667,16 @@ export default function FarmLifePage() {
   _pathfinder = new Pathfinder(walkability)  // 길찾기 ← 통행 판정 (순수 C# 객체)
   movement.Init(_pathfinder, characterAnimator)
   farm.Init(dataStore, effects, hitEffects, walkability)
+  furniture.Init(dataStore, inventory, player, movement, characterAnimator)
   interaction.Init(dataStore, walkability, movement, farm,
-                   equipment, characterAnimator, inventory)
+                   equipment, characterAnimator, inventory, furniture)
 
   // ── 이벤트 배선 (역결합) ──────────────────
   inventory.Bind(farm)                       // 채집됨 → 인벤토리 적재
   drops.Bind(farm)                           // 채집됨 → 드랍 연출 (별개 구독)
-  time.OnDayPassed += farm.GrowAllCrops      // 하루 경과 → 작물 성장`}</CodeBlock>
+  time.OnDayPassed += farm.GrowAllCrops      // 하루 경과 → 작물 성장
+  time.OnDateChanged += farm.HandleDateChanged // 계절 변경 → 제철 아닌 작물 시듦
+  furniture.OnSleepRequested += sleep.Sleep  // 놓은 침대에 누움 → 수면`}</CodeBlock>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             <NumItem n={1}>순수 로직 객체는 MonoBehaviour 없이 <code>new</code>로 생성해 주입</NumItem>
             <NumItem n={2}>참조 누락은 <code>ReferenceValidator</code>가 시작 시점에 일괄 보고 — 런타임 NullReference 추적 제거</NumItem>
@@ -818,10 +855,78 @@ CraftDeliveryBase           추상 MonoBehaviour — 지급 방식의 계약
               </ul>
             </NumItem>
             <NumItem n={2}>
-              해금 경로 4가지 — 기본 개방 / 아이템 사용 / 아이템 획득(<code>unlockOnPickup</code>) / 이벤트 호출
+              해금 경로 5가지 — 기본 개방 / 아이템 사용 / 아이템 획득(<code>unlockOnPickup</code>) / 획득 시 여러 개(<code>unlocksOnAcquire</code>) / 이벤트 호출
             </NumItem>
             <NumItem n={3}>
               <code>CraftingStationWorker</code>가 가동 연출(프레임 애니)과 완성품 보관·수령을 담당
+            </NumItem>
+          </ul>
+        </section>
+
+        {/* ── 레시피 해금 사슬 ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>레시피 해금 사슬 — 광석에서 무기까지</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            던전에서 광석을 얻는 순간부터 무기를 손에 쥐기까지, 해금과 지급을 모두 <strong style={{ color: "#e0e0e0" }}>아이템 획득 이벤트 하나</strong>에 태웠습니다.
+          </p>
+          <CodeBlock>{`구리 광석 획득 ─ unlocksOnAcquire ─▶ 구리 주괴 레시피 해금 (용광로)
+       구리 주괴 획득 ─ unlocksOnAcquire ─▶ 1등급 도구 6종 · 무기 3종 레시피 해금
+            대장장이 NPC 대화 "제작 부탁"  또는  모루(무기 작업대)
+                 ▼  제작 결과 = ToolItemData
+InventorySystem.Add ─ IItemAcquireHandler ─▶ ToolInventory: 도구 칸에 넣거나 낮은 등급을 교체
+                                             (가방에는 남지 않음)`}</CodeBlock>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            <NumItem n={1}>
+              해금 규칙은 코드가 아니라 <code>ItemData.unlocksOnAcquire</code>(레시피 SO 참조 배열) — 광석 · 주괴 애셋이 무엇을 여는지 스스로 안다
+            </NumItem>
+            <NumItem n={2}>
+              “이미 더 좋은 도구를 가졌다”는 판단을 <code>ItemAvailability</code>에 등록 — 제작 · 상점 · 드롭이 이유를 모른 채 똑같이 거른다
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>같은 장치로 외형 파츠 중복 획득, 제철 아닌 씨앗 판매도 막는다</SubItem>
+              </ul>
+            </NumItem>
+            <NumItem n={3}>
+              대장장이 제작은 새 제작 로직 없이 기존 <code>CraftingStationPoint</code>를 NPC가 품게 하고,
+              대화 종류 <code>Craft</code>가 끝나면 <code>OnCraftRequested</code> → <code>NpcCraftService</code>가 그 제작대를 연다
+            </NumItem>
+          </ul>
+        </section>
+
+        {/* ── 가구 배치 ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>가구 배치 — 타일맵 위의 모델과 뷰</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            애셋 팩의 가구 시트 28장(약 1,600 스프라이트)을 규칙 스크립트로 묶어 가구 1,173종을 만들고,
+            새 저장 · 렌더링 경로를 만들지 않고 기존 타일 데이터 저장소에 태웠습니다.
+          </p>
+          <CodeBlock>{`FurnitureData (ItemData)     방향[] × 상태[] — 상태 = 프레임 · 겹침 애니 · 빛 여부
+       ▼  놓기
+TileDataStore                FurnitureTileData(앵커) + FurniturePartData(나머지 칸, 통행·클릭만)
+       ▼  RefreshView
+Interactable Tilemap         런타임 FurnitureTile(정지 / 애니, 발자국 가운데로 오프셋)
+FurnitureSystem              Light2D 광원 · 불꽃 겹침 스프라이트 · 앉기/눕기 자세
+SaveSystem                   ObjectKind.Furniture (앵커만) → 불러온 뒤 발자국 · 광원 재구성`}</CodeBlock>
+
+          <h3 style={SUB_TITLE}>“그림이 있을 때만 상호작용”</h3>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>토글 — 벽난로(불꽃 4프레임 겹침 + 흔들리는 광원), 커튼 · 옷장 · 냉장고(열림/닫힘 그림), 모니터 · 트리(켜짐 그림 + 빛)</NumItem>
+            <NumItem n={2}>앉기 · 눕기 — 가구가 아니라 <strong style={{ color: "#f0f0f0" }}>캐릭터의 동작</strong>. 캐릭터 시트의 앉기 · 수면 폴더를 파츠 애니메이션에 추가해 재생</NumItem>
+            <NumItem n={3}>켜고 끌 그림이 없는 램프 · 촛대는 상호작용 없이 늘 빛나는 광원</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>부딪힌 문제</h3>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            <NumItem n={1}>
+              밤이 화면 전체를 덮는 UI 오버레이라 광원이 보이지 않음 → 밤 표현을 <strong style={{ color: "#f0f0f0" }}>전역 Light2D의 밝기 · 색</strong>으로 전환
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>자기 조명을 쓰는 광산과 충돌하지 않도록 AmbientLightOverride(Push/Pop)로 소유권 분리</SubItem>
+              </ul>
+            </NumItem>
+            <NumItem n={2}>
+              불꽃을 같은 칸의 다른 타일맵에 그리면 정렬이 비겨 본체 뒤로 숨음 → 겹침만 한 단계 앞 순서의 스프라이트로 분리
+            </NumItem>
+            <NumItem n={3}>
+              불꽃 높이는 후보 값 4개를 전 벽난로에 합성해 비교한 뒤 결정(5px에서 장작 위에 앉음)
             </NumItem>
           </ul>
         </section>
@@ -880,7 +985,7 @@ CraftDeliveryBase           추상 MonoBehaviour — 지급 방식의 계약
           <h2 style={SECTION_TITLE}>세이브 / 로드 아키텍처</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             시스템마다 저장 코드를 흩뿌리는 대신, <code>IPersistentSystem</code> 계약 하나로 통일했습니다.
-            현재 구현체는 12개입니다.
+            현재 구현체는 16개입니다.
           </p>
           <Figure
             src={DIAGRAM_SAVE}
