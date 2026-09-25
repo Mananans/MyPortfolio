@@ -14,12 +14,12 @@ import Link from "next/link";
 //      ├── gallery-6.png  ← 외양간 내부 — 가축 5종
 //      ├── gallery-7.png  ← 대장간 내부 — 대장장이 NPC
 //      ├── gallery-8.png  ← 닭장 · 외양간 외관
-//      ├── gallery-9.png  ← 가공 기계 8종 · 작업대 · 반려동물
+//      ├── gallery-9.png  ← 플레이어 집 앞 — 가공 기계 8종 · 작업대 · 용광로 · 반려동물
 //      ├── gallery-10.png ← 비 오는 날 — 우산 · 달팽이 (빗방울은 임시 제작 이미지)
 //      ├── gallery-11.png ← 가축 상점 앞 — 말 타기
 //      ├── gallery-12.png ← 숙련도 창
-//      ├── diagram-layer.png    ← 계층 구조 다이어그램
-//      ├── diagram-save.png     ← 세이브/로드 분기 다이어그램
+//      ├── diagram-layer.png    ← 계층 구조 다이어그램 (7단계, 2026-09-25 다시 그림 — _reslice/portfolio_diagrams.py)
+//      ├── diagram-save.png     ← 세이브/로드 분기 다이어그램 (RebuildAfterLoad 추가, 2026-09-25)
 //      └── diagram-affinity.png ← 호감도 마일스톤 판정 다이어그램
 //  📁 public/images/thumb/farmlife-2026.png  ← 메인 카드 썸네일
 // ─────────────────────────────────────────────
@@ -38,7 +38,7 @@ const GALLERY = [
   { src: "/images/farmlife-2026/gallery-6.png", label: "외양간 — 소 · 염소 · 양 · 돼지 · 타조" },
   { src: "/images/farmlife-2026/gallery-7.png", label: "대장간 — 대장장이에게 제작 부탁" },
   { src: "/images/farmlife-2026/gallery-8.png", label: "닭장 · 외양간" },
-  { src: "/images/farmlife-2026/gallery-9.png", label: "가공 기계 8종 · 작업대 · 반려동물" },
+  { src: "/images/farmlife-2026/gallery-9.png", label: "플레이어 집 앞 — 가공 기계 8종 · 작업대 · 용광로 · 반려동물" },
   { src: "/images/farmlife-2026/gallery-10.png", label: "비 오는 날 — 우산 · 달팽이 (빗방울은 리소스가 없어 임시로 만든 이미지)" },
   { src: "/images/farmlife-2026/gallery-11.png", label: "가축 상점 앞 — 말 타기" },
   { src: "/images/farmlife-2026/gallery-12.png", label: "숙련도 — 레벨 보너스 · 레시피 해금" },
@@ -161,7 +161,7 @@ const LAYERS = [
     level: "UI",
     color: "#94a3b8",
     desc: "로직의 이벤트를 구독만 · 로직은 UI를 참조하지 않음",
-    items: ["PlayerHealthBar", "QuickSlotBar", "AffinityHeartsUI", "CraftingUI", "FurnitureCatalogUI", "MineElevatorUI", "SkillWindowUI", "SystemMessage", "*Notifier"],
+    items: ["PlayerHealthBar", "QuickSlotBar", "AffinityHeartsUI", "CraftingUI", "FurnitureCatalogUI", "MineElevatorUI", "SkillWindowUI", "LivestockSellUI", "SystemMessage", "*Notifier"],
   },
 ];
 
@@ -261,6 +261,9 @@ const INTERFACES = [
   { name: "ISaveable", contract: "ToSaveData(cell)", impl: "FarmTileData / GrassData / HarvestableData / FurnitureTileData / MachineTileData" },
   { name: "IWarpConsent", contract: "AllowTriggerWarp", impl: "NpcController" },
   { name: "IHitAnimation", contract: "HitFrames / HitFps", impl: "HarvestableDefinition" },
+  { name: "IScreenFader", contract: "FadeToBlack / FadeToClear", impl: "ScreenFader(UI) — 수면 · 부활 연출이 UI 타입을 모르게" },
+  { name: "ICollectionBook", contract: "도감 목록 · 기록 · 진행도", impl: "ItemCollectionBook(물고기 · 광물 · 나무 · 곤충) / BundleBook / AvatarCollectionBook" },
+  { name: "IFestivalMinigameMode", contract: "축제 미니게임 판정 방식", impl: "CollectMinigameMode / TimingMinigameMode / WheelMinigameMode" },
 ];
 
 function InterfaceTable() {
@@ -354,7 +357,7 @@ const SYSTEMS = [
     points: [
       "CraftingRecipe(SO)에 station 개념 없음 — 제작대가 자기 레시피 목록을 소유",
       "지급 방식을 CraftDeliveryBase로 추상화 (스타듀식 / 돈스타브식 / 즉시)",
-      "해금 경로 4가지: 기본 개방 / 아이템 사용 / 획득 / 이벤트 호출",
+      "해금 경로: 기본 개방 / 아이템 사용 / 획득 / 이벤트 호출 / 숙련도 레벨",
       "BuffSystem — 음식 버프(공격력·최대체력), 지속시간 후 자동 해제",
     ],
   },
@@ -391,6 +394,7 @@ const SYSTEMS = [
     points: [
       "TimeSystem이 시각 / 계절 / 일 / 요일 · 밝기를 소유하고 이벤트로 방송",
       "밤에만 자발적 수면 가능, 새벽 강제 기절은 시간 체크 우회",
+      "2시에 쓰러지면 집 침대 옆에서 깸 — 옮기기 전 이벤트로 탈것 · 광산 상태를 먼저 정리",
       "수면 시 NPC는 OnTimeChanged로 아침 스케줄 자동 재평가",
     ],
   },
@@ -421,6 +425,7 @@ const SYSTEMS = [
       "LivestockData(SO) 하나로 배고픔 · 성장 단계 · 방향별 프레임 · 산출 주기 · 암수 모습 정의",
       "가축 상점(목장주 NPC) — 산 가축은 가방이 아니라 바로 축사로, 사료통은 벽쪽 자리에 차례로",
       "암수가 있는 종은 밤마다 번식, 고기 그림이 있는 4종만 도축",
+      "사는 것은 늘 새끼부터, 다 자란 가축은 목장주에게 판매(새끼 값의 1.5배)",
       "닭장 · 외양간 내부는 먼 좌표에 텍스트 그리드로 굽고 워프로 연결",
     ],
   },
@@ -566,7 +571,7 @@ function Roadmap() {
       "낚시 — 미니게임 + 물고기 도감", "커뮤니티 센터 / 번들", "봄 축제 — 별도 Scene", "캐릭터 외형 · 외형 도감",
       "작물 계절 · 가축 7종 · 외양간", "대장장이 · 도구/무기 레시피 해금 사슬", "집 가구 배치 · 카탈로그 · 가구 조명",
       "사계절 축제 · 미니게임 4종 · 축제 한정 상품 · 날짜에 맞춰 열기", "가축 상점 · 암수 · 번식 · 도축 · 사료통", "탈것(말 · 타조) · 탁자 위 소품",
-      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비",
+      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 자동 테스트 34개",
       "점검 후 정리 — 7곳에 흩어진 ‘바깥 범위’를 OutdoorArea 하나로, 2시에 쓰러지면 집 침대로(탈것 · 광산 정리 이벤트)",
     ] },
   ];
@@ -643,7 +648,7 @@ export default function FarmLifePage() {
 
         {/* Tags */}
         <div style={{ marginBottom: "18px" }}>
-          {["Unity 6", "C#", "ScriptableObject", "Architecture", "Editor"].map(t => (
+          {["Unity 6", "C#", "ScriptableObject", "Architecture", "Editor", "NUnit"].map(t => (
             <span key={t} style={TAG}>{t}</span>
           ))}
         </div>
@@ -667,7 +672,8 @@ export default function FarmLifePage() {
             {[
               "엔진: Unity 6 (2D URP · Renderer 2D / Light 2D) / 언어: C#",
               "네임스페이스: FarmGame.Core (에디터: FarmGame.EditorTools)",
-              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 20종 (런타임 스크립트 269개 + 에디터 48개)",
+              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 20종 (런타임 스크립트 271개 + 에디터 54개)",
+              "검증: EditMode 자동 테스트 34개 (규칙 · 저장 계약 · 데이터 무결성 · 씬 배선) + 플레이 확인",
               "설계 문서: PROJECT_STATUS.md / ARCHITECTURE.md",
             ].map(t => (
               <p key={t} style={{ fontSize: "14px", color: TEAL, opacity: 0.9, margin: 0 }}>• {t}</p>
@@ -712,7 +718,7 @@ export default function FarmLifePage() {
           <Figure
             src={DIAGRAM_LAYER}
             alt="계층 구조 다이어그램"
-            caption="클릭 하나가 조정자에서 데이터까지 내려가는 경로"
+            caption="7단계 계층 — 위에서 아래로만 호출하고, UI 는 로직의 이벤트를 구독만 한다"
           />
           <LayerDiagram />
         </section>
@@ -725,26 +731,29 @@ export default function FarmLifePage() {
             연결이 한 파일에 모여 있어 의존 관계를 코드로 읽을 수 있습니다.
           </p>
           <CodeBlock>{`Awake():
-  ReferenceValidator.Validate(...)           // 참조 누락을 시작 시점에 일괄 보고
-
   // ── 의존성 주입 ──────────────────────────
   walkability.Init(dataStore)                // 통행 판정 ← 데이터
   _pathfinder = new Pathfinder(walkability)  // 길찾기 ← 통행 판정 (순수 C# 객체)
   movement.Init(_pathfinder, characterAnimator)
   farm.Init(dataStore, effects, hitEffects, walkability)
   furniture.Init(dataStore, inventory, player, movement, characterAnimator)
+  machines.Init(dataStore, inventory, movement)   // 가공 기계도 같은 칸 데이터 저장소
   interaction.Init(dataStore, walkability, movement, farm,
-                   equipment, characterAnimator, inventory, furniture)
+                   equipment, characterAnimator, inventory, furniture, machines)
 
   // ── 이벤트 배선 (역결합) ──────────────────
   inventory.Bind(farm)                       // 채집됨 → 인벤토리 적재
   drops.Bind(farm)                           // 채집됨 → 드랍 연출 (별개 구독)
+  collectionBooks.Init(inventory)            // 획득 → 도감 자동 기록
   time.OnDayPassed += farm.GrowAllCrops      // 하루 경과 → 작물 성장
   time.OnDateChanged += farm.HandleDateChanged // 계절 변경 → 제철 아닌 작물 시듦
-  furniture.OnSleepRequested += sleep.Sleep  // 놓은 침대에 누움 → 수면`}</CodeBlock>
+  furniture.OnSleepRequested += sleep.Sleep  // 놓은 침대에 누움 → 수면
+  sleep.OnPassedOut  += HandleLeaveForHome   // 2시에 쓰러짐 ┐ 집으로 옮기기 전
+  revive.OnReviving  += HandleLeaveForHome   // 체력 0 부활  ┘ 탈것 내리기 · 광산 정리
+  weather.OnWeatherChanged += farm.HandleWeather // 비 → 바깥 밭 적시기`}</CodeBlock>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             <NumItem n={1}>순수 로직 객체는 MonoBehaviour 없이 <code>new</code>로 생성해 주입</NumItem>
-            <NumItem n={2}>참조 누락은 <code>ReferenceValidator</code>가 시작 시점에 일괄 보고 — 런타임 NullReference 추적 제거</NumItem>
+            <NumItem n={2}>씬 배선(인스펙터 칸)은 <code>DesignRuleWiring</code> 도구가 채우고, 빈 칸·세이브 목록 누락은 <code>SceneWiringTests</code>가 잡는다 — 에러 없이 기능이 침묵하는 경우를 테스트로</NumItem>
             <NumItem n={3}>한 이벤트를 여러 구독자가 나눠 받도록 설계 (적재와 연출을 분리)</NumItem>
           </ul>
         </section>
@@ -920,7 +929,7 @@ CraftDeliveryBase           추상 MonoBehaviour — 지급 방식의 계약
               </ul>
             </NumItem>
             <NumItem n={2}>
-              해금 경로 5가지 — 기본 개방 / 아이템 사용 / 아이템 획득(<code>unlockOnPickup</code>) / 획득 시 여러 개(<code>unlocksOnAcquire</code>) / 이벤트 호출
+              해금 경로 6가지 — 기본 개방 / 아이템 사용 / 아이템 획득(<code>unlockOnPickup</code>) / 획득 시 여러 개(<code>unlocksOnAcquire</code>) / 이벤트 호출 / 숙련도 레벨(<code>SkillDefinition</code> 보상)
             </NumItem>
             <NumItem n={3}>
               <code>CraftingStationWorker</code>가 가동 연출(프레임 애니)과 완성품 보관·수령을 담당
@@ -1037,7 +1046,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
           </p>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
             <NumItem n={1}>
-              <code>InteractionManager</code>가 클릭 감지 → NPC · 가판대 · 가구 라우팅 시도(전부 miss) → 셀 라우팅
+              <code>InteractionManager</code>가 클릭 감지 → NPC · 가판대 · 가구 · 기계 · 곤충 라우팅 시도(전부 miss) → 셀 라우팅
             </NumItem>
             <NumItem n={2}>
               <code>dataStore.TryGet(cell)</code> → <code>HarvestableData</code> 발견 → <code>CanInteract(Axe) = true</code>
@@ -1083,7 +1092,8 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
           <h2 style={SECTION_TITLE}>세이브 / 로드 아키텍처</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             시스템마다 저장 코드를 흩뿌리는 대신, <code>IPersistentSystem</code> 계약 하나로 통일했습니다.
-            현재 구현체는 20종(씬 인스턴스 23개)입니다.
+            현재 구현체는 20종(씬 인스턴스 23개)입니다. 가구 · 가공 기계처럼 여러 칸을 차지하는 것은 앵커 칸만 저장하고,
+            불러온 뒤 <code>RebuildAfterLoad</code>로 나머지 칸과 조명 · 아이콘을 다시 만듭니다.
           </p>
           <Figure
             src={DIAGRAM_SAVE}
@@ -1173,6 +1183,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
                   { n: "WalkabilityService", r: "인접 · 최단 접근 가능 칸 찾기", u: "NpcController, MonsterController, InteractionManager" },
                   { n: "SpaceScanner", r: "flood fill로 열린 공간 수집", u: "NpcController, MonsterController" },
                   { n: "NpcRegistry", r: "씬의 NPC 목록 (등록 / 해제)", u: "NpcSaveManager, PlaceMilestoneManager" },
+                  { n: "OutdoorArea", r: "바깥 맵 범위 — 7곳에 흩어져 있던 같은 값을 하나로", u: "MachineSystem, InsectSystem, SeasonVisualManager, CameraFollow, Rain · Snow · Umbrella" },
                 ].map(row => (
                   <tr key={row.n}>
                     <td style={{
@@ -1271,6 +1282,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
               "런타임 Find 탐색 없음",
               "세이브 대상 23칸 누락 · 중복 키 0",
               "저장 → 불러오기 실행 확인",
+              "EditMode 테스트 34개 통과",
             ].map(t => (
               <span key={t} style={{
                 display: "inline-flex", alignItems: "center", gap: "7px",
@@ -1282,6 +1294,69 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
               </span>
             ))}
           </div>
+        </section>
+
+        {/* ── 자동 테스트 ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>자동 테스트 — 조용히 빠지는 것을 잡는다</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            이 구조에서 가장 흔한 실패는 예외가 아니라 <strong style={{ color: "#e0e0e0" }}>아무 일도 일어나지 않는 것</strong>입니다.
+            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 34개로 고정했습니다.
+          </p>
+          <div style={{ overflowX: "auto", marginBottom: "16px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
+              <thead>
+                <tr>
+                  {["층", "무엇을", "예"].map(h => (
+                    <th key={h} style={{
+                      textAlign: "left", padding: "10px 12px",
+                      borderBottom: `1px solid ${TEAL}40`,
+                      color: TEAL, fontWeight: 700, fontSize: "12px", whiteSpace: "nowrap",
+                    }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { n: "규칙 (14)", r: "씬 없이 계산만", u: "숙련도 곡선 · 기계 공정(대기 → 작업 → 완성) · 바깥 범위 경계 · 가축 암수 산출" },
+                  { n: "저장 계약 (4)", r: "Capture → Restore 왕복", u: "지갑 · 숙련도, 옛 세이브(항목 수가 적은 것) 허용, 고정 SaveKey 중복 없음" },
+                  { n: "데이터 무결성 (9)", r: "SO 애셋 전수 검사", u: "도구 동작 hitFrame · 모든 아이템이 레지스트리에 있는가 · 이름/id 중복 · 판매가 = 새끼 값 × 1.5" },
+                  { n: "씬 배선 (7)", r: "메인 Scene 의 인스펙터 칸", u: "세이브 목록 누락 · 키 중복 · 순서, GameManager 주입 칸, 새 시스템 칸, 빠진 스크립트" },
+                ].map(row => (
+                  <tr key={row.n}>
+                    <td style={{
+                      padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+                      color: GREEN, fontWeight: 700, whiteSpace: "nowrap", verticalAlign: "top",
+                    }}>{row.n}</td>
+                    <td style={{
+                      padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+                      opacity: 0.8, verticalAlign: "top",
+                    }}>{row.r}</td>
+                    <td style={{
+                      padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+                      opacity: 0.55, lineHeight: 1.6, verticalAlign: "top",
+                    }}>{row.u}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <h3 style={SUB_TITLE}>처음 돌렸을 때 찾은 것</h3>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 12px" }}>
+            <NumItem n={1}>
+              낫 동작의 <code>hitFrame</code>이 비어 있어 타격 이벤트가 오지 않았음 — <strong style={{ color: "#f0f0f0" }}>낫으로 풀을 벨 수 없던 버그</strong>
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>모션은 정상으로 나오니 눈으로는 알아차리기 어려운 종류</SubItem>
+              </ul>
+            </NumItem>
+            <NumItem n={2}>
+              1단계 재료(구리 광석 · 구리 주괴)가 저장용 레지스트리에 없어 <strong style={{ color: "#f0f0f0" }}>가방에 든 채 저장하면 불러올 때 사라지던 버그</strong>
+            </NumItem>
+          </ul>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, margin: 0 }}>
+            스크립트가 한 어셈블리에 모여 있어 asmdef 로 쪼개는 대신 에디터 어셈블리에 테스트를 두었습니다.
+            새 시스템 · SO 필드 · 인스펙터 칸을 더하면 해당 층 테스트에 한 줄을 더하는 것을 규칙으로 했습니다.
+          </p>
         </section>
 
         {/* ── 로드맵 ── */}
