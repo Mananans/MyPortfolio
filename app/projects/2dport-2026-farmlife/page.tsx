@@ -1186,7 +1186,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
               레시피가 결과 아이템을, 두루마리 아이템이 레시피를 가리킵니다.
               ScriptableObject 간 데이터 관계라 런타임 생성·파괴가 없고 GUID로 직렬화되며,
               <strong style={{ color: "#f0f0f0" }}> 실제 관계를 그대로 표현한 것이라 끊지 않았습니다.</strong>{" "}
-              규칙을 기계적으로 적용하기보다 이유가 있으면 남기는 쪽을 택했습니다.
+              규칙을 기계적으로 적용하기보다 근거에 따라 유연하게 방식을 정리했습니다.
             </p>
           </Card>
 
@@ -1206,12 +1206,12 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
               </thead>
               <tbody>
                 {[
-                  { n: "SpriteFramePlayer", r: "스프라이트 프레임 진행 (1회 / 반복)", u: "FrameEffect, DroppedItem, CraftingStationWorker" },
-                  { n: "FadeUtil", r: "알파 보간 코루틴 (적용 대상은 델리게이트)", u: "ScreenFader, SpriteFader, SystemMessage" },
+                  { n: "SpriteFramePlayer", r: "스프라이트 프레임 진행", u: "FrameEffect, DroppedItem, CraftingStationWorker" },
+                  { n: "FadeUtil", r: "알파 보간 코루틴", u: "ScreenFader, SpriteFader, SystemMessage" },
                   { n: "WalkabilityService", r: "인접 · 최단 접근 가능 칸 찾기", u: "NpcController, MonsterController, InteractionManager" },
-                  { n: "SpaceScanner", r: "flood fill로 열린 공간 수집", u: "NpcController, MonsterController" },
+                  { n: "SpaceScanner", r: "flood fill로 비어 있는 공간 수집", u: "NpcController, MonsterController" },
                   { n: "NpcRegistry", r: "씬의 NPC 목록 (등록 / 해제)", u: "NpcSaveManager, PlaceMilestoneManager" },
-                  { n: "OutdoorArea", r: "바깥 맵 범위 — 7곳에 흩어져 있던 같은 값을 하나로", u: "MachineSystem, InsectSystem, SeasonVisualManager, CameraFollow, Rain · Snow · Umbrella" },
+                  { n: "OutdoorArea", r: "실내 · 외 구분 좌표 범위", u: "MachineSystem, InsectSystem, SeasonVisualManager, CameraFollow, Rain · Snow · Umbrella" },
                 ].map(row => (
                   <tr key={row.n}>
                     <td style={{
@@ -1346,11 +1346,11 @@ MapCapture               역방향: 손으로 칠한 씬 → 텍스트 격자`}<
             <NumItem n={3}>실내는 바깥과 먼 좌표에 굽고 워프 한 쌍으로만 잇는다 — 공간 경계가 좌표 분리로 자연히 생긴다</NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>배치 규칙 — 꾸미기 전에 가른다</h3>
+          <h3 style={SUB_TITLE}>배치 규칙</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
-            플레이 테스트에서 "소파에 앉을 수 없다", "가축이 벽 위에 올라탄다", "러그 밑에 캐릭터가 묻힌다"는 지적이 한꺼번에 나왔습니다.
-            원인은 하나 — 놓는 물건을 <strong style={{ color: "#f0f0f0" }}>상호작용해야 하는지, 막아야 하는지, 바닥에 깔리는지 가르지 않고</strong> 한 장식 층에 그렸던 것입니다.
-            규칙 스크립트로 모든 실내를 다시 가르고, 막힘은 손으로 찍지 않고 계산하게 했습니다.
+            플레이 테스트에서 "소파에 앉을 수 없다", "가축이 벽 위에 올라탄다", "러그 밑에 캐릭터가 묻힌다" 등 문제가 한꺼번에 나왔습니다.
+            분석 결과, 원인은 놓는 물건을 <strong style={{ color: "#f0f0f0" }}>상호작용해야 하는지, 막아야 하는지, 바닥에 깔리는지 구분하지 않고</strong> 한 장식 레이어에 그렸던 것입니다.
+            규칙 스크립트로 모든 실내를 다시 구분하고, 막힘은 계산하게 했습니다.
           </p>
           <div style={{ overflowX: "auto", marginBottom: "16px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
@@ -1382,9 +1382,9 @@ MapCapture               역방향: 손으로 칠한 씬 → 텍스트 격자`}<
             </table>
           </div>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
-            <NumItem n={1}>러그를 장식 층에 두면 같은 정렬 레이어에서 Y 로 앞뒤가 갈려, 러그 위쪽 칸에 선 캐릭터가 러그 뒤에 그려졌다 → 바닥 층으로</NumItem>
+            <NumItem n={1}>러그를 장식 층에 두면 같은 정렬 레이어에서 Y 로 앞뒤가 갈려, 러그 위쪽 칸에 선 캐릭터가 러그 뒤에 그려졌다 바닥 층으로</NumItem>
             <NumItem n={2}>
-              가축의 발(위치)은 칸 밑변인데 동물 그림의 기준점이 가운데라 몸 절반이 아래 칸으로 — 맨 아랫줄 가축이 벽 위에 선 것처럼 보였다
+              맨 아랫줄 가축이 벽 위에 선 것처럼 보였다 → 가축의 발(위치)은 칸 밑변인데 동물 그림의 기준점이 가운데라 몸 절반이 아래 칸으로
               <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
                 <SubItem>원본 애셋은 그대로 두고 실행 중에 기준점만 내린 사본으로 그림(FootSprite) — 프레임끼리 맞춘 발 높이는 유지</SubItem>
               </ul>
@@ -1400,10 +1400,10 @@ MapCapture               역방향: 손으로 칠한 씬 → 텍스트 격자`}<
 
         {/* ── 에디터 도구 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>에디터 도구 — 설정을 코드로</h2>
+          <h2 style={SECTION_TITLE}>에디터 도구</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
-            씬 · 애셋을 손으로 고치지 않고 에디터 도구(메뉴 80개)로 세웁니다.
-            규칙은 하나 — <strong style={{ color: "#e0e0e0" }}>몇 번을 다시 돌려도 같은 결과</strong>. 그래서 도구를 고치고 다시 돌리는 것이 수정 방법이 됩니다.
+            오브젝트 배치나 연결을 손으로 하지 않고 스크립트에 적어 두어, 메뉴 한 번으로 똑같이 다시 만들 수 있습니다. 
+            설정을 바꿀 때도 스크립트를 고치고 다시 실행하면 되고, 몇 번을 실행해도 동일한 결과를 얻습니다.
           </p>
           <div style={{ overflowX: "auto", marginBottom: "16px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
@@ -1484,7 +1484,7 @@ Bootstrap ─ ContentUpdater: 카탈로그 확인 → 바뀐 번들만 받기(�
 
         {/* ── 자동 테스트 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>자동 테스트 — 조용히 빠지는 것을 잡는다</h2>
+          <h2 style={SECTION_TITLE}>자동 테스트</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             이 구조에서 가장 흔한 실패는 예외가 아니라 <strong style={{ color: "#e0e0e0" }}>아무 일도 일어나지 않는 것</strong>입니다.
             인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 39개로 고정했습니다.
@@ -1527,7 +1527,7 @@ Bootstrap ─ ContentUpdater: 카탈로그 확인 → 바뀐 번들만 받기(�
               </tbody>
             </table>
           </div>
-          <h3 style={SUB_TITLE}>처음 돌렸을 때 찾은 것</h3>
+          <h3 style={SUB_TITLE}>첫 기능 테스트 시 발견된 문제</h3>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 12px" }}>
             <NumItem n={1}>
               낫 동작의 <code>hitFrame</code>이 비어 있어 타격 이벤트가 오지 않았음 — <strong style={{ color: "#f0f0f0" }}>낫으로 풀을 벨 수 없던 버그</strong>
