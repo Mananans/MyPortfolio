@@ -18,8 +18,9 @@ import Link from "next/link";
 //      ├── gallery-10.png ← 비 오는 날 — 우산 · 달팽이 (빗방울은 임시 제작 이미지)
 //      ├── gallery-11.png ← 가축 상점 앞 — 말 타기
 //      ├── gallery-12.png ← 숙련도 창
-//      ├── diagram-layer.png    ← 계층 구조 다이어그램 (7단계, 2026-09-25 다시 그림 — _reslice/portfolio_diagrams.py)
-//      ├── diagram-save.png     ← 세이브/로드 분기 다이어그램 (RebuildAfterLoad 추가, 2026-09-25)
+//      ├── diagram-layer.png    ← 계층 구조 다이어그램 (7단계, 2026-09-26 보관함 · 원격 콘텐츠 추가 — _reslice/portfolio_diagrams.py)
+//      ├── diagram-save.png     ← 세이브/로드 분기 다이어그램 (2026-09-26 불러오기 때 맵과 세이브 맞추기 추가)
+//      ├── walk-audit.png       ← 통행 점검 도구가 그린 플레이어 집 (막힌 칸 X · 걷는 칸 점)
 //      └── diagram-affinity.png ← 호감도 마일스톤 판정 다이어그램
 //  📁 public/images/thumb/farmlife-2026.png  ← 메인 카드 썸네일
 // ─────────────────────────────────────────────
@@ -28,6 +29,7 @@ const HERO_IMAGE = "/images/farmlife-2026/hero.png";
 const DIAGRAM_LAYER = "/images/farmlife-2026/diagram-layer.png";
 const DIAGRAM_SAVE = "/images/farmlife-2026/diagram-save.png";
 const DIAGRAM_AFFINITY = "/images/farmlife-2026/diagram-affinity.png";
+const WALK_AUDIT = "/images/farmlife-2026/walk-audit.png";
 
 const GALLERY = [
   { src: "/images/farmlife-2026/gallery-1.png", label: "경작 화면" },
@@ -137,7 +139,7 @@ const LAYERS = [
     level: "도메인",
     color: GREEN,
     desc: "한 분야의 로직 소유",
-    items: ["FarmManager", "StallSystem", "NpcInteractionHandler", "CombatSystem", "CraftingSystem", "FishingSystem", "FurnitureSystem", "NpcCraftService", "FestivalMinigameService", "LivestockManager", "MountSystem", "MachineSystem", "SkillPerks", "InsectSystem", "PetSystem", "WeatherSystem", "SaveSystem"],
+    items: ["FarmManager", "StallSystem", "NpcInteractionHandler", "CombatSystem", "CraftingSystem", "FishingSystem", "FurnitureSystem", "NpcCraftService", "FestivalMinigameService", "LivestockManager", "MountSystem", "MachineSystem", "SkillPerks", "InsectSystem", "PetSystem", "WeatherSystem", "StorageSystem", "ContentUpdater", "SaveSystem"],
   },
   {
     level: "엔티티 컨트롤러",
@@ -161,7 +163,7 @@ const LAYERS = [
     level: "UI",
     color: "#94a3b8",
     desc: "로직의 이벤트를 구독만 · 로직은 UI를 참조하지 않음",
-    items: ["PlayerHealthBar", "QuickSlotBar", "AffinityHeartsUI", "CraftingUI", "FurnitureCatalogUI", "MineElevatorUI", "SkillWindowUI", "LivestockSellUI", "SystemMessage", "*Notifier"],
+    items: ["PlayerHealthBar", "QuickSlotBar", "AffinityHeartsUI", "CraftingUI", "FurnitureCatalogUI", "MineElevatorUI", "SkillWindowUI", "LivestockSellUI", "StorageUI", "BootstrapView", "SystemMessage", "*Notifier"],
   },
 ];
 
@@ -250,11 +252,11 @@ function CodeBlock({ children }) {
 
 // 인터페이스 바인딩 표
 const INTERFACES = [
-  { name: "IPersistentSystem", contract: "SaveKey / InitializeNew / Capture / Restore", impl: "구현체 20종(씬 인스턴스 23개) — Inventory, ToolInventory, QuickSlot, Wallet, Time, PlayerHealth, Stall, PlayerPositionSaver, NpcSaveManager, MineManager, CraftingSystem, ItemCollectionBook, BundleBook, LivestockSaveManager, AvatarCollectionBook, PlayerAppearance, MountSystem, SkillSystem, PetSystem, WeatherSystem" },
+  { name: "IPersistentSystem", contract: "SaveKey / InitializeNew / Capture / Restore", impl: "구현체 21종(씬 인스턴스 24개) — Inventory, ToolInventory, QuickSlot, Wallet, Time, PlayerHealth, Stall, PlayerPositionSaver, NpcSaveManager, MineManager, CraftingSystem, ItemCollectionBook, BundleBook, LivestockSaveManager, AvatarCollectionBook, PlayerAppearance, MountSystem, SkillSystem, PetSystem, WeatherSystem, StorageSystem" },
   { name: "IItemAcquireHandler", contract: "TryHandleAcquire — 가방에 넣기 전 가로채기", impl: "AvatarCollectionBook(외형 파츠 → 즉시 해금) / ToolInventory(도구 → 도구 칸·등급 교체) / LivestockManager(가축·사료통 → 축사로) / MountSystem(말 → 말뚝, 안장) / PetSystem(입양 → 마당으로)" },
   { name: "ITileDataStore", contract: "셀 데이터 조회 / 등록", impl: "TileDataStore" },
   { name: "IEffectPlayer", contract: "연출 재생", impl: "EffectSystem" },
-  { name: "ICharacterAnimator", contract: "Play(action, dir)", impl: "CharacterAnimator / NpcAnimator / MonsterAnimator / NullCharacterAnimator" },
+  { name: "ICharacterAnimator", contract: "Play(action, dir)", impl: "CharacterAnimator / NpcAnimator / MonsterAnimator / LivestockAnimator" },
   { name: "IWalkableProvider", contract: "통행 판정 + 인접 칸 찾기", impl: "WalkabilityService" },
   { name: "IInteractable", contract: "Interact / CanInteract", impl: "FurnitureInteractable / MineLadder / LivestockController / HorseStand / PetController" },
   { name: "IToolProvider", contract: "현재 장착 도구 제공", impl: "EquipmentSystem" },
@@ -415,6 +417,8 @@ const SYSTEMS = [
       "그림이 있을 때만 상호작용 — 벽난로 불꽃 · 커튼 · 옷장 · 냉장고 토글, 소파 앉기, 침대 수면",
       "불꽃 · 촛불 · 램프는 Light2D 광원 — 밤 표현을 전역 조명으로 전환",
       "탁자 119종 위에 작은 가구 238종 — 그림 폭으로 차지할 자리를 계산해 탁자 크기에 맞춰 올림",
+      "맵에 원래 놓인 가구도 같은 모델(고정 가구) — 앉기 · 켜기 · 조명이 그대로, 회수만 막음",
+      "보관함 — 상자를 누르면 36칸 창, 창이 열린 동안만 열린 상자 그림",
     ],
   },
   {
@@ -571,7 +575,9 @@ function Roadmap() {
       "낚시 — 미니게임 + 물고기 도감", "커뮤니티 센터 / 번들", "봄 축제 — 별도 Scene", "캐릭터 외형 · 외형 도감",
       "작물 계절 · 가축 7종 · 외양간", "대장장이 · 도구/무기 레시피 해금 사슬", "집 가구 배치 · 카탈로그 · 가구 조명",
       "사계절 축제 · 미니게임 4종 · 축제 한정 상품 · 날짜에 맞춰 열기", "가축 상점 · 암수 · 번식 · 도축 · 사료통", "탈것(말 · 타조) · 탁자 위 소품",
-      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 자동 테스트 34개",
+      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 자동 테스트 39개",
+      "플레이어 자택 · 플레이어 상점 · 보관함", "실내 배치 규칙(상호작용 / 막힘 / 바닥 깔개) · 통행 점검 도구",
+      "Addressables 원격 콘텐츠 배포 — S3 + CloudFront, 콘텐츠 업데이트 빌드 · 업로드 도구",
       "점검 후 정리 — 7곳에 흩어진 ‘바깥 범위’를 OutdoorArea 하나로, 2시에 쓰러지면 집 침대로(탈것 · 광산 정리 이벤트)",
     ] },
   ];
@@ -648,7 +654,7 @@ export default function FarmLifePage() {
 
         {/* Tags */}
         <div style={{ marginBottom: "18px" }}>
-          {["Unity 6", "C#", "ScriptableObject", "Architecture", "Editor", "NUnit"].map(t => (
+          {["Unity 6", "C#", "ScriptableObject", "Architecture", "Editor", "NUnit", "Addressables", "AWS"].map(t => (
             <span key={t} style={TAG}>{t}</span>
           ))}
         </div>
@@ -672,8 +678,10 @@ export default function FarmLifePage() {
             {[
               "엔진: Unity 6 (2D URP · Renderer 2D / Light 2D) / 언어: C#",
               "네임스페이스: FarmGame.Core (에디터: FarmGame.EditorTools)",
-              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 20종 (런타임 스크립트 271개 + 에디터 54개)",
-              "검증: EditMode 자동 테스트 34개 (규칙 · 저장 계약 · 데이터 무결성 · 씬 배선) + 플레이 확인",
+              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 보관함 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 21종 (런타임 스크립트 279개 + 에디터 66개)",
+              "맵: 바깥 · 실내 · 축제장 16개를 텍스트 그리드로 쓰고 에디터 베이커로 굽는다",
+              "배포: Addressables — 축제 Scene 을 원격 콘텐츠로(AWS S3 + CloudFront), 앱 재배포 없이 콘텐츠 업데이트",
+              "검증: EditMode 자동 테스트 39개 (규칙 · 저장 계약 · 데이터 무결성 · 씬 배선) + 플레이 · 실행 파일 확인",
               "설계 문서: PROJECT_STATUS.md / ARCHITECTURE.md",
             ].map(t => (
               <p key={t} style={{ fontSize: "14px", color: TEAL, opacity: 0.9, margin: 0 }}>• {t}</p>
@@ -748,6 +756,8 @@ export default function FarmLifePage() {
   time.OnDayPassed += farm.GrowAllCrops      // 하루 경과 → 작물 성장
   time.OnDateChanged += farm.HandleDateChanged // 계절 변경 → 제철 아닌 작물 시듦
   furniture.OnSleepRequested += sleep.Sleep  // 놓은 침대에 누움 → 수면
+  furniture.OnStorageRequested += storage.Open // 상자 누름 → 보관함 열기
+  storage.OnClosed += furniture.CloseStorage   // 창 닫힘 → 닫힌 상자 그림
   sleep.OnPassedOut  += HandleLeaveForHome   // 2시에 쓰러짐 ┐ 집으로 옮기기 전
   revive.OnReviving  += HandleLeaveForHome   // 체력 0 부활  ┘ 탈것 내리기 · 광산 정리
   weather.OnWeatherChanged += farm.HandleWeather // 비 → 바깥 밭 적시기`}</CodeBlock>
@@ -784,7 +794,7 @@ export default function FarmLifePage() {
               <code>ICharacterAnimator</code>가 플레이어 · NPC · 몬스터 애니를 통일
               <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
                 <SubItem>MovementSystem이 대상이 누구든 동일한 코드로 구동</SubItem>
-                <SubItem>애니메이터가 없는 대상은 NullCharacterAnimator로 분기 제거</SubItem>
+                <SubItem>가축은 좌우 2방향뿐인 LivestockAnimator로 같은 이동 코드를 탄다</SubItem>
               </ul>
             </NumItem>
           </ul>
@@ -1092,7 +1102,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
           <h2 style={SECTION_TITLE}>세이브 / 로드 아키텍처</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             시스템마다 저장 코드를 흩뿌리는 대신, <code>IPersistentSystem</code> 계약 하나로 통일했습니다.
-            현재 구현체는 20종(씬 인스턴스 23개)입니다. 가구 · 가공 기계처럼 여러 칸을 차지하는 것은 앵커 칸만 저장하고,
+            현재 구현체는 21종(씬 인스턴스 24개)입니다. 가구 · 가공 기계처럼 여러 칸을 차지하는 것은 앵커 칸만 저장하고,
             불러온 뒤 <code>RebuildAfterLoad</code>로 나머지 칸과 조명 · 아이콘을 다시 만듭니다.
           </p>
           <Figure
@@ -1126,6 +1136,22 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
               </ul>
             </NumItem>
             <NumItem n={4}>둘이 배타적이므로 복원값이 Start에 덮일 경로 자체가 사라짐</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>불러오기 — 맵과 세이브 맞추기</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            맵에 칠한 오브젝트(나무 · 바위 · 낚시터 · 원래 놓인 가구)는 새 게임 때 스캔해 칸 데이터가 됩니다.
+            불러올 때는 세이브가 이기지만, 저장하지 않는 것과 세이브보다 나중에 생긴 것은 맵에서 다시 가져와야 합니다.
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>복원이 칸 그림을 덮기 전에 맵에서 <strong style={{ color: "#f0f0f0" }}>먼저 모은다</strong> — 고정 가구 · 저장 안 하는 지형(낚시터)</NumItem>
+            <NumItem n={2}>복원 뒤 낚시터를 다시 깔고, 옛 세이브에 없던 고정 가구는 발자국이 비어 있을 때만 채운다</NumItem>
+            <NumItem n={3}>
+              상태가 있는 것(벤 나무 · 캔 바위)은 되살리지 않는다 — 새 종류를 더할 때 "상태가 있나"를 먼저 정하는 규칙
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>점검에서 이 단계가 문서에만 있고 코드에서 빠져 있던 것을 발견 — 불러온 게임에서 낚시터가 0개였다(새 게임 8개). 복구 후 8개 확인</SubItem>
+              </ul>
+            </NumItem>
           </ul>
 
           <h3 style={SUB_TITLE}>NPC 저장 — 위임 방식</h3>
@@ -1280,9 +1306,10 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
               "이벤트 · 콜백 역결합",
               "매 프레임 GC 할당 없음",
               "런타임 Find 탐색 없음",
-              "세이브 대상 23칸 누락 · 중복 키 0",
+              "세이브 대상 24칸 누락 · 중복 키 0",
               "저장 → 불러오기 실행 확인",
-              "EditMode 테스트 34개 통과",
+              "문서의 클래스 · 메서드 이름 = 코드",
+              "EditMode 테스트 39개 통과",
             ].map(t => (
               <span key={t} style={{
                 display: "inline-flex", alignItems: "center", gap: "7px",
@@ -1296,12 +1323,169 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
           </div>
         </section>
 
+        {/* ── 맵 제작 파이프라인 ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>맵 제작 — 텍스트 그리드 베이커</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            바깥 맵 · 실내 · 축제장 16개를 손으로 칠하지 않고 <strong style={{ color: "#e0e0e0" }}>글자 격자로 쓰고 굽습니다.</strong>
+            파이썬 스크립트가 격자를 만들고, 에디터 베이커가 레이어마다 타일맵에 칠합니다.
+          </p>
+          <CodeBlock>{`생성 스크립트(*_map.py)  장면을 글자 격자로 — 레이어마다 한 장(바닥 · 벽/막힘 · 장식 · 러그 · 상호작용)
+       ▼
+MapDefinition (SO)       레이어 × 텍스트 격자 + 원점      MapLegend (SO)  글자 → 타일 / 프리팹
+       ▼  MapValidator    굽기 전 검사 — 범례 누락 · 범례에 없는 글자 · 빈 레이어
+MapBakeTarget            레이어 ↔ 씬의 Tilemap / 부모 오브젝트
+       ▼
+MapBaker                 정의 범위를 지우고 다시 칠함 — 몇 번을 돌려도 같은 결과(런타임에서도 호출 가능)
+MapCapture               역방향: 손으로 칠한 씬 → 텍스트 격자`}</CodeBlock>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>격자가 텍스트라 바뀐 곳이 비교로 보이고, 배치 규칙(나무 간격 · 길 잇기 · 건물 발자국)을 스크립트로 적용할 수 있다</NumItem>
+            <NumItem n={2}><code>SiblingRuleTile</code> — 지정한 형제 타일도 같은 타일로 보는 RuleTile. 흙길이 밭으로 이어지는 끝에 풀 테두리를 그리지 않는다</NumItem>
+            <NumItem n={3}>실내는 바깥과 먼 좌표에 굽고 워프 한 쌍으로만 잇는다 — 공간 경계가 좌표 분리로 자연히 생긴다</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>배치 규칙 — 꾸미기 전에 가른다</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            플레이 테스트에서 "소파에 앉을 수 없다", "가축이 벽 위에 올라탄다", "러그 밑에 캐릭터가 묻힌다"는 지적이 한꺼번에 나왔습니다.
+            원인은 하나 — 놓는 물건을 <strong style={{ color: "#f0f0f0" }}>상호작용해야 하는지, 막아야 하는지, 바닥에 깔리는지 가르지 않고</strong> 한 장식 층에 그렸던 것입니다.
+            규칙 스크립트로 모든 실내를 다시 가르고, 막힘은 손으로 찍지 않고 계산하게 했습니다.
+          </p>
+          <div style={{ overflowX: "auto", marginBottom: "16px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
+              <thead>
+                <tr>
+                  {["물건", "타일맵", "막힘"].map(h => (
+                    <th key={h} style={{
+                      textAlign: "left", padding: "10px 12px",
+                      borderBottom: `1px solid ${TEAL}40`,
+                      color: TEAL, fontWeight: 700, fontSize: "12px", whiteSpace: "nowrap",
+                    }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { n: "쓰임 있는 가구(앉기 · 켜기 · 보관 · 탁자 · 조명)", r: "Interactable — 놓은 가구와 같은 칸 데이터(고정 가구)", u: "가구 데이터의 발자국" },
+                  { n: "서 있는 물건(상자 · 통 · 여물통 · 대장간 기물)", r: "Decor(Y 정렬)", u: "그림이 반 칸 이상 걸친 칸을 Block 에" },
+                  { n: "러그 · 돗자리", r: "GroundDecor(캐릭터 밑)", u: "없음" },
+                  { n: "벽걸이(액자 · 시계)", r: "Decor", u: "없음(벽 줄)" },
+                ].map(row => (
+                  <tr key={row.n}>
+                    <td style={{ padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", color: GREEN, verticalAlign: "top" }}>{row.n}</td>
+                    <td style={{ padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", opacity: 0.8, verticalAlign: "top" }}>{row.r}</td>
+                    <td style={{ padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", opacity: 0.55, lineHeight: 1.6, verticalAlign: "top" }}>{row.u}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>러그를 장식 층에 두면 같은 정렬 레이어에서 Y 로 앞뒤가 갈려, 러그 위쪽 칸에 선 캐릭터가 러그 뒤에 그려졌다 → 바닥 층으로</NumItem>
+            <NumItem n={2}>
+              가축의 발(위치)은 칸 밑변인데 동물 그림의 기준점이 가운데라 몸 절반이 아래 칸으로 — 맨 아랫줄 가축이 벽 위에 선 것처럼 보였다
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>원본 애셋은 그대로 두고 실행 중에 기준점만 내린 사본으로 그림(FootSprite) — 프레임끼리 맞춘 발 높이는 유지</SubItem>
+              </ul>
+            </NumItem>
+            <NumItem n={3}>길찾기 없이 직선으로 움직이는 반려동물 · 기는 곤충은 가는 선이 막힌 칸을 지나지 않는 목적지만 고른다</NumItem>
+          </ul>
+          <Figure
+            src={WALK_AUDIT}
+            alt="통행 점검 그림"
+            caption="통행 점검 도구 — 실제 통행 판정으로 막힌 칸은 빨간 X, 걷는 칸은 초록 점. 그림과 막힘이 어긋난 칸을 눈으로 찾는다"
+          />
+        </section>
+
+        {/* ── 에디터 도구 ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>에디터 도구 — 설정을 코드로</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            씬 · 애셋을 손으로 고치지 않고 에디터 도구(메뉴 80개)로 세웁니다.
+            규칙은 하나 — <strong style={{ color: "#e0e0e0" }}>몇 번을 다시 돌려도 같은 결과</strong>. 그래서 도구를 고치고 다시 돌리는 것이 수정 방법이 됩니다.
+          </p>
+          <div style={{ overflowX: "auto", marginBottom: "16px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
+              <thead>
+                <tr>
+                  {["도구", "하는 일"].map(h => (
+                    <th key={h} style={{
+                      textAlign: "left", padding: "10px 12px",
+                      borderBottom: `1px solid ${TEAL}40`,
+                      color: TEAL, fontWeight: 700, fontSize: "12px", whiteSpace: "nowrap",
+                    }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { n: "설정 도구 32개(*Setup)", u: "건물 · NPC · 가축 · 축제 Scene · 보관함 등 기능 하나를 세우는 전 과정 — 애셋 생성 → 씬 오브젝트 → 배선 → 저장" },
+                  { n: "DesignRuleWiring", u: "세이브 목록 · 주입 칸 · 창 목록을 규칙대로 채움 — 빈 칸은 테스트(SceneWiringTests)가 잡는다" },
+                  { n: "스프라이트 재슬라이스", u: "애셋 팩 시트를 규칙 스크립트로 다시 자르고 기준점을 밑변으로 통일 — \"물체의 발은 자기 칸의 밑변에\"" },
+                  { n: "맵 베이커 · 캡처 · 검사", u: "텍스트 격자 ↔ 타일맵, 실내 배치 규칙 적용, 통행 점검 그림" },
+                  { n: "빌드 측정", u: "빌드 크기 · 들어간 애셋 · 실행 메모리 기록 — 701MB → 358.5MB(Resources 정리) → 124.3MB(Addressables)" },
+                  { n: "콘텐츠 빌드 · 업로드", u: "새 출시 / 콘텐츠 업데이트 빌드, CDN 업로드, 테스트용 로컬 콘텐츠 서버" },
+                ].map(row => (
+                  <tr key={row.n}>
+                    <td style={{ padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", fontFamily: "var(--font-geist-mono), monospace", color: GREEN, whiteSpace: "nowrap", verticalAlign: "top" }}>{row.n}</td>
+                    <td style={{ padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", opacity: 0.7, lineHeight: 1.6, verticalAlign: "top" }}>{row.u}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* ── Addressables ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>Addressables — 원격 콘텐츠 배포</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            처음엔 빌드 크기를 줄이려고 Scene 을 번들로 나눴고(701MB → 124.3MB), 이어서 서버에서 콘텐츠를 받는 구조로 넓혔습니다.
+            축제 Scene 은 <strong style={{ color: "#e0e0e0" }}>앱을 다시 내지 않고</strong> 서버의 번들만 바꿔 업데이트합니다.
+          </p>
+          <CodeBlock>{`앱 안 (로컬 · 출시 후 고정)    Bootstrap · InGame · 이벤트 Scene · 공유 애셋 4,745개
+서버   (원격 · 출시 후 교체)    축제 Scene 4 · 콘텐츠 버전                    라벨 remote
+
+Bootstrap ─ ContentUpdater: 카탈로그 확인 → 바뀐 번들만 받기(진행 표시) → 콘텐츠 버전 → InGame
+                                       ▲ https
+빌드 결과(ServerData) ─ aws s3 ─▶ S3(퍼블릭 차단) ─▶ CloudFront(OAC)`}</CodeBlock>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>
+              번들은 이름에 해시가 붙어 바뀌지 않으므로 1년 캐시, 카탈로그는 같은 이름으로 덮어쓰므로 캐시 안 함 — CDN 캐시를 비우지 않아도 업데이트가 바로 보인다
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>번들을 먼저, 카탈로그를 마지막에 올린다 — 카탈로그가 아직 없는 번들을 가리키는 순간을 만들지 않는다</SubItem>
+              </ul>
+            </NumItem>
+            <NumItem n={2}>
+              콘텐츠 업데이트 빌드는 나간 앱을 기준으로 바뀐 것만 — 콘텐츠 버전을 1 → 2 로 올리자 번들 하나만 새로 생겼고, 다시 켰을 때 1,217바이트만 받았다
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>앱에 든 애셋이 바뀌면 업데이트 빌드를 멈춘다 — 그건 앱을 새로 내야 하는 변경</SubItem>
+              </ul>
+            </NumItem>
+            <NumItem n={3}>
+              서버에 못 붙는 경우를 먼저 설계 — 오프라인 첫 실행은 안내 후 시작, 못 받은 축제에 들어가려 하면 제자리에서 안내
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>점검에서 실패 뒤 축제 쪽 "떠나는 중" 표시가 남아 다시 못 들어가던 것을 찾아, 조정자(GameFlow)가 되돌리게 함</SubItem>
+              </ul>
+            </NumItem>
+            <NumItem n={4}>사고 방지 — 로컬 테스트용 주소로 빌드한 카탈로그는 업로드를 거절, 출시 빌드인데 https 가 아니면 앱 빌드를 멈춘다</NumItem>
+            <NumItem n={5}>
+              함정 — Scene 들을 한 번들에 묶었더니 한 Scene 이 내려갈 때 공유 애셋까지 내려가 다음 Scene 의 외형 파츠가 사라졌다
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>Scene 마다 따로 + 공유 애셋 그룹. 에디터에서 바로 플레이하면 재현되지 않아 "빌드된 번들로 시작"하는 모드로만 보인다</SubItem>
+              </ul>
+            </NumItem>
+          </ul>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, margin: 0 }}>
+            확인: 개발용 실행 파일을 캐시 없이 로컬 서버 없이 실행 → CloudFront 에서 2.06MB 를 받고 게임 시작.
+          </p>
+        </section>
+
         {/* ── 자동 테스트 ── */}
         <section style={{ marginBottom: "40px" }}>
           <h2 style={SECTION_TITLE}>자동 테스트 — 조용히 빠지는 것을 잡는다</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             이 구조에서 가장 흔한 실패는 예외가 아니라 <strong style={{ color: "#e0e0e0" }}>아무 일도 일어나지 않는 것</strong>입니다.
-            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 34개로 고정했습니다.
+            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 39개로 고정했습니다.
           </p>
           <div style={{ overflowX: "auto", marginBottom: "16px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
@@ -1320,8 +1504,8 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
                 {[
                   { n: "규칙 (14)", r: "씬 없이 계산만", u: "숙련도 곡선 · 기계 공정(대기 → 작업 → 완성) · 바깥 범위 경계 · 가축 암수 산출" },
                   { n: "저장 계약 (4)", r: "Capture → Restore 왕복", u: "지갑 · 숙련도, 옛 세이브(항목 수가 적은 것) 허용, 고정 SaveKey 중복 없음" },
-                  { n: "데이터 무결성 (9)", r: "SO 애셋 전수 검사", u: "도구 동작 hitFrame · 모든 아이템이 레지스트리에 있는가 · 이름/id 중복 · 판매가 = 새끼 값 × 1.5" },
-                  { n: "씬 배선 (7)", r: "메인 Scene 의 인스펙터 칸", u: "세이브 목록 누락 · 키 중복 · 순서, GameManager 주입 칸, 새 시스템 칸, 빠진 스크립트" },
+                  { n: "데이터 무결성 (12)", r: "SO · 설정 애셋 전수 검사", u: "도구 동작 hitFrame · 모든 아이템이 레지스트리에 있는가 · 이름/id 중복 · 판매가 = 새끼 값 × 1.5 · Addressables 원격/로컬 그룹 설정" },
+                  { n: "씬 배선 (9)", r: "메인 Scene 의 인스펙터 칸 · 타일맵", u: "세이브 목록 누락 · 키 중복 · 순서, GameManager 주입 칸, 새 시스템 칸, 빠진 스크립트, 상호작용 타일맵엔 상호작용하는 것만 · Decor 에 러그나 쓸 수 있는 가구가 그림으로만 있지 않은가" },
                 ].map(row => (
                   <tr key={row.n}>
                     <td style={{
@@ -1351,6 +1535,9 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
             </NumItem>
             <NumItem n={2}>
               1단계 재료(구리 광석 · 구리 주괴)가 저장용 레지스트리에 없어 <strong style={{ color: "#f0f0f0" }}>가방에 든 채 저장하면 불러올 때 사라지던 버그</strong>
+            </NumItem>
+            <NumItem n={3}>
+              타일맵 구분 테스트를 더하자마자, 씬에 직접 칠한 실내의 옷장 · 벽난로가 <strong style={{ color: "#f0f0f0" }}>그림으로만 있어 열 수 없던 것</strong>을 잡음
             </NumItem>
           </ul>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, margin: 0 }}>
