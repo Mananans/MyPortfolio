@@ -38,7 +38,7 @@ const GALLERY = [
   { src: "/images/farmlife-2026/gallery-4.png", label: "광산 전투", tall: true },
   { src: "/images/farmlife-2026/gallery-5.png", label: "밤의 집 — 배치한 가구 · 벽난로 · 촛불 조명" },
   { src: "/images/farmlife-2026/gallery-6.png", label: "외양간 — 소 · 염소 · 양 · 돼지 · 타조" },
-  { src: "/images/farmlife-2026/gallery-7.png", label: "대장간 — 대장장이에게 제작 부탁" },
+  { src: "/images/farmlife-2026/gallery-7.png", label: "대장간" },
   { src: "/images/farmlife-2026/gallery-8.png", label: "닭장 · 외양간" },
   { src: "/images/farmlife-2026/gallery-9.png", label: "플레이어 집 앞 — 가공 기계 8종 · 작업대 · 용광로 · 반려동물" },
   { src: "/images/farmlife-2026/gallery-10.png", label: "비 오는 날 — 우산 · 달팽이 (빗방울은 리소스가 없어 임시로 만든 이미지)" },
