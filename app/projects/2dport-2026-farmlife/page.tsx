@@ -1382,7 +1382,7 @@ MapCapture               역방향: 손으로 칠한 씬 → 텍스트 격자`}<
             </table>
           </div>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
-            <NumItem n={1}>러그를 장식 층에 두면 같은 정렬 레이어에서 Y 로 앞뒤가 갈려, 러그 위쪽 칸에 선 캐릭터가 러그 뒤에 그려졌다 바닥 층으로</NumItem>
+            <NumItem n={1}>러그를 장식 층에 두면 같은 정렬 레이어에서 Y 로 앞뒤가 갈려, 러그 위쪽 칸에 선 캐릭터가 러그 뒤에 그려졌다 → 바닥 층으로</NumItem>
             <NumItem n={2}>
               맨 아랫줄 가축이 벽 위에 선 것처럼 보였다 → 가축의 발(위치)은 칸 밑변인데 동물 그림의 기준점이 가운데라 몸 절반이 아래 칸으로
               <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
