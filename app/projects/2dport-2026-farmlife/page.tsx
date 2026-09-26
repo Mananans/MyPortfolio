@@ -5,11 +5,11 @@ import Link from "next/link";
 // ─────────────────────────────────────────────
 //  이미지 경로 설정
 //  📁 public/images/farmlife-2026/
-//      ├── hero.png
-//      ├── gallery-1.png  ← 농장 / 경작 화면
-//      ├── gallery-2.png  ← NPC 스케줄 · 대화 화면
-//      ├── gallery-3.png  ← 상점 / 가판대 화면
-//      ├── gallery-4.png  ← 전투 화면
+//      ├── hero.png       ← 마을 풍경 1920x720 (UI 없이 월드만 렌더, 2026-09-27)
+//      ├── gallery-1.png  ← 경작 — 물 주기 (게임 화면 480x720 을 2배로 캡처, 2026-09-27)
+//      ├── gallery-2.png  ← NPC 대화 — 로저 (동일)
+//      ├── gallery-3.png  ← 가판대 판매 창 (동일)
+//      ├── gallery-4.png  ← 광산 전투 — 검 휘두르기 (동일)
 //      ├── gallery-5.png  ← 밤의 집 — 배치한 가구와 조명
 //      ├── gallery-6.png  ← 외양간 내부 — 가축 5종
 //      ├── gallery-7.png  ← 대장간 내부 — 대장장이 NPC
@@ -32,10 +32,10 @@ const DIAGRAM_AFFINITY = "/images/farmlife-2026/diagram-affinity.png";
 const WALK_AUDIT = "/images/farmlife-2026/walk-audit.png";
 
 const GALLERY = [
-  { src: "/images/farmlife-2026/gallery-1.png", label: "경작 화면" },
-  { src: "/images/farmlife-2026/gallery-2.png", label: "NPC 스케줄 · 대화" },
-  { src: "/images/farmlife-2026/gallery-3.png", label: "가판대" },
-  { src: "/images/farmlife-2026/gallery-4.png", label: "전투 화면" },
+  { src: "/images/farmlife-2026/gallery-1.png", label: "경작 — 물 주기", tall: true },
+  { src: "/images/farmlife-2026/gallery-2.png", label: "NPC 대화", tall: true },
+  { src: "/images/farmlife-2026/gallery-3.png", label: "가판대 — 판매 가격 정하기", tall: true },
+  { src: "/images/farmlife-2026/gallery-4.png", label: "광산 전투", tall: true },
   { src: "/images/farmlife-2026/gallery-5.png", label: "밤의 집 — 배치한 가구 · 벽난로 · 촛불 조명" },
   { src: "/images/farmlife-2026/gallery-6.png", label: "외양간 — 소 · 염소 · 양 · 돼지 · 타조" },
   { src: "/images/farmlife-2026/gallery-7.png", label: "대장간 — 대장장이에게 제작 부탁" },
@@ -1562,11 +1562,16 @@ Bootstrap ─ ContentUpdater: 카탈로그 확인 → 바뀐 번들만 받기(�
           <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#f0f0f0", marginBottom: "16px" }}>
             Project Gallery
           </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-            {GALLERY.map(({ src, label }) => (
+          {/* 실제 게임 화면(세로 480x720)은 한 줄에 원래 비율로, 나머지 장면은 2열 16:9 */}
+          {[GALLERY.filter(g => g.tall), GALLERY.filter(g => !g.tall)].map((group, gi) => (
+          <div key={gi} style={{
+            display: "grid", gap: "12px", marginBottom: gi === 0 ? "12px" : 0,
+            gridTemplateColumns: gi === 0 ? "repeat(auto-fit, minmax(150px, 1fr))" : "1fr 1fr",
+          }}>
+            {group.map(({ src, label }) => (
               <div key={src} style={{
                 position: "relative", borderRadius: "8px", overflow: "hidden",
-                background: "#08150f", aspectRatio: "16/9",
+                background: "#08150f", aspectRatio: gi === 0 ? "2/3" : "16/9",
                 border: "1px solid rgba(74,222,128,0.15)",
               }}>
                 <img
@@ -1589,6 +1594,7 @@ Bootstrap ─ ContentUpdater: 카탈로그 확인 → 바뀐 번들만 받기(�
               </div>
             ))}
           </div>
+          ))}
         </section>
 
       </div>
