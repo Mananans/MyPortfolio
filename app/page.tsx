@@ -11,7 +11,7 @@ const PROJECTS = [
     desc: "스타듀밸리형 농사 · 생활 시뮬레이션",
     period: "2026.07 ~ Present",
     highlight: "계층 기반 아키텍처 설계 및 God Object 리팩터링",
-    tags: ["Unity", "C#", "Editor"],
+    tags: ["Unity", "C#", "Editor", "AWS"],
     img: "/images/thumb/farmlife-2026.png",
     link: "/projects/2dport-2026-farmlife",
   },
@@ -146,7 +146,7 @@ export default function Home() {
     }
   };
 
-  const allTags = ["전체", "Unity", "C#", "UGUI", "Firebase", "Editor"];
+  const allTags = ["전체", "Unity", "C#", "UGUI", "Firebase", "Editor", "AWS"];
   const filtered = filter === "전체" ? PROJECTS : PROJECTS.filter(p => p.tags.includes(filter));
   const modal = PROJECTS.find(p => p.id === activeModal);
 
