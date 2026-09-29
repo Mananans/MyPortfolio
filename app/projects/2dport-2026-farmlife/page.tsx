@@ -950,8 +950,8 @@ MineManager         층 상태 · 층 이동 · 진행도 · 저장`}</CodeBlock
             </table>
           </div>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
-            <NumItem n={1}>약한 몬스터는 &lsquo;여기까지만 나온다&rsquo;는 층을 둬서, 깊은 층에서는 빠지고 강한 몬스터만 남습니다</NumItem>
-            <NumItem n={2}>드롭도 깊이를 따라갑니다 — 슬라임 핵 → 석탄 · 철광석 → 금광석 · 보석</NumItem>
+            <NumItem n={1}>몬스터별로 층을 나누어, 깊은 층에서는 강한 몬스터만 남습니다</NumItem>
+            <NumItem n={2}>드롭 아이템 종류도 깊이에 따라 구분됩니다. — 슬라임 핵 → 석탄 · 철광석 → 금광석 · 보석</NumItem>
           </ul>
 
           <h3 style={SUB_TITLE}>구조 — 몬스터를 늘려도 코드는 그대로</h3>
@@ -977,7 +977,7 @@ MonsterProjectile      화살(직선) · 폭탄 · 가시 침(포물선) · 독 
               플레이어의 화살은 몬스터만, 몬스터의 투사체는 플레이어만 맞힙니다 — 두 쪽을 다른 부품으로 나눠 서로 섞이지 않게
             </NumItem>
             <NumItem n={3}>
-              독꽃의 가시는 쏘는 순간 플레이어가 있던 자리에서 잠깐 뒤에 솟습니다 — 움직이면 피할 수 있는 공격
+              식물형 몬스터의 공격은 플레이어가 있던 자리에서 잠깐 뒤에 솟습니다 — 움직이면 피할 수 있는 공격
             </NumItem>
           </ul>
           <img src={MONSTERS_RANGED} alt="원거리 공격 4종" style={{ width: "100%", borderRadius: "8px", border: "1px solid rgba(74,222,128,0.15)", imageRendering: "pixelated", marginBottom: "8px" }} />
