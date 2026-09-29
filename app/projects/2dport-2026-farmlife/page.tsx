@@ -23,6 +23,7 @@ import Link from "next/link";
 //      ├── walk-audit.png       ← 통행 점검 도구가 그린 플레이어 집 (막힌 칸 X · 걷는 칸 점)
 //      ├── monsters.png         ← 광산 몬스터 31종 (약한 것 → 강한 것, 발이 칸 밑변에 닿게 줄 세운 렌더, 2026-09-29)
 //      ├── monsters-ranged.png  ← 원거리 공격 4종 (화살 · 폭탄 · 가시 침 · 독 가시, 광산 30층 실행 캡처)
+//      ├── armor-inventory.png  ← 인벤토리 — 초상 아래 방어구 칸(금 투구 · 갑옷 착용), 가방의 방어구, 이름 · 성별 (2026-09-29)
 //      └── diagram-affinity.png ← 호감도 마일스톤 판정 다이어그램
 //  📁 public/images/thumb/farmlife-2026.png  ← 메인 카드 썸네일
 // ─────────────────────────────────────────────
@@ -34,6 +35,7 @@ const DIAGRAM_AFFINITY = "/images/farmlife-2026/diagram-affinity.png";
 const WALK_AUDIT = "/images/farmlife-2026/walk-audit.png";
 const MONSTERS = "/images/farmlife-2026/monsters.png";
 const MONSTERS_RANGED = "/images/farmlife-2026/monsters-ranged.png";
+const ARMOR_INVENTORY = "/images/farmlife-2026/armor-inventory.png";
 
 const GALLERY = [
   { src: "/images/farmlife-2026/gallery-1.png", label: "경작 — 물 주기", tall: true },
@@ -256,7 +258,7 @@ function CodeBlock({ children }) {
 
 // 인터페이스 바인딩 표
 const INTERFACES = [
-  { name: "IPersistentSystem", contract: "SaveKey / InitializeNew / Capture / Restore", impl: "구현체 21종(씬 인스턴스 24개) — Inventory, ToolInventory, QuickSlot, Wallet, Time, PlayerHealth, Stall, PlayerPositionSaver, NpcSaveManager, MineManager, CraftingSystem, ItemCollectionBook, BundleBook, LivestockSaveManager, AvatarCollectionBook, PlayerAppearance, MountSystem, SkillSystem, PetSystem, WeatherSystem, StorageSystem" },
+  { name: "IPersistentSystem", contract: "SaveKey / InitializeNew / Capture / Restore", impl: "구현체 23종(씬 인스턴스 26개) — Inventory, ToolInventory, QuickSlot, Wallet, Time, PlayerHealth, Stall, PlayerPositionSaver, NpcSaveManager, MineManager, CraftingSystem, ItemCollectionBook, BundleBook, LivestockSaveManager, AvatarCollectionBook, PlayerAppearance, MountSystem, SkillSystem, PetSystem, WeatherSystem, StorageSystem, ArmorSystem, PlayerProfile" },
   { name: "IItemAcquireHandler", contract: "TryHandleAcquire — 가방에 넣기 전 가로채기", impl: "AvatarCollectionBook(외형 파츠 → 즉시 해금) / ToolInventory(도구 → 도구 칸·등급 교체) / LivestockManager(가축·사료통 → 축사로) / MountSystem(말 → 말뚝, 안장) / PetSystem(입양 → 마당으로)" },
   { name: "ITileDataStore", contract: "셀 데이터 조회 / 등록", impl: "TileDataStore" },
   { name: "IEffectPlayer", contract: "연출 재생", impl: "EffectSystem" },
@@ -580,11 +582,13 @@ function Roadmap() {
       "낚시 — 미니게임 + 물고기 도감", "커뮤니티 센터 / 번들", "봄 축제 — 별도 Scene", "캐릭터 외형 · 외형 도감",
       "작물 계절 · 가축 7종 · 외양간", "대장장이 · 도구/무기 레시피 해금 사슬", "집 가구 배치 · 카탈로그 · 가구 조명",
       "사계절 축제 · 미니게임 4종 · 축제 한정 상품 · 날짜에 맞춰 열기", "가축 상점 · 암수 · 번식 · 도축 · 사료통", "탈것(말 · 타조) · 탁자 위 소품",
-      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 자동 테스트 42개",
+      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 54 · 자동 플레이 테스트 4",
       "플레이어 자택 · 플레이어 상점 · 보관함", "실내 배치 규칙(상호작용 / 막힘 / 바닥 깔개) · 통행 점검 도구",
       "Addressables 원격 콘텐츠 배포 — S3 + CloudFront, 콘텐츠 업데이트 빌드 · 업로드 도구",
       "광산 몬스터 31종 · 원거리 공격 4종 · 적 그림 기준점을 발로",
       "어셈블리 4개로 분리(UI 역참조를 컴파일 에러로) · 플레이 진입 30초 → 14초 · 빌드 파이프라인 · CDN 콘텐츠 재배포",
+      "자동 플레이 테스트(버그 3개 발견) · 세이브 버전 관리 · 성능 계측(층 전환 353 → 14ms, 전투 GC −80%)",
+      "방어구 40종(무기와 같은 10단계) · 받는 피해 비율 계산 · 캐릭터 이름 · 성별 저장",
       "점검 후 정리 — 7곳에 흩어진 ‘바깥 범위’를 OutdoorArea 하나로, 2시에 쓰러지면 집 침대로(탈것 · 광산 정리 이벤트)",
     ] },
   ];
@@ -685,10 +689,10 @@ export default function FarmLifePage() {
             {[
               "엔진: Unity 6 (2D URP · Renderer 2D / Light 2D) / 언어: C#",
               "네임스페이스: FarmGame.Core (에디터: FarmGame.EditorTools)",
-              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 보관함 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 21종 (런타임 스크립트 280개 + 에디터 68개)",
+              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 보관함 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 23종 (런타임 스크립트 295개 + 에디터 70개 + 플레이 테스트 2개)",
               "맵: 바깥 · 실내 · 축제장 16개를 텍스트 그리드로 쓰고 에디터 베이커로 굽는다",
               "배포: Addressables — 축제 Scene 을 원격 콘텐츠로(AWS S3 + CloudFront), 앱 재배포 없이 콘텐츠 업데이트",
-              "검증: EditMode 자동 테스트 42개 (규칙 · 저장 계약 · 데이터 무결성 · 씬 배선) + 모든 빌드 직전 자동 검사 + 플레이 · 실행 파일 확인",
+              "검증: EditMode 테스트 54개 (규칙 · 저장 계약 · 세이브 변환 · 데이터 무결성 · 씬 배선) + 자동 플레이 테스트 4개 + 모든 빌드 직전 자동 검사 + 성능 측정 시나리오",
               "설계 문서: PROJECT_STATUS.md / ARCHITECTURE.md",
             ].map(t => (
               <p key={t} style={{ fontSize: "14px", color: TEAL, opacity: 0.9, margin: 0 }}>• {t}</p>
@@ -1077,6 +1081,38 @@ InventorySystem.Add ─ IItemAcquireHandler ─▶ ToolInventory: 도구 칸에 
           </ul>
         </section>
 
+        {/* ── 방어구 · 피해 계산 ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>방어구 · 받는 피해 — 무기와 같은 사슬 위에</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            방어구 40종(투구 · 갑옷 · 각반 · 신발 × 나무 ~ 흑요석 10단계)을 무기와 같은 제작 · 해금 사슬에 얹었습니다.
+            캐릭터 겉모습은 바꾸지 않고, 인벤토리의 부위 칸과 방어력으로 드러납니다.
+          </p>
+          <img src={ARMOR_INVENTORY} alt="인벤토리 방어구 칸" style={{ width: "100%", maxWidth: "420px", display: "block", margin: "0 auto 8px", borderRadius: "8px", border: "1px solid rgba(74,222,128,0.15)", imageRendering: "pixelated" }} />
+          <p style={{ fontSize: "12px", opacity: 0.45, margin: "0 0 20px", textAlign: "center" }}>초상 아래 부위 칸(금 투구 · 갑옷 착용) · 가방의 방어구 · 이름 · 성별</p>
+
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>받는 피해 — 빼기에서 비율로</h3>
+          <CodeBlock>{`받는 피해 = 반올림( 공격력 × 50 / (50 + 방어력) ),  최소 1
+
+방어력 = 기본 + 입은 방어구 합      전신 나무 5 (−9%) … 금 20 (−29%) … 흑요석 50 (−50%)`}</CodeBlock>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>전에는 &lsquo;공격 − 방어&rsquo; — 약한 몬스터는 늘 1, 강한 몬스터에게는 방어가 거의 소용없다. 비율이면 어떤 몬스터에게든 같은 비율만큼 듣는다</NumItem>
+            <NumItem n={2}>방어력이 오를수록 한 칸의 효과는 완만해진다 — 끝 단계 방어구로도 무적이 되지 않는다(맞으면 최소 1)</NumItem>
+            <NumItem n={3}>공식은 순수 함수 하나 — 몬스터 근접 · 투사체가 모두 이것을 거치고, 씬 없이 표로 테스트한다</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>구조</h3>
+          <CodeBlock>{`가방 칸 ─드래그 앤 드롭─▶ 방어구 칸(UI) ─▶ ArmorSystem  부위 검사 · 입은 것과 맞바꿈 · 저장
+                                                  │ 바뀜(이벤트)
+                                         GameManager ─▶ PlayerHealth.방어력  (방어구 시스템은 체력을 모른다)
+몬스터 근접 · 투사체 ─▶ PlayerHealth.TakeDamage ─▶ DamageFormula`}</CodeBlock>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            <NumItem n={1}>레시피는 같은 단계 칼 레시피의 금속을 부위 크기만큼 — 제작 시간 · 해금(그 단계 주괴를 처음 얻으면)도 칼과 같게, 대장간과 플레이어 모루 양쪽에서</NumItem>
+            <NumItem n={2}>40종의 데이터 · 레시피 · 해금 연결 · 두 제작대 · 인벤토리 칸 배선은 에디터 메뉴 한 번. 다시 돌려도 같은 결과</NumItem>
+            <NumItem n={3}>세이브에 캐릭터 이름 · 성별도 더해 인벤토리 초상 옆에 보인다</NumItem>
+          </ul>
+        </section>
+
         {/* ── 가구 배치 ── */}
         <section style={{ marginBottom: "40px" }}>
           <h2 style={SECTION_TITLE}>가구 배치 — 타일맵 위의 모델과 뷰</h2>
@@ -1203,7 +1239,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
           <h2 style={SECTION_TITLE}>세이브 / 로드 아키텍처</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             시스템마다 저장 코드를 흩뿌리는 대신, <code>IPersistentSystem</code> 계약 하나로 통일했습니다.
-            현재 구현체는 21종(씬 인스턴스 24개)입니다. 가구 · 가공 기계처럼 여러 칸을 차지하는 것은 앵커 칸만 저장하고,
+            현재 구현체는 23종(씬 인스턴스 26개)입니다. 가구 · 가공 기계처럼 여러 칸을 차지하는 것은 앵커 칸만 저장하고,
             불러온 뒤 <code>RebuildAfterLoad</code>로 나머지 칸과 조명 · 아이콘을 다시 만듭니다.
           </p>
           <Figure
@@ -1255,6 +1291,20 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
               </ul>
             </NumItem>
             <NumItem n={4}>여러 칸짜리 가구 · 기계의 나머지 칸과 조명을 다시 만든다(세이브에는 기준 칸 하나만 저장)</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>세이브 버전 — 옛 세이브를 한 단계씩 최신으로</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            게임을 업데이트해도 플레이어의 세이브가 깨지면 안 됩니다. 세이브에 형식 버전을 적고, 옛 버전은 불러올 때 <strong style={{ color: "#f0f0f0" }}>변환 단계를 차례로</strong> 거쳐 최신으로 바꿉니다.
+          </p>
+          <CodeBlock>{`세이브 파일 ─ 읽기 ─▶ SaveMigrator ─▶ 불러오기(최신 형식만 안다)
+                     버전 0 → 1 : 밭 없이 작물만 저장하던 칸 → 기본 밭 + 작물
+                     (다음 형식 변경은 여기에 한 단계를 더하고 버전을 1 올린다)`}</CodeBlock>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>불러오기 코드 안에 흩어져 있던 옛 형식 호환 분기를 번호 붙은 변환 단계로 꺼냈다 — 불러오기는 최신 형식 하나만 다룬다</NumItem>
+            <NumItem n={2}>처음 변환할 때 원본을 따로 남긴다(save.json.v0.bak) — 다음 저장이 최신 형식으로 덮어써도 되돌릴 수 있게</NumItem>
+            <NumItem n={3}>게임보다 새 버전의 세이브는 낮추지 않고 읽을 수 있는 만큼 읽는다(경고)</NumItem>
+            <NumItem n={4}>실제 옛 세이브 사본을 테스트 샘플로 — 변환 뒤 칸 · 시스템 수가 같고 모든 칸이 지금 게임 데이터로 풀리는지. 이 테스트가 위의 &lsquo;나무 · 바위가 사라지는 버그&rsquo;를 처음 드러냈다</NumItem>
           </ul>
 
           <h3 style={SUB_TITLE}>NPC 저장 — 위임 방식</h3>
@@ -1366,6 +1416,65 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
           </div>
         </section>
 
+        {/* ── 성능 계측 ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>성능 — 재고, 고치고, 다시 재기</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            추측으로 고치지 않고, 같은 조건을 다시 돌릴 수 있는 측정 시나리오부터 만들었습니다.
+            무거울 만한 곳에 프로파일러 마커를 달고, 프레임 시간 · 프레임당 GC 할당 · 마커별 시간과 호출 수를 기록합니다.
+          </p>
+          <div style={{ overflowX: "auto", marginBottom: "16px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
+              <thead>
+                <tr>
+                  {["측정", "전", "후"].map(h => (
+                    <th key={h} style={{ textAlign: "left", padding: "8px 12px", borderBottom: `1px solid ${TEAL}40`, color: TEAL, fontWeight: 700, fontSize: "12px", whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["광산 층 전환", "353ms (최대 486)", "13.8ms (최대 19.7)"],
+                  ["광산 전투 20마리 — 프레임", "평균 21.6 · p95 36.1ms", "평균 14.6 · p95 21.3ms"],
+                  ["광산 전투 — GC 할당", "64.8KB/프레임", "12.9KB/프레임 (−80%)"],
+                  ["광산 전투 — 길찾기", "1.71ms · 6.8회/프레임", "0.28ms · 1.0회/프레임"],
+                  ["마을 평상시 (대조군)", "15.0ms · 11.1KB", "14.2ms · 10.9KB (변화 없음)"],
+                ].map(row => (
+                  <tr key={row[0]}>
+                    <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", color: GREEN, fontWeight: 700, whiteSpace: "nowrap" }}>{row[0]}</td>
+                    <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", opacity: 0.55 }}>{row[1]}</td>
+                    <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", opacity: 0.9 }}>{row[2]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p style={{ fontSize: "12px", opacity: 0.45, margin: "0 0 16px" }}>에디터 플레이 · 같은 시나리오(고정 시드) 수치. 대조군이 그대로라 측정 자체가 공정한 것을 확인.</p>
+
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>찾은 병목</h3>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>
+              층 전환 0.35초 멈춤의 99% — 광산을 <strong style={{ color: "#f0f0f0" }}>한 칸씩</strong> 지우고(5레이어 × 1,800칸) 칠하던 것
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>레이어마다 한 번에 칠하기 + 바닥 · 벽은 지우지 않고 덮어쓰기(벽 RuleTile 갱신이 바뀐 칸 주변만)</SubItem>
+                <SubItem>덮어쓴 결과가 새로 칠한 것과 칸마다 같은지 자동 플레이 테스트로 고정</SubItem>
+              </ul>
+            </NumItem>
+            <NumItem n={2}>
+              막힌 몬스터가 <strong style={{ color: "#f0f0f0" }}>매 프레임 실패하는 길찾기</strong>를 되풀이 — 전투 660프레임에 &lsquo;경로 없음&rsquo; 3,661번
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>실패하는 A* 는 닿는 영역 전체를 뒤져 가장 비싸다 → 실패하면 0.5초 뒤에 다시. 성능 문제이자 동작 버그였다</SubItem>
+              </ul>
+            </NumItem>
+            <NumItem n={3}>길찾기가 호출마다 큐 · Dictionary · HashSet · 결과 List 를 새로 만듦 → 재사용(결과는 호출한 쪽 버퍼에). 연속 호출이 섞이지 않는지 단위 테스트</NumItem>
+            <NumItem n={4}>통행 판정이 칸마다 타일 객체를 꺼내 null 비교 → 있는지만 묻는 HasTile</NumItem>
+          </ul>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, margin: 0 }}>
+            측정 시나리오는 평소 테스트에는 끼지 않고 메뉴 한 번으로 돌아가며, 결과를 라벨을 붙인 파일로 남겨 전후를 비교합니다.
+            남은 GC 약 11KB/프레임은 마을에도 똑같이 있는 공통분이라 이번 범위에서 뺐습니다.
+          </p>
+        </section>
+
         {/* ── 구조 리팩터링 ── */}
         <section style={{ marginBottom: "40px" }}>
           <h2 style={SECTION_TITLE}>God Object 점검과 리팩터링</h2>
@@ -1412,7 +1521,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
               "세이브 대상 24칸 누락 · 중복 키 0",
               "저장 → 불러오기 실행 확인",
               "문서의 클래스 · 메서드 이름 = 코드",
-              "EditMode 테스트 42개 통과",
+              "EditMode 54 · PlayMode 4 통과",
             ].map(t => (
               <span key={t} style={{
                 display: "inline-flex", alignItems: "center", gap: "7px",
@@ -1598,7 +1707,8 @@ FarmGame.UI           화면 · 슬롯 · 알림                        Core 만
      ▲
 FarmGame.EditorTools  맵 베이커 · 설정 도구 · 빌드 · 업로드      에디터 전용
      ▲
-FarmGame.Tests        EditMode 테스트 42개`}</CodeBlock>
+FarmGame.Tests        EditMode 테스트 54개
+FarmGame.PlayTests    자동 플레이 테스트 4개 + 성능 측정 시나리오 3개`}</CodeBlock>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
             <NumItem n={1}>로직이 UI 를 부르면 이제 <strong style={{ color: "#f0f0f0" }}>컴파일 에러</strong> — 문서의 규칙이 코드의 경계가 됐다</NumItem>
             <NumItem n={2}>
@@ -1628,7 +1738,7 @@ FarmGame.Tests        EditMode 테스트 42개`}</CodeBlock>
 
           <h3 style={SUB_TITLE}>③ 빌드 파이프라인</h3>
           <CodeBlock>{`메뉴 한 번 (Dev / Release)
-  테스트 42개 ── 실패면 멈춤
+  테스트 54개 ── 실패면 멈춤
        ↓
   콘텐츠 주소 전환(Dev = 로컬 서버 / Release = CDN) → 앱 + 원격 콘텐츠 빌드 → 주소 원래대로
        ↓
@@ -1660,7 +1770,7 @@ FarmGame.Tests        EditMode 테스트 42개`}</CodeBlock>
           <h2 style={SECTION_TITLE}>자동 테스트</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             이 구조에서 가장 흔한 실패는 예외가 아니라 <strong style={{ color: "#e0e0e0" }}>아무 일도 일어나지 않는 것</strong>입니다.
-            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 42개로 고정했고, 빌드할 때마다 먼저 돌게 했습니다.
+            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 54개로 고정했고, 빌드할 때마다 먼저 돌게 했습니다. 실제 게임을 띄워 확인하던 것은 자동 플레이 테스트로 옮겼습니다.
           </p>
           <div style={{ overflowX: "auto", marginBottom: "16px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
@@ -1677,10 +1787,11 @@ FarmGame.Tests        EditMode 테스트 42개`}</CodeBlock>
               </thead>
               <tbody>
                 {[
-                  { n: "규칙 (14)", r: "씬 없이 계산만", u: "숙련도 곡선 · 기계 공정(대기 → 작업 → 완성) · 바깥 범위 경계 · 가축 암수 산출" },
-                  { n: "저장 계약 (4)", r: "Capture → Restore 왕복", u: "지갑 · 숙련도, 옛 세이브(항목 수가 적은 것) 허용, 고정 SaveKey 중복 없음" },
-                  { n: "데이터 무결성 (15)", r: "SO · 설정 애셋 · 코드 전수 검사", u: "도구 동작 hitFrame · 모든 아이템이 레지스트리에 있는가 · 이름/id 중복 · 판매가 = 새끼 값 × 1.5 · Addressables 원격/로컬 그룹 설정 · 몬스터 데이터와 그림이 서로 맞물리는가 · 광산 1~40층 모두 몬스터가 있고 깊을수록 강한가 · 플레이마다 비워야 하는 static 에 초기화가 있는가" },
-                  { n: "씬 배선 (9)", r: "메인 Scene 의 인스펙터 칸 · 타일맵", u: "세이브 목록 누락 · 키 중복 · 순서, GameManager 주입 칸, 새 시스템 칸, 빠진 스크립트, 상호작용 타일맵엔 상호작용하는 것만 · Decor 에 러그나 쓸 수 있는 가구가 그림으로만 있지 않은가" },
+                  { n: "규칙 (16)", r: "씬 없이 계산만", u: "숙련도 곡선 · 기계 공정(대기 → 작업 → 완성) · 바깥 범위 경계 · 가축 암수 산출 · 받는 피해 공식 · 길찾기 버퍼 재사용" },
+                  { n: "저장 계약 (6)", r: "Capture → Restore 왕복", u: "지갑 · 숙련도 · 방어구(입기 · 맞바꿈 · 벗기) · 이름 성별, 옛 세이브(항목 수가 적은 것) 허용, 고정 SaveKey 중복 없음" },
+                  { n: "세이브 변환 (5)", r: "옛 세이브 → 최신 형식", u: "단계 수 = 버전 · 옛 작물 칸 → 밭 + 작물 · 더 새 세이브는 그대로 · 실제 옛 세이브 샘플이 지금 데이터로 모두 풀림 · 원본 백업 한 번" },
+                  { n: "데이터 무결성 (17)", r: "SO · 설정 애셋 · 코드 전수 검사", u: "도구 동작 hitFrame · 모든 아이템이 레지스트리에 있는가 · 이름/id 중복 · 판매가 = 새끼 값 × 1.5 · Addressables 원격/로컬 그룹 설정 · 몬스터 데이터와 그림이 서로 맞물리는가 · 광산 1~40층 모두 몬스터가 있고 깊을수록 강한가 · 플레이마다 비워야 하는 static 에 초기화가 있는가 · 맵의 나무 · 바위 정의가 모두 레지스트리에 · 방어구 10단계 × 4부위 · 레시피 · 해금 경로" },
+                  { n: "씬 배선 (10)", r: "메인 Scene 의 인스펙터 칸 · 타일맵", u: "세이브 목록 누락 · 키 중복 · 순서, GameManager 주입 칸, 새 시스템 칸, 빠진 스크립트, 상호작용 타일맵엔 상호작용하는 것만 · Decor 에 러그나 쓸 수 있는 가구가 그림으로만 있지 않은가 · 두 제작대의 방어구 레시피 · 인벤토리 방어구 칸 배선" },
                 ].map(row => (
                   <tr key={row.n}>
                     <td style={{
@@ -1700,6 +1811,28 @@ FarmGame.Tests        EditMode 테스트 42개`}</CodeBlock>
               </tbody>
             </table>
           </div>
+          <h3 style={SUB_TITLE}>자동 플레이 테스트 — 실제 게임을 띄워서</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            사람이 하던 플레이 확인을 PlayMode 테스트로 옮겼습니다. 메인 Scene 을 띄우고 시나리오를 돌리며, 도중에 에러가 찍히면 실패입니다.
+            세이브는 테스트 전용 파일에 써서 <strong style={{ color: "#f0f0f0" }}>플레이어의 세이브는 건드리지 않습니다</strong>(전후 해시 동일).
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>새 게임 → 밭 갈기 → 제철 작물 심기 → 물 → 잠 → 저장 → Scene 다시 띄워 불러오기 — 날짜 · 밭 · 작물이 자란 정도 · 가방 · 소지금 · 맵의 나무 · 바위 개수가 그대로</NumItem>
+            <NumItem n={2}>광산 1 → 5층 — 도착 칸 · 몬스터가 선 칸이 걸을 수 있는 칸인지, 그 층 목록의 몬스터만 나오는지, 나가면 몬스터가 모두 정리되는지</NumItem>
+            <NumItem n={3}>광산 지형을 덮어써 칠해도(성능 개선) 새로 칠한 것과 칸마다 같은지 — 타일 · 벽 RuleTile 이 고른 그림 · 회전까지</NumItem>
+            <NumItem n={4}>방어구를 입으면 방어력이 오르고 받는 피해가 공식대로 주는지, 인벤토리에 이름 · 성별이 한글로 보이는지, 저장 → 불러오기</NumItem>
+          </ul>
+          <Card style={{ background: "rgba(74,222,128,0.06)", border: `1px solid ${GREEN}30`, marginBottom: "16px" }}>
+            <p style={{ margin: "0 0 8px", fontSize: "13px", lineHeight: 1.75, opacity: 0.85 }}>
+              <span style={{ color: GREEN, fontWeight: 700 }}>테스트가 잡은 실제 버그 — </span>
+            </p>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              <NumItem n={1}>몬스터가 <strong style={{ color: "#f0f0f0" }}>광석 바위 속에 스폰</strong> — 광산은 바닥 목록을 만든 뒤 그 위에 광석(30%)을 까는데, 스포너가 그 목록을 그대로 썼다 → 스폰하는 순간 비어 있는 칸만</NumItem>
+              <NumItem n={2}>같은 이유로 <strong style={{ color: "#f0f0f0" }}>광산 도착 지점 · 필수 사다리가 바위 위</strong>에 놓일 수 있었다 → 바위 없는 칸에서 고른다</NumItem>
+              <NumItem n={3}>맵의 나무 · 바위 14종이 저장용 레지스트리에 없어 <strong style={{ color: "#f0f0f0" }}>저장 → 불러오면 조용히 사라짐</strong> — 개발 중 늘 새 게임으로 시작해 드러나지 않았다 → 등록 + 누락을 잡는 테스트</NumItem>
+            </ul>
+          </Card>
+
           <h3 style={SUB_TITLE}>첫 기능 테스트 시 발견된 문제</h3>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 12px" }}>
             <NumItem n={1}>
@@ -1716,7 +1849,7 @@ FarmGame.Tests        EditMode 테스트 42개`}</CodeBlock>
             </NumItem>
           </ul>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, margin: 0 }}>
-            스크립트가 한 어셈블리에 모여 있어 asmdef 로 쪼개는 대신 에디터 어셈블리에 테스트를 두었습니다.
+            테스트는 자기 어셈블리(EditMode 는 FarmGame.Tests, PlayMode 는 FarmGame.PlayTests)에 있습니다.
             새 시스템 · SO 필드 · 인스펙터 칸을 더하면 해당 층 테스트에 한 줄을 더하는 것을 규칙으로 했습니다.
           </p>
         </section>
