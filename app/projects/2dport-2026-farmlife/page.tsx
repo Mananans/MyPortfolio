@@ -580,10 +580,11 @@ function Roadmap() {
       "낚시 — 미니게임 + 물고기 도감", "커뮤니티 센터 / 번들", "봄 축제 — 별도 Scene", "캐릭터 외형 · 외형 도감",
       "작물 계절 · 가축 7종 · 외양간", "대장장이 · 도구/무기 레시피 해금 사슬", "집 가구 배치 · 카탈로그 · 가구 조명",
       "사계절 축제 · 미니게임 4종 · 축제 한정 상품 · 날짜에 맞춰 열기", "가축 상점 · 암수 · 번식 · 도축 · 사료통", "탈것(말 · 타조) · 탁자 위 소품",
-      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 자동 테스트 41개",
+      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 자동 테스트 42개",
       "플레이어 자택 · 플레이어 상점 · 보관함", "실내 배치 규칙(상호작용 / 막힘 / 바닥 깔개) · 통행 점검 도구",
       "Addressables 원격 콘텐츠 배포 — S3 + CloudFront, 콘텐츠 업데이트 빌드 · 업로드 도구",
       "광산 몬스터 31종 · 원거리 공격 4종 · 적 그림 기준점을 발로",
+      "어셈블리 4개로 분리(UI 역참조를 컴파일 에러로) · 플레이 진입 30초 → 14초 · 빌드 파이프라인 · CDN 콘텐츠 재배포",
       "점검 후 정리 — 7곳에 흩어진 ‘바깥 범위’를 OutdoorArea 하나로, 2시에 쓰러지면 집 침대로(탈것 · 광산 정리 이벤트)",
     ] },
   ];
@@ -684,10 +685,10 @@ export default function FarmLifePage() {
             {[
               "엔진: Unity 6 (2D URP · Renderer 2D / Light 2D) / 언어: C#",
               "네임스페이스: FarmGame.Core (에디터: FarmGame.EditorTools)",
-              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 보관함 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 21종 (런타임 스크립트 280개 + 에디터 67개)",
+              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 보관함 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 21종 (런타임 스크립트 280개 + 에디터 68개)",
               "맵: 바깥 · 실내 · 축제장 16개를 텍스트 그리드로 쓰고 에디터 베이커로 굽는다",
               "배포: Addressables — 축제 Scene 을 원격 콘텐츠로(AWS S3 + CloudFront), 앱 재배포 없이 콘텐츠 업데이트",
-              "검증: EditMode 자동 테스트 41개 (규칙 · 저장 계약 · 데이터 무결성 · 씬 배선) + 플레이 · 실행 파일 확인",
+              "검증: EditMode 자동 테스트 42개 (규칙 · 저장 계약 · 데이터 무결성 · 씬 배선) + 모든 빌드 직전 자동 검사 + 플레이 · 실행 파일 확인",
               "설계 문서: PROJECT_STATUS.md / ARCHITECTURE.md",
             ].map(t => (
               <p key={t} style={{ fontSize: "14px", color: TEAL, opacity: 0.9, margin: 0 }}>• {t}</p>
@@ -1411,7 +1412,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
               "세이브 대상 24칸 누락 · 중복 키 0",
               "저장 → 불러오기 실행 확인",
               "문서의 클래스 · 메서드 이름 = 코드",
-              "EditMode 테스트 41개 통과",
+              "EditMode 테스트 42개 통과",
             ].map(t => (
               <span key={t} style={{
                 display: "inline-flex", alignItems: "center", gap: "7px",
@@ -1582,12 +1583,84 @@ Bootstrap ─ ContentUpdater: 카탈로그 확인 → 바뀐 번들만 받기(�
           </p>
         </section>
 
+        {/* ── 개발 환경 ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>개발 환경 — 규칙은 컴파일러가, 빌드는 메뉴 한 번</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            스크립트가 350개 가까이 되자 두 가지가 불편해졌습니다. 설계 규칙은 문서로만 지켜지고, 플레이 버튼을 누를 때마다 30초씩 기다렸습니다.
+            코드를 어셈블리로 나누고, 플레이 진입을 줄이고, 빌드를 한 번에 돌게 묶었습니다.
+          </p>
+
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>① 어셈블리 분리 — &lsquo;UI 는 구독만&rsquo;을 컴파일러가 지킨다</h3>
+          <CodeBlock>{`FarmGame.Core         도메인 · 데이터 · 조정자 · 입력          (UI 를 모른다)
+     ▲
+FarmGame.UI           화면 · 슬롯 · 알림                        Core 만 참조
+     ▲
+FarmGame.EditorTools  맵 베이커 · 설정 도구 · 빌드 · 업로드      에디터 전용
+     ▲
+FarmGame.Tests        EditMode 테스트 42개`}</CodeBlock>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>로직이 UI 를 부르면 이제 <strong style={{ color: "#f0f0f0" }}>컴파일 에러</strong> — 문서의 규칙이 코드의 경계가 됐다</NumItem>
+            <NumItem n={2}>
+              나누는 순간 숨어 있던 위반이 하나 드러났다 — 로직 폴더의 알림 14개가 화면 메시지(UI)를 직접 부르고 있었다
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>알림은 원래 UI 층이라 UI 쪽으로 옮김. 흩어져 있던 UI 스크립트 34개를 한곳에 모음(파일 ID 는 그대로라 씬 연결은 안 끊김)</SubItem>
+              </ul>
+            </NumItem>
+            <NumItem n={3}>
+              함정 — 대화 조건은 씬에 &lsquo;어느 어셈블리의 어떤 클래스&rsquo;로 저장돼 있어서, 어셈블리 이름이 바뀌면 조건을 못 읽는다
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>옛 이름을 새 이름으로 이어 주는 표시(<code>[MovedFrom]</code>)를 달고, 씬 5개의 조건 67개가 모두 읽히는 것을 확인</SubItem>
+              </ul>
+            </NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>② 플레이 진입 30초 → 14초</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            플레이를 누를 때마다 스크립트 전체를 다시 올리던 단계(도메인 리로드)를 건너뛰게 했습니다.
+            대신 <strong style={{ color: "#f0f0f0" }}>전역(static) 값이 이전 플레이의 것을 그대로 들고 온다</strong>는 문제가 생깁니다 — 계절 · 비 · 등록 목록 · 이벤트 구독.
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>그런 값 16곳을 찾아 플레이 시작마다 비우게 함</NumItem>
+            <NumItem n={2}>새로 추가했는데 비우는 걸 잊으면 테스트가 실패 — 코드를 훑어 바뀌는 전역 값에 초기화가 있는지 검사</NumItem>
+            <NumItem n={3}>확인: 연속 3번 플레이 — 워프 등록 수가 늘지 않고, 몬스터 한 마리에 경험치가 매번 정확히 +10(이벤트가 두 번 걸리지 않음)</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>③ 빌드 파이프라인</h3>
+          <CodeBlock>{`메뉴 한 번 (Dev / Release)
+  테스트 42개 ── 실패면 멈춤
+       ↓
+  콘텐츠 주소 전환(Dev = 로컬 서버 / Release = CDN) → 앱 + 원격 콘텐츠 빌드 → 주소 원래대로
+       ↓
+  Builds/날짜-종류/build_report.txt   테스트 · 빌드 시간 · 용량 · 올릴 콘텐츠 폴더
+
+그냥 빌드해도(파일 메뉴)   빌드 직전 검사 33개(약 6초) — 실패면 빌드 중단
+명령줄                    같은 파이프라인, 실패면 종료 코드 1 — CI 에 그대로`}</CodeBlock>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>개발용 빌드가 출시용 기록을 망치지 않게 — 콘텐츠 업데이트의 기준 파일은 되돌리고, 로컬 주소로 만든 콘텐츠는 CDN 업로드가 거절되게 표시</NumItem>
+            <NumItem n={2}>업로드는 파이프라인에 넣지 않았다 — 밖으로 나가는 일이라 리포트를 보고 사람이 누른다</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>어셈블리를 바꾸면 서버 콘텐츠도 바뀐다</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            번들은 안에 든 스크립트를 &lsquo;어셈블리 이름 + 클래스&rsquo;로 기억합니다. 어셈블리를 나눈 뒤의 앱은 서버에 있던 옛 축제 번들을 제대로 읽을 수 없어서,
+            앱과 콘텐츠를 <strong style={{ color: "#f0f0f0" }}>짝으로</strong> 다시 빌드해 CDN 에 올렸습니다(축제 번들 4개 교체, 옛 번들은 되돌릴 수 있게 남김).
+          </p>
+          <Card style={{ background: "rgba(74,222,128,0.06)", border: `1px solid ${GREEN}30`, marginBottom: 0 }}>
+            <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.75, opacity: 0.85 }}>
+              <span style={{ color: GREEN, fontWeight: 700 }}>확인 — </span>
+              캐시를 비운 새 앱이 CDN 에서 2.06MB 를 받아 시작(에러 0), 에디터에서 &lsquo;빌드된 번들로 시작&rsquo; 모드로 축제 씬 4개를 CDN 에서 열어
+              씬마다 게임 스크립트 226~244개가 모두 붙은 것(빠진 스크립트 0)을 확인했습니다.
+            </p>
+          </Card>
+        </section>
+
         {/* ── 자동 테스트 ── */}
         <section style={{ marginBottom: "40px" }}>
           <h2 style={SECTION_TITLE}>자동 테스트</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             이 구조에서 가장 흔한 실패는 예외가 아니라 <strong style={{ color: "#e0e0e0" }}>아무 일도 일어나지 않는 것</strong>입니다.
-            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 41개로 고정했습니다.
+            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 42개로 고정했고, 빌드할 때마다 먼저 돌게 했습니다.
           </p>
           <div style={{ overflowX: "auto", marginBottom: "16px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
@@ -1606,7 +1679,7 @@ Bootstrap ─ ContentUpdater: 카탈로그 확인 → 바뀐 번들만 받기(�
                 {[
                   { n: "규칙 (14)", r: "씬 없이 계산만", u: "숙련도 곡선 · 기계 공정(대기 → 작업 → 완성) · 바깥 범위 경계 · 가축 암수 산출" },
                   { n: "저장 계약 (4)", r: "Capture → Restore 왕복", u: "지갑 · 숙련도, 옛 세이브(항목 수가 적은 것) 허용, 고정 SaveKey 중복 없음" },
-                  { n: "데이터 무결성 (14)", r: "SO · 설정 애셋 전수 검사", u: "도구 동작 hitFrame · 모든 아이템이 레지스트리에 있는가 · 이름/id 중복 · 판매가 = 새끼 값 × 1.5 · Addressables 원격/로컬 그룹 설정 · 몬스터 데이터와 그림이 서로 맞물리는가 · 광산 1~40층 모두 몬스터가 있고 깊을수록 강한가" },
+                  { n: "데이터 무결성 (15)", r: "SO · 설정 애셋 · 코드 전수 검사", u: "도구 동작 hitFrame · 모든 아이템이 레지스트리에 있는가 · 이름/id 중복 · 판매가 = 새끼 값 × 1.5 · Addressables 원격/로컬 그룹 설정 · 몬스터 데이터와 그림이 서로 맞물리는가 · 광산 1~40층 모두 몬스터가 있고 깊을수록 강한가 · 플레이마다 비워야 하는 static 에 초기화가 있는가" },
                   { n: "씬 배선 (9)", r: "메인 Scene 의 인스펙터 칸 · 타일맵", u: "세이브 목록 누락 · 키 중복 · 순서, GameManager 주입 칸, 새 시스템 칸, 빠진 스크립트, 상호작용 타일맵엔 상호작용하는 것만 · Decor 에 러그나 쓸 수 있는 가구가 그림으로만 있지 않은가" },
                 ].map(row => (
                   <tr key={row.n}>
