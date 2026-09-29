@@ -21,6 +21,8 @@ import Link from "next/link";
 //      ├── diagram-layer.png    ← 계층 구조 다이어그램 (7단계, 2026-09-26 보관함 · 원격 콘텐츠 추가 — _reslice/portfolio_diagrams.py)
 //      ├── diagram-save.png     ← 세이브/로드 분기 다이어그램 (2026-09-26 불러오기 때 맵과 세이브 맞추기 추가)
 //      ├── walk-audit.png       ← 통행 점검 도구가 그린 플레이어 집 (막힌 칸 X · 걷는 칸 점)
+//      ├── monsters.png         ← 광산 몬스터 31종 (약한 것 → 강한 것, 발이 칸 밑변에 닿게 줄 세운 렌더, 2026-09-29)
+//      ├── monsters-ranged.png  ← 원거리 공격 4종 (화살 · 폭탄 · 가시 침 · 독 가시, 광산 30층 실행 캡처)
 //      └── diagram-affinity.png ← 호감도 마일스톤 판정 다이어그램
 //  📁 public/images/thumb/farmlife-2026.png  ← 메인 카드 썸네일
 // ─────────────────────────────────────────────
@@ -30,6 +32,8 @@ const DIAGRAM_LAYER = "/images/farmlife-2026/diagram-layer.png";
 const DIAGRAM_SAVE = "/images/farmlife-2026/diagram-save.png";
 const DIAGRAM_AFFINITY = "/images/farmlife-2026/diagram-affinity.png";
 const WALK_AUDIT = "/images/farmlife-2026/walk-audit.png";
+const MONSTERS = "/images/farmlife-2026/monsters.png";
+const MONSTERS_RANGED = "/images/farmlife-2026/monsters-ranged.png";
 
 const GALLERY = [
   { src: "/images/farmlife-2026/gallery-1.png", label: "경작 — 물 주기", tall: true },
@@ -327,7 +331,8 @@ const SYSTEMS = [
     name: "전투",
     points: [
       "MonsterController AI 상태기계 (Roam / Chase / Attack / Dead)",
-      "MonsterData(SO)로 스탯·추적범위·드랍 정의 — 종류 추가는 SO + 프리팹만",
+      "광산 몬스터 31종 — 깊을수록 강한 몬스터, 근접 · 원거리(화살 · 폭탄 · 침 · 독 가시) · 붙박이",
+      "MonsterData(SO)가 스탯 · 드롭 · 그림(프리팹) · 투사체를 모두 가리킨다 — 종류 추가는 SO + 프리팹만",
       "추적 대상 캐싱으로 매 프레임 A* 재계산 방지",
       "넉백은 KnockbackReceiver로 플레이어·몬스터 공용화",
       "데미지 = Power × 도구 계수 + 버프 보너스",
@@ -575,9 +580,10 @@ function Roadmap() {
       "낚시 — 미니게임 + 물고기 도감", "커뮤니티 센터 / 번들", "봄 축제 — 별도 Scene", "캐릭터 외형 · 외형 도감",
       "작물 계절 · 가축 7종 · 외양간", "대장장이 · 도구/무기 레시피 해금 사슬", "집 가구 배치 · 카탈로그 · 가구 조명",
       "사계절 축제 · 미니게임 4종 · 축제 한정 상품 · 날짜에 맞춰 열기", "가축 상점 · 암수 · 번식 · 도축 · 사료통", "탈것(말 · 타조) · 탁자 위 소품",
-      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 자동 테스트 39개",
+      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 자동 테스트 41개",
       "플레이어 자택 · 플레이어 상점 · 보관함", "실내 배치 규칙(상호작용 / 막힘 / 바닥 깔개) · 통행 점검 도구",
       "Addressables 원격 콘텐츠 배포 — S3 + CloudFront, 콘텐츠 업데이트 빌드 · 업로드 도구",
+      "광산 몬스터 31종 · 원거리 공격 4종 · 적 그림 기준점을 발로",
       "점검 후 정리 — 7곳에 흩어진 ‘바깥 범위’를 OutdoorArea 하나로, 2시에 쓰러지면 집 침대로(탈것 · 광산 정리 이벤트)",
     ] },
   ];
@@ -678,10 +684,10 @@ export default function FarmLifePage() {
             {[
               "엔진: Unity 6 (2D URP · Renderer 2D / Light 2D) / 언어: C#",
               "네임스페이스: FarmGame.Core (에디터: FarmGame.EditorTools)",
-              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 보관함 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 21종 (런타임 스크립트 279개 + 에디터 66개)",
+              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 보관함 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 21종 (런타임 스크립트 280개 + 에디터 67개)",
               "맵: 바깥 · 실내 · 축제장 16개를 텍스트 그리드로 쓰고 에디터 베이커로 굽는다",
               "배포: Addressables — 축제 Scene 을 원격 콘텐츠로(AWS S3 + CloudFront), 앱 재배포 없이 콘텐츠 업데이트",
-              "검증: EditMode 자동 테스트 39개 (규칙 · 저장 계약 · 데이터 무결성 · 씬 배선) + 플레이 · 실행 파일 확인",
+              "검증: EditMode 자동 테스트 41개 (규칙 · 저장 계약 · 데이터 무결성 · 씬 배선) + 플레이 · 실행 파일 확인",
               "설계 문서: PROJECT_STATUS.md / ARCHITECTURE.md",
             ].map(t => (
               <p key={t} style={{ fontSize: "14px", color: TEAL, opacity: 0.9, margin: 0 }}>• {t}</p>
@@ -903,6 +909,100 @@ MineManager         층 상태 · 층 이동 · 진행도 · 저장`}</CodeBlock
               <code>MineElevatorUI</code> — 도달했던 엘리베이터 층으로 바로 이동
             </NumItem>
           </ul>
+        </section>
+
+        {/* ── 광산 몬스터 ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>광산 몬스터 — 데이터 한 장이 그림과 공격을 고른다</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            애셋 팩에 있는 몬스터 그림 31종을 모두 광산에 넣었습니다. 깊이 내려갈수록 더 흉악해 보이는 몬스터가 더 강한 능력치로 나옵니다.
+            몬스터를 늘리는 동안 광산 · 스포너 코드는 종류를 몰라도 되게 만드는 것이 목표였습니다.
+          </p>
+          <img src={MONSTERS} alt="광산 몬스터 31종" style={{ width: "100%", borderRadius: "8px", border: "1px solid rgba(74,222,128,0.15)", imageRendering: "pixelated", marginBottom: "8px" }} />
+          <p style={{ fontSize: "12px", opacity: 0.45, margin: "0 0 20px" }}>왼쪽 위(작은 슬라임, 체력 3)부터 오른쪽 아래(큰 황금 슬라임, 체력 90)까지 체력 순</p>
+
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>층별 등장</h3>
+          <div style={{ overflowX: "auto", marginBottom: "16px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "480px" }}>
+              <thead>
+                <tr>
+                  {["층", "나오는 몬스터", "체력 / 공격"].map(h => (
+                    <th key={h} style={{ textAlign: "left", padding: "8px 12px", borderBottom: `1px solid ${TEAL}40`, color: TEAL, fontWeight: 700, fontSize: "12px", whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["1층~", "작은 슬라임 · 초록 · 파란 슬라임", "3~7 / 1~2"],
+                  ["5층~", "분홍 슬라임 · 새싹 슬라임", "9~16 / 3~4"],
+                  ["10층~", "버섯병사 · 큰 슬라임", "20~34 / 5~7"],
+                  ["17층~", "가시 두더지(붙박이 · 침) · 창 고블린 · 검은 슬라임", "30~44 / 7~9"],
+                  ["22층~", "붉은 버섯병사 · 폭탄 고블린 · 궁수 고블린", "42~60 / 9~10"],
+                  ["28층~", "황금 슬라임 · 독꽃(붙박이 · 독 가시) · 큰 황금 슬라임", "30~90 / 8~13"],
+                ].map(row => (
+                  <tr key={row[0]}>
+                    <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", color: GREEN, fontWeight: 700, whiteSpace: "nowrap" }}>{row[0]}</td>
+                    <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", opacity: 0.8 }}>{row[1]}</td>
+                    <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", opacity: 0.55, whiteSpace: "nowrap" }}>{row[2]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>약한 몬스터는 &lsquo;여기까지만 나온다&rsquo;는 층을 둬서, 깊은 층에서는 빠지고 강한 몬스터만 남습니다</NumItem>
+            <NumItem n={2}>드롭도 깊이를 따라갑니다 — 슬라임 핵 → 석탄 · 철광석 → 금광석 · 보석</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>구조 — 몬스터를 늘려도 코드는 그대로</h3>
+          <CodeBlock>{`MonsterData(SO)        스탯 · 드롭 · 그림(프리팹) · 붙박이 여부 · 투사체 · 사거리
+      ⇅ 서로 가리킴
+몬스터 프리팹           방향(아래 · 위 · 왼 · 오) × 동작(대기 · 걷기 · 피격 · 사망 · 공격) 그림 + 몸에 맞춘 충돌체
+MineFloorTable(SO)     몬스터 항목 = 데이터 · 나오는 층(처음 ~ 끝) · 추첨 비중
+      ↓  MineManager.MonstersFor(지금 층)
+MonsterSpawner         층 목록에서 뽑고, 뽑힌 데이터가 가리키는 프리팹을 만든다
+      ↓
+MonsterController      배회 → 추적 → 공격 (근접: 닿으면 / 원거리: 사거리 안 · 벽에 안 가리면 멈춰서 쏜다)
+      ↓  공격 모션 → 발사 타이밍
+MonsterProjectile      화살(직선) · 폭탄 · 가시 침(포물선) · 독 가시(발밑에서 솟음) → 플레이어 체력 · 넉백`}</CodeBlock>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>
+              새 몬스터 = 데이터 한 장 + 프리팹 한 장 + 광산 표에 한 줄. 스포너 · 광산 · AI 코드는 몬스터 종류를 모릅니다
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>31종의 데이터 · 프리팹 · 광산 표는 에디터 메뉴 한 번으로 만든다 — 시트의 행 구성(방향 · 동작)만 규칙으로 적어 두고, 그림은 위치로 찾아 채운다</SubItem>
+                <SubItem>시트에 오른쪽 모습만 있으면 왼쪽은 좌우로 뒤집어 쓴다</SubItem>
+              </ul>
+            </NumItem>
+            <NumItem n={2}>
+              플레이어의 화살은 몬스터만, 몬스터의 투사체는 플레이어만 맞힙니다 — 두 쪽을 다른 부품으로 나눠 서로 섞이지 않게
+            </NumItem>
+            <NumItem n={3}>
+              독꽃의 가시는 쏘는 순간 플레이어가 있던 자리에서 잠깐 뒤에 솟습니다 — 움직이면 피할 수 있는 공격
+            </NumItem>
+          </ul>
+          <img src={MONSTERS_RANGED} alt="원거리 공격 4종" style={{ width: "100%", borderRadius: "8px", border: "1px solid rgba(74,222,128,0.15)", imageRendering: "pixelated", marginBottom: "8px" }} />
+          <p style={{ fontSize: "12px", opacity: 0.45, margin: "0 0 20px" }}>광산 30층 실행 화면 — 궁수 고블린의 화살 · 폭탄 고블린의 폭탄 · 가시 두더지의 침 · 플레이어 발밑에서 솟는 독꽃의 가시</p>
+
+          <h3 style={SUB_TITLE}>그림의 발을 칸 바닥에</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            몬스터 그림의 기준점이 몸 한가운데여서, 몬스터가 칸 아래로 반쯤 내려와 그려지고 프레임마다 몸이 조금씩 흔들렸습니다.
+            몬스터마다 &lsquo;가장 낮은 발끝&rsquo;을 찾아 모든 프레임의 기준점을 그 선에 맞추는 스크립트로 101장을 한 번에 고쳤습니다.
+            뛰어오르는 프레임은 뛴 높이 그대로 남습니다.
+          </p>
+
+          <h3 style={SUB_TITLE}>실행해서 찾은 문제</h3>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>화살이 쏘자마자 사라짐 — 발 위치가 칸 경계라 벽 검사가 아래 칸을 읽었다 → 1/4 칸 위에서 검사</NumItem>
+            <NumItem n={2}>독 가시가 보이지 않음 — 이펙트 시트까지 몸 시트와 같은 칸 크기로 계산해 기준점이 위로 튀었다 → 이펙트는 따로 계산</NumItem>
+            <NumItem n={3}>폭탄이 플레이어보다 큼 — 아이콘 시트는 픽셀 기준이 달라 크기를 맞춤</NumItem>
+          </ul>
+          <Card style={{ background: "rgba(74,222,128,0.06)", border: `1px solid ${GREEN}30`, marginBottom: 0 }}>
+            <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.75, opacity: 0.85 }}>
+              <span style={{ color: GREEN, fontWeight: 700 }}>확인 — </span>
+              31종을 줄 세워 발이 칸 바닥에 닿는지 보고, 광산 30층에서 원거리 4종이 각각 쏘아 맞히는 것 · 근접 몬스터가 때리는 것 ·
+              플레이어 검이 들어가는 것을 실행으로 확인했습니다. 층별로 스폰을 여러 번 뽑아 1층은 약한 슬라임만, 35층은 고블린 · 황금 슬라임 · 독꽃 위주인 것도 확인했습니다.
+            </p>
+          </Card>
         </section>
 
         {/* ── 제작 ── */}
@@ -1311,7 +1411,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
               "세이브 대상 24칸 누락 · 중복 키 0",
               "저장 → 불러오기 실행 확인",
               "문서의 클래스 · 메서드 이름 = 코드",
-              "EditMode 테스트 39개 통과",
+              "EditMode 테스트 41개 통과",
             ].map(t => (
               <span key={t} style={{
                 display: "inline-flex", alignItems: "center", gap: "7px",
@@ -1487,7 +1587,7 @@ Bootstrap ─ ContentUpdater: 카탈로그 확인 → 바뀐 번들만 받기(�
           <h2 style={SECTION_TITLE}>자동 테스트</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             이 구조에서 가장 흔한 실패는 예외가 아니라 <strong style={{ color: "#e0e0e0" }}>아무 일도 일어나지 않는 것</strong>입니다.
-            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 39개로 고정했습니다.
+            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 41개로 고정했습니다.
           </p>
           <div style={{ overflowX: "auto", marginBottom: "16px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
@@ -1506,7 +1606,7 @@ Bootstrap ─ ContentUpdater: 카탈로그 확인 → 바뀐 번들만 받기(�
                 {[
                   { n: "규칙 (14)", r: "씬 없이 계산만", u: "숙련도 곡선 · 기계 공정(대기 → 작업 → 완성) · 바깥 범위 경계 · 가축 암수 산출" },
                   { n: "저장 계약 (4)", r: "Capture → Restore 왕복", u: "지갑 · 숙련도, 옛 세이브(항목 수가 적은 것) 허용, 고정 SaveKey 중복 없음" },
-                  { n: "데이터 무결성 (12)", r: "SO · 설정 애셋 전수 검사", u: "도구 동작 hitFrame · 모든 아이템이 레지스트리에 있는가 · 이름/id 중복 · 판매가 = 새끼 값 × 1.5 · Addressables 원격/로컬 그룹 설정" },
+                  { n: "데이터 무결성 (14)", r: "SO · 설정 애셋 전수 검사", u: "도구 동작 hitFrame · 모든 아이템이 레지스트리에 있는가 · 이름/id 중복 · 판매가 = 새끼 값 × 1.5 · Addressables 원격/로컬 그룹 설정 · 몬스터 데이터와 그림이 서로 맞물리는가 · 광산 1~40층 모두 몬스터가 있고 깊을수록 강한가" },
                   { n: "씬 배선 (9)", r: "메인 Scene 의 인스펙터 칸 · 타일맵", u: "세이브 목록 누락 · 키 중복 · 순서, GameManager 주입 칸, 새 시스템 칸, 빠진 스크립트, 상호작용 타일맵엔 상호작용하는 것만 · Decor 에 러그나 쓸 수 있는 가구가 그림으로만 있지 않은가" },
                 ].map(row => (
                   <tr key={row.n}>
