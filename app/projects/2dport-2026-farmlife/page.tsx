@@ -24,6 +24,7 @@ import Link from "next/link";
 //      ├── monsters.png         ← 광산 몬스터 31종 (약한 것 → 강한 것, 발이 칸 밑변에 닿게 줄 세운 렌더, 2026-09-29)
 //      ├── monsters-ranged.png  ← 원거리 공격 4종 (화살 · 폭탄 · 가시 침 · 독 가시, 광산 30층 실행 캡처)
 //      ├── armor-inventory.png  ← 인벤토리 — 초상 아래 방어구 칸(금 투구 · 갑옷 착용), 가방의 방어구, 이름 · 성별 (2026-09-29)
+//      ├── localization-settings.png ← 설정 창 한국어 | 영어 나란히 — 언어 버튼 · 키 바꾸기 (2026-09-30)
 //      └── diagram-affinity.png ← 호감도 마일스톤 판정 다이어그램
 //  📁 public/images/thumb/farmlife-2026.png  ← 메인 카드 썸네일
 // ─────────────────────────────────────────────
@@ -36,6 +37,7 @@ const WALK_AUDIT = "/images/farmlife-2026/walk-audit.png";
 const MONSTERS = "/images/farmlife-2026/monsters.png";
 const MONSTERS_RANGED = "/images/farmlife-2026/monsters-ranged.png";
 const ARMOR_INVENTORY = "/images/farmlife-2026/armor-inventory.png";
+const LOCALIZATION_SETTINGS = "/images/farmlife-2026/localization-settings.png";
 
 const GALLERY = [
   { src: "/images/farmlife-2026/gallery-1.png", label: "경작 — 물 주기", tall: true },
@@ -582,13 +584,14 @@ function Roadmap() {
       "낚시 — 미니게임 + 물고기 도감", "커뮤니티 센터 / 번들", "봄 축제 — 별도 Scene", "캐릭터 외형 · 외형 도감",
       "작물 계절 · 가축 7종 · 외양간", "대장장이 · 도구/무기 레시피 해금 사슬", "집 가구 배치 · 카탈로그 · 가구 조명",
       "사계절 축제 · 미니게임 4종 · 축제 한정 상품 · 날짜에 맞춰 열기", "가축 상점 · 암수 · 번식 · 도축 · 사료통", "탈것(말 · 타조) · 탁자 위 소품",
-      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 54 · 자동 플레이 테스트 4",
+      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 76 · 자동 플레이 테스트 7",
       "플레이어 자택 · 플레이어 상점 · 보관함", "실내 배치 규칙(상호작용 / 막힘 / 바닥 깔개) · 통행 점검 도구",
       "Addressables 원격 콘텐츠 배포 — S3 + CloudFront, 콘텐츠 업데이트 빌드 · 업로드 도구",
       "광산 몬스터 31종 · 원거리 공격 4종 · 적 그림 기준점을 발로",
       "어셈블리 4개로 분리(UI 역참조를 컴파일 에러로) · 플레이 진입 30초 → 14초 · 빌드 파이프라인 · CDN 콘텐츠 재배포",
       "자동 플레이 테스트(버그 3개 발견) · 세이브 버전 관리 · 성능 계측(층 전환 353 → 14ms, 전투 GC −80%)",
       "방어구 40종(무기와 같은 10단계) · 받는 피해 비율 계산 · 캐릭터 이름 · 성별 저장",
+      "현업 파이프라인 — 기획 데이터 표(CSV → 애셋) · 스프라이트 아틀라스(인벤토리 화면 배치 −33%) · 새 Input System + 키 바꾸기 · 한국어/영어 현지화 2,689줄 · 세이브 암호화 + 위변조 검사",
       "점검 후 정리 — 7곳에 흩어진 ‘바깥 범위’를 OutdoorArea 하나로, 2시에 쓰러지면 집 침대로(탈것 · 광산 정리 이벤트)",
     ] },
   ];
@@ -689,10 +692,10 @@ export default function FarmLifePage() {
             {[
               "엔진: Unity 6 (2D URP · Renderer 2D / Light 2D) / 언어: C#",
               "네임스페이스: FarmGame.Core (에디터: FarmGame.EditorTools)",
-              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 보관함 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 23종 (런타임 스크립트 295개 + 에디터 70개 + 플레이 테스트 2개)",
+              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 보관함 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 23종 (런타임 스크립트 296개 + 에디터 70개 + 테스트 13개)",
               "맵: 바깥 · 실내 · 축제장 16개를 텍스트 그리드로 쓰고 에디터 베이커로 굽는다",
               "배포: Addressables — 축제 Scene 을 원격 콘텐츠로(AWS S3 + CloudFront), 앱 재배포 없이 콘텐츠 업데이트",
-              "검증: EditMode 테스트 54개 (규칙 · 저장 계약 · 세이브 변환 · 데이터 무결성 · 씬 배선) + 자동 플레이 테스트 4개 + 모든 빌드 직전 자동 검사 + 성능 측정 시나리오",
+              "검증: EditMode 테스트 76개 (규칙 · 저장 계약 · 세이브 변환 · 데이터 무결성 · 씬 배선 · 데이터 표 · 입력 · 현지화 · 세이브 봉투) + 자동 플레이 테스트 7개 + 모든 빌드 직전 자동 검사 + 성능 측정 시나리오",
               "설계 문서: PROJECT_STATUS.md / ARCHITECTURE.md",
             ].map(t => (
               <p key={t} style={{ fontSize: "14px", color: TEAL, opacity: 0.9, margin: 0 }}>• {t}</p>
@@ -1521,7 +1524,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
               "세이브 대상 24칸 누락 · 중복 키 0",
               "저장 → 불러오기 실행 확인",
               "문서의 클래스 · 메서드 이름 = 코드",
-              "EditMode 54 · PlayMode 4 통과",
+              "EditMode 76 · PlayMode 7 통과",
             ].map(t => (
               <span key={t} style={{
                 display: "inline-flex", alignItems: "center", gap: "7px",
@@ -1707,8 +1710,8 @@ FarmGame.UI           화면 · 슬롯 · 알림                        Core 만
      ▲
 FarmGame.EditorTools  맵 베이커 · 설정 도구 · 빌드 · 업로드      에디터 전용
      ▲
-FarmGame.Tests        EditMode 테스트 54개
-FarmGame.PlayTests    자동 플레이 테스트 4개 + 성능 측정 시나리오 3개`}</CodeBlock>
+FarmGame.Tests        EditMode 테스트 76개
+FarmGame.PlayTests    자동 플레이 테스트 7개 + 성능 측정 시나리오 4개`}</CodeBlock>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
             <NumItem n={1}>로직이 UI 를 부르면 이제 <strong style={{ color: "#f0f0f0" }}>컴파일 에러</strong> — 문서의 규칙이 코드의 경계가 됐다</NumItem>
             <NumItem n={2}>
@@ -1738,7 +1741,7 @@ FarmGame.PlayTests    자동 플레이 테스트 4개 + 성능 측정 시나리�
 
           <h3 style={SUB_TITLE}>③ 빌드 파이프라인</h3>
           <CodeBlock>{`메뉴 한 번 (Dev / Release)
-  테스트 54개 ── 실패면 멈춤
+  테스트 76개 ── 실패면 멈춤
        ↓
   콘텐츠 주소 전환(Dev = 로컬 서버 / Release = CDN) → 앱 + 원격 콘텐츠 빌드 → 주소 원래대로
        ↓
@@ -1765,12 +1768,115 @@ FarmGame.PlayTests    자동 플레이 테스트 4개 + 성능 측정 시나리�
           </Card>
         </section>
 
+        {/* ── 현업 파이프라인(2026-09-30) ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>현업 파이프라인 — 데이터 표 · 아틀라스 · 입력 · 현지화 · 세이브 보호</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            게임 기능이 아니라 &lsquo;팀이 이 게임을 계속 만들 때&rsquo; 필요한 다섯 가지를 붙였습니다.
+            각각 도구만 만들지 않고, 규칙이 깨지면 실패하는 테스트를 같이 두었습니다.
+          </p>
+
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>① 기획 데이터 표 — CSV 가 진실의 원천</h3>
+          <CodeBlock>{`Assets/DataTables/  Monsters.csv 31행 · Armor.csv 40행 · Tools.csv 91행   (엑셀로 바로 열림)
+     ↓  Check(미리 보기) → Import
+  검사 전부 먼저 ── 하나라도 틀리면 아무것도 안 바꿈
+     "Monsters.csv:14 [끝층] BlueSlime: 끝층 3 < 등장층 10"
+  적용 ── MonsterData · 광산 층 표 · 방어구 · 레시피 재료 · 설명 글까지 함께`}</CodeBlock>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
+            <NumItem n={1}>숫자가 아님 · 없는 아이템 · 키 중복 · 표에 빠진 애셋을 파일 · 줄 · 열로 알림 — 고친 값은 &lsquo;키 열: 옛 → 새&rsquo;로 보고</NumItem>
+            <NumItem n={2}>몬스터 · 방어구 설정 도구는 뼈대만 만들고 값은 표에서 — 다시 돌려도 바뀜 0</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>② 스프라이트 아틀라스 — 드로우콜</h3>
+          <div style={{ overflowX: "auto", marginBottom: "12px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "480px" }}>
+              <thead>
+                <tr>
+                  {["화면 (배치 수)", "아틀라스 끔", "켬"].map(h => (
+                    <th key={h} style={{ textAlign: "left", padding: "8px 12px", borderBottom: `1px solid ${TEAL}40`, color: TEAL, fontWeight: 700, fontSize: "12px", whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["마을", "35~39", "29"],
+                  ["마을 + 인벤토리", "44~45", "30 (−33%)"],
+                  ["광산 몬스터 20마리", "62~64", "62 (타일맵 · 조명이 대부분)"],
+                ].map(row => (
+                  <tr key={row[0]}>
+                    <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", color: GREEN, fontWeight: 700, whiteSpace: "nowrap" }}>{row[0]}</td>
+                    <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", opacity: 0.55 }}>{row[1]}</td>
+                    <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", opacity: 0.9 }}>{row[2]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
+            <NumItem n={1}>
+              타일셋은 16px 조각이 1만 6천 개라 통째로 넣으면 4096×2048(32MB) — 씬 · 데이터가 <strong style={{ color: "#f0f0f0" }}>실제로 쓰는 타일 762개만</strong> 모아 2MB
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>아틀라스 합 46MB (원본 시트 합 73MB). 픽셀 아트라 포인트 필터 · 무압축 · 회전 끔 · 여백 4px — 타일 번짐 없음을 캡처로 확인</SubItem>
+              </ul>
+            </NumItem>
+            <NumItem n={2}>처음 잰 광산 수치가 오히려 나빠 보였다 — 방마다 몬스터 구성이 달라서. 시드를 고정하고 패커만 껐다 켜는 A/B 로 다시 쟀다</NumItem>
+            <NumItem n={3}>SetPass(33~35)는 그대로 — 2D 조명 · 머티리얼이 정하는 몫이라 아틀라스 범위 밖으로 기록</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>③ 새 Input System · 키 바꾸기</h3>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
+            <NumItem n={1}>옛 <code>Input.GetKeyDown</code> 21개 파일 → 액션 애셋(생성 C# 클래스) 하나. 게임 코드에 키 이름이 없다 — 옛 Input 이 다시 들어오면 테스트 실패</NumItem>
+            <NumItem n={2}>키 바꾸기: 버튼 → 다음 키(Esc 취소). 다른 조작이 쓰던 키면 <strong style={{ color: "#f0f0f0" }}>서로 맞바꿈</strong>, 도는 동안 모든 조작을 꺼 누른 키가 게임으로 새지 않게</NumItem>
+            <NumItem n={3}>바꾼 키는 세이브가 아니라 기기 설정에 — 어느 세이브든 같은 키. 창 제목의 &lsquo;(K)&rsquo;도 바꾼 키를 따라감</NumItem>
+            <NumItem n={4}>가상 키보드 PlayMode 테스트: I 로 열림 → P 로 바꾸면 I 는 안 먹고 P 가 먹음 → 창에서 L 을 눌러 바꾸기</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>④ 현지화 — 한국어 · 영어 2,689줄</h3>
+          <img src={LOCALIZATION_SETTINGS} alt="설정 창 한국어 / 영어" style={{ width: "100%", maxWidth: "640px", display: "block", margin: "0 auto 8px", borderRadius: "8px", border: "1px solid rgba(74,222,128,0.15)", imageRendering: "pixelated" }} />
+          <p style={{ fontSize: "12px", opacity: 0.45, margin: "0 0 16px", textAlign: "center" }}>설정 창의 언어 버튼 — 누르면 열린 창 · 고정 글자 · 키 표시가 바로 바뀐다</p>
+          <CodeBlock>{`원문(한국어)이 곧 키        Loc.T("가방이 가득 찼어.")   Loc.F("{0}에 탔어요! ({1}: 내리기)", 이름, 키)
+번역할 칸 = [Localized]     아이템 · 몬스터 · 대사 · 레시피 … SO 접근자에서 번역
+Strings.csv (ko · en · 출처)  ─Build→  게임용 표   ({0} 자리 · 색 태그 · 남은 한글 검사, 틀리면 표를 안 바꿈)`}</CodeBlock>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
+            <NumItem n={1}>
+              아이템 · 대사까지 전부 번역 — 가구 1,174개 · 등급 · 씨앗 같은 반복 문형은 용어집 + 규칙으로, 대사 110줄 · 알림 · 설명은 한 줄씩(인물별 말투 유지)
+            </NumItem>
+            <NumItem n={2}>
+              빠진 곳은 테스트가 잡는다 — 주석과 문자열을 구분하는 작은 어휘 분석기로 코드를 읽어 &lsquo;감싸지 않은 한글&rsquo;을 찾고(로그 · 속성은 통과),
+              한글이 든 칸에 표시가 없거나 번역 · 자리({"{0}"})가 빠지면 실패
+            </NumItem>
+            <NumItem n={3}>
+              함정 — 설정 도구가 이름을 읽어 애셋에 다시 쓰는데, 영어 상태면 <strong style={{ color: "#f0f0f0" }}>원문이 영어로 덮인다</strong>
+              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
+                <SubItem>에디터(플레이 중 아님)는 항상 원문, 플레이를 끝내면 고른 언어를 잊게 막음</SubItem>
+              </ul>
+            </NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>⑤ 세이브 보호 — 암호화 · 위변조 검사 · 안전한 쓰기</h3>
+          <CodeBlock>{`파일 = "FGS1" + IV + HMAC-SHA256 + AES-256 암호문      (HMAC 이 전체를 덮어 한 바이트만 바뀌어도 거부)
+쓰기   임시 파일에 다 쓴 뒤 바꿔 끼우기 · 바로 앞 세이브는 .prev   (쓰다가 꺼져도 세이브가 남음)
+읽기   검사 실패 → 원본은 .bad 로 남기고 .prev 로 · 그것도 없으면 빈 세계 대신 새 게임
+       옛 평문 세이브는 그대로 읽고 다음 저장부터 암호화`}</CodeBlock>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, margin: "0 0 12px" }}>
+            키가 실행 파일 안에 있으니 작정한 해킹은 못 막습니다 — 메모장으로 돈을 고치는 것과 파일 손상을 막는 장치로 범위를 정했습니다.
+            개발용으로는 세이브를 읽을 수 있는 JSON 으로 꺼내고 다시 넣는 메뉴를 두었습니다.
+          </p>
+          <Card style={{ background: "rgba(74,222,128,0.06)", border: `1px solid ${GREEN}30`, marginBottom: 0 }}>
+            <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.75, opacity: 0.85 }}>
+              <span style={{ color: GREEN, fontWeight: 700 }}>확인 — </span>
+              자동 플레이 테스트에서 소지금 111 → 222 로 두 번 저장한 뒤 파일을 한 바이트 고치면 111 로 불러오고, 앞 세이브까지 지우면 새 게임으로 시작.
+              다섯 가지를 더한 뒤 EditMode 76 · PlayMode 7 통과.
+            </p>
+          </Card>
+        </section>
+
         {/* ── 자동 테스트 ── */}
         <section style={{ marginBottom: "40px" }}>
           <h2 style={SECTION_TITLE}>자동 테스트</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             이 구조에서 가장 흔한 실패는 예외가 아니라 <strong style={{ color: "#e0e0e0" }}>아무 일도 일어나지 않는 것</strong>입니다.
-            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 54개로 고정했고, 빌드할 때마다 먼저 돌게 했습니다. 실제 게임을 띄워 확인하던 것은 자동 플레이 테스트로 옮겼습니다.
+            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 76개로 고정했고, 빌드할 때마다 먼저 돌게 했습니다. 실제 게임을 띄워 확인하던 것은 자동 플레이 테스트로 옮겼습니다.
           </p>
           <div style={{ overflowX: "auto", marginBottom: "16px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
