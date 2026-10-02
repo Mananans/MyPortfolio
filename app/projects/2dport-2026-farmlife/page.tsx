@@ -591,7 +591,7 @@ function Roadmap() {
       "어셈블리 4개로 분리(UI 역참조를 컴파일 에러로) · 플레이 진입 30초 → 14초 · 빌드 파이프라인 · CDN 콘텐츠 재배포",
       "자동 플레이 테스트(버그 3개 발견) · 세이브 버전 관리 · 성능 계측(층 전환 353 → 14ms, 전투 GC −80%)",
       "방어구 40종(무기와 같은 10단계) · 받는 피해 비율 계산 · 캐릭터 이름 · 성별 저장",
-      "현업 파이프라인 — 기획 데이터 표(CSV → 애셋) · 스프라이트 아틀라스(인벤토리 화면 배치 −33%) · 새 Input System + 키 바꾸기 · 한국어/영어 현지화 2,689줄 · 세이브 암호화 + 위변조 검사",
+      "현업 파이프라인 — 기획 데이터 표(CSV → 애셋) · 스프라이트 아틀라스(인벤토리 화면을 그리는 명령 약 3분의 1 감소) · 새 Input System + 키 바꾸기 · 한국어/영어 현지화 2,689줄 · 세이브 암호화 + 위변조 검사",
       "점검 후 정리 — 7곳에 흩어진 ‘바깥 범위’를 OutdoorArea 하나로, 2시에 쓰러지면 집 침대로(탈것 · 광산 정리 이벤트)",
     ] },
   ];
@@ -1772,27 +1772,35 @@ FarmGame.PlayTests    자동 플레이 테스트 7개 + 성능 측정 시나리�
         <section style={{ marginBottom: "40px" }}>
           <h2 style={SECTION_TITLE}>현업 파이프라인 — 데이터 표 · 아틀라스 · 입력 · 현지화 · 세이브 보호</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
-            게임 기능이 아니라 &lsquo;팀이 이 게임을 계속 만들 때&rsquo; 필요한 다섯 가지를 붙였습니다.
-            각각 도구만 만들지 않고, 규칙이 깨지면 실패하는 테스트를 같이 두었습니다.
+            새 게임 기능이 아니라, 여러 사람이 이 게임을 계속 만들고 출시할 때 필요한 기반 다섯 가지를 붙였습니다.
+            각 항목마다 도구만 만들지 않고, 규칙이 깨지면 실패하는 자동 테스트를 함께 두었습니다.
           </p>
 
-          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>① 기획 데이터 표 — CSV 가 진실의 원천</h3>
-          <CodeBlock>{`Assets/DataTables/  Monsters.csv 31행 · Armor.csv 40행 · Tools.csv 91행   (엑셀로 바로 열림)
-     ↓  Check(미리 보기) → Import
-  검사 전부 먼저 ── 하나라도 틀리면 아무것도 안 바꿈
-     "Monsters.csv:14 [끝층] BlueSlime: 끝층 3 < 등장층 10"
-  적용 ── MonsterData · 광산 층 표 · 방어구 · 레시피 재료 · 설명 글까지 함께`}</CodeBlock>
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>① 기획 데이터 표 — 수치는 엑셀 표에서 고친다</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            몬스터 체력이나 방어구 방어력을 바꾸려면 지금까지는 유니티에서 애셋을 하나씩 열어야 했습니다.
+            이 수치들을 CSV 표 세 개(몬스터 31종 · 방어구 40종 · 도구 91종)로 꺼내, 기획자가 엑셀에서 고치고 메뉴 한 번으로 게임에 들여오게 했습니다.
+          </p>
+          <CodeBlock>{`엑셀에서 표 수정  →  미리 보기(무엇이 바뀌는지 목록)  →  들여오기
+
+들여오기 전에 표 전체를 먼저 검사하고, 틀린 곳이 하나라도 있으면 아무것도 바꾸지 않는다.
+  예) Monsters.csv 14번째 줄 [끝층] BlueSlime: 끝층(3)이 등장층(10)보다 작음`}</CodeBlock>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
-            <NumItem n={1}>숫자가 아님 · 없는 아이템 · 키 중복 · 표에 빠진 애셋을 파일 · 줄 · 열로 알림 — 고친 값은 &lsquo;키 열: 옛 → 새&rsquo;로 보고</NumItem>
-            <NumItem n={2}>몬스터 · 방어구 설정 도구는 뼈대만 만들고 값은 표에서 — 다시 돌려도 바뀜 0</NumItem>
+            <NumItem n={1}>숫자 칸에 글자가 들어갔거나, 없는 아이템 이름을 적었거나, 같은 몬스터가 두 줄 있거나, 표에서 빠진 몬스터가 있으면 몇 번째 줄 어느 칸인지 알려 줍니다.</NumItem>
+            <NumItem n={2}>값 하나를 고치면 연결된 곳(광산 층별 등장표, 방어구 설명 글, 제작 레시피 재료)까지 함께 바뀝니다.</NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>② 스프라이트 아틀라스 — 드로우콜</h3>
+          <h3 style={SUB_TITLE}>② 스프라이트 아틀라스 — 화면 한 장을 그리는 횟수 줄이기</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            그림이 서로 다른 텍스처 파일에 흩어져 있으면, 그래픽 카드는 텍스처가 바뀔 때마다 그리기 명령을 따로 받습니다(이 명령 수가 아래 표의 &lsquo;배치 수&rsquo;).
+            아틀라스는 여러 그림을 큰 텍스처 한 장에 모아 두는 것으로, 같은 장에 있는 그림들은 한 번에 그릴 수 있습니다.
+            타일 · 오브젝트 · 적 · UI 그림을 네 장의 아틀라스로 묶었고, 원본 그림 파일은 그대로 두었습니다.
+          </p>
           <div style={{ overflowX: "auto", marginBottom: "12px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "480px" }}>
               <thead>
                 <tr>
-                  {["화면 (배치 수)", "아틀라스 끔", "켬"].map(h => (
+                  {["화면 (프레임당 배치 수)", "아틀라스 없음", "아틀라스 사용"].map(h => (
                     <th key={h} style={{ textAlign: "left", padding: "8px 12px", borderBottom: `1px solid ${TEAL}40`, color: TEAL, fontWeight: 700, fontSize: "12px", whiteSpace: "nowrap" }}>{h}</th>
                   ))}
                 </tr>
@@ -1800,8 +1808,8 @@ FarmGame.PlayTests    자동 플레이 테스트 7개 + 성능 측정 시나리�
               <tbody>
                 {[
                   ["마을", "35~39", "29"],
-                  ["마을 + 인벤토리", "44~45", "30 (−33%)"],
-                  ["광산 몬스터 20마리", "62~64", "62 (타일맵 · 조명이 대부분)"],
+                  ["마을 + 인벤토리 창", "44~45", "30 (약 3분의 1 감소)"],
+                  ["광산 · 몬스터 20마리", "62~64", "62 (변화 없음)"],
                 ].map(row => (
                   <tr key={row[0]}>
                     <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", color: GREEN, fontWeight: 700, whiteSpace: "nowrap" }}>{row[0]}</td>
@@ -1814,59 +1822,80 @@ FarmGame.PlayTests    자동 플레이 테스트 7개 + 성능 측정 시나리�
           </div>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
             <NumItem n={1}>
-              타일셋은 16px 조각이 1만 6천 개라 통째로 넣으면 4096×2048(32MB) — 씬 · 데이터가 <strong style={{ color: "#f0f0f0" }}>실제로 쓰는 타일 762개만</strong> 모아 2MB
-              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
-                <SubItem>아틀라스 합 46MB (원본 시트 합 73MB). 픽셀 아트라 포인트 필터 · 무압축 · 회전 끔 · 여백 4px — 타일 번짐 없음을 캡처로 확인</SubItem>
-              </ul>
+              타일 그림은 16×16px 칸 단위로 잘려 있어 조각이 약 1만 6천 개입니다. 이것을 전부 아틀라스에 넣으면 4096×2048 크기에 메모리 32MB가 되어,
+              원래 타일 그림 파일들(18MB)보다 오히려 커졌습니다. 그래서 맵과 게임 데이터에서 <strong style={{ color: "#f0f0f0" }}>실제로 쓰이는 타일 762개만</strong> 골라 넣어
+              1024×512, 2MB로 줄였습니다. 새 타일을 칠하면 메뉴를 다시 눌러 아틀라스에 추가합니다.
             </NumItem>
-            <NumItem n={2}>처음 잰 광산 수치가 오히려 나빠 보였다 — 방마다 몬스터 구성이 달라서. 시드를 고정하고 패커만 껐다 켜는 A/B 로 다시 쟀다</NumItem>
-            <NumItem n={3}>SetPass(33~35)는 그대로 — 2D 조명 · 머티리얼이 정하는 몫이라 아틀라스 범위 밖으로 기록</NumItem>
+            <NumItem n={2}>
+              네 장을 합친 메모리는 46MB로, 원본 그림 파일을 합친 73MB보다 적습니다. 픽셀 아트라서 흐려지지 않게 압축하지 않고,
+              그림 사이에 4px 간격을 두어 타일 경계에 옆 그림 색이 묻어나지 않게 했습니다. 마을 화면을 캡처해 번짐이 없는 것을 확인했습니다.
+            </NumItem>
+            <NumItem n={3}>
+              처음 측정에서는 광산 수치가 오히려 나빠 보였는데, 원인은 아틀라스가 아니라 측정할 때마다 몬스터 구성이 달랐던 것이었습니다.
+              무작위 값을 고정해 같은 몬스터가 나오게 하고, 아틀라스만 껐다 켜며 다시 쟀습니다. 광산은 타일맵과 조명이 그리기 대부분을 차지해 변화가 없었습니다.
+            </NumItem>
           </ul>
 
           <h3 style={SUB_TITLE}>③ 새 Input System · 키 바꾸기</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            키 입력이 스크립트 21개에 &lsquo;I 키가 눌렸나&rsquo;처럼 직접 적혀 있어서, 플레이어가 키를 바꿀 방법이 없었습니다.
+            유니티의 새 입력 시스템으로 옮겨 &lsquo;인벤토리 열기&rsquo; 같은 조작 이름으로 입력을 읽게 했고, 어떤 키가 그 조작인지는 설정 한 곳에서만 정합니다.
+          </p>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
-            <NumItem n={1}>옛 <code>Input.GetKeyDown</code> 21개 파일 → 액션 애셋(생성 C# 클래스) 하나. 게임 코드에 키 이름이 없다 — 옛 Input 이 다시 들어오면 테스트 실패</NumItem>
-            <NumItem n={2}>키 바꾸기: 버튼 → 다음 키(Esc 취소). 다른 조작이 쓰던 키면 <strong style={{ color: "#f0f0f0" }}>서로 맞바꿈</strong>, 도는 동안 모든 조작을 꺼 누른 키가 게임으로 새지 않게</NumItem>
-            <NumItem n={3}>바꾼 키는 세이브가 아니라 기기 설정에 — 어느 세이브든 같은 키. 창 제목의 &lsquo;(K)&rsquo;도 바꾼 키를 따라감</NumItem>
-            <NumItem n={4}>가상 키보드 PlayMode 테스트: I 로 열림 → P 로 바꾸면 I 는 안 먹고 P 가 먹음 → 창에서 L 을 눌러 바꾸기</NumItem>
+            <NumItem n={1}>설정 창에서 조작 옆 버튼을 누르고 새 키를 누르면 바뀝니다(Esc 는 취소). 다른 조작이 이미 쓰던 키를 고르면 두 조작의 키를 <strong style={{ color: "#f0f0f0" }}>서로 맞바꿔</strong>, 한 키에 조작 두 개가 걸리지 않게 했습니다.</NumItem>
+            <NumItem n={2}>새 키를 기다리는 동안에는 게임 조작을 모두 꺼 둡니다. 그렇지 않으면 바꾸려고 누른 키가 동시에 게임 조작으로도 처리됩니다.</NumItem>
+            <NumItem n={3}>바꾼 키는 세이브 파일이 아니라 기기 설정에 저장해, 어느 세이브를 불러와도 같은 키를 씁니다. 창 제목의 &lsquo;숙련도 (K)&rsquo; 같은 키 안내도 바꾼 키로 따라 바뀝니다.</NumItem>
+            <NumItem n={4}>테스트에서 가상 키보드로 실제 키를 누릅니다. I 로 인벤토리가 열리는지, 키를 P 로 바꾸면 I 는 더 이상 안 먹고 P 가 먹는지, 설정 창에서 바꾸기가 끝나는지 확인합니다. 옛 방식의 입력 코드가 다시 들어오면 실패하는 검사도 두었습니다.</NumItem>
           </ul>
 
           <h3 style={SUB_TITLE}>④ 현지화 — 한국어 · 영어 2,689줄</h3>
           <img src={LOCALIZATION_SETTINGS} alt="설정 창 한국어 / 영어" style={{ width: "100%", maxWidth: "640px", display: "block", margin: "0 auto 8px", borderRadius: "8px", border: "1px solid rgba(74,222,128,0.15)", imageRendering: "pixelated" }} />
-          <p style={{ fontSize: "12px", opacity: 0.45, margin: "0 0 16px", textAlign: "center" }}>설정 창의 언어 버튼 — 누르면 열린 창 · 고정 글자 · 키 표시가 바로 바뀐다</p>
-          <CodeBlock>{`원문(한국어)이 곧 키        Loc.T("가방이 가득 찼어.")   Loc.F("{0}에 탔어요! ({1}: 내리기)", 이름, 키)
-번역할 칸 = [Localized]     아이템 · 몬스터 · 대사 · 레시피 … SO 접근자에서 번역
-Strings.csv (ko · en · 출처)  ─Build→  게임용 표   ({0} 자리 · 색 태그 · 남은 한글 검사, 틀리면 표를 안 바꿈)`}</CodeBlock>
+          <p style={{ fontSize: "12px", opacity: 0.45, margin: "0 0 16px", textAlign: "center" }}>설정 창 맨 위의 언어 버튼. 누르면 열려 있는 창과 화면 글자가 바로 바뀐다.</p>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            게임 안의 모든 글자(아이템 이름과 설명, NPC 대사, 알림, UI)를 영어로도 볼 수 있게 했습니다.
+            번역문마다 새 이름을 붙이지 않고 <strong style={{ color: "#f0f0f0" }}>한국어 원문을 그대로 찾는 열쇠</strong>로 써서, 기존 코드와 애셋의 한국어를 고치지 않고 화면에 보일 때만 번역을 찾게 했습니다.
+          </p>
+          <CodeBlock>{`번역 표 Strings.csv     한국어 원문 | 영어 | 어디서 나온 글자인지
+        ↓ 만들기(검사 포함)
+게임이 읽는 번역 표      화면에 보일 때 원문으로 영어를 찾는다. 없으면 원문 그대로.
+
+검사: 원문의 {0} 같은 값 자리와 색 태그가 번역에도 그대로 있는가, 번역에 한글이 남지 않았는가.
+      틀리면 게임용 표를 바꾸지 않는다.`}</CodeBlock>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
             <NumItem n={1}>
-              아이템 · 대사까지 전부 번역 — 가구 1,174개 · 등급 · 씨앗 같은 반복 문형은 용어집 + 규칙으로, 대사 110줄 · 알림 · 설명은 한 줄씩(인물별 말투 유지)
+              가구 이름 1,174개, 도구 · 방어구 등급, 씨앗 설명처럼 같은 문형이 반복되는 글은 용어집과 문형 규칙으로 번역했고,
+              NPC 대사 110줄과 알림 · 설명은 한 줄씩 직접 번역했습니다. 해적 선장은 뱃사람 말투, 대장장이는 무뚝뚝한 말투처럼 인물별 말투를 살렸습니다.
             </NumItem>
             <NumItem n={2}>
-              빠진 곳은 테스트가 잡는다 — 주석과 문자열을 구분하는 작은 어휘 분석기로 코드를 읽어 &lsquo;감싸지 않은 한글&rsquo;을 찾고(로그 · 속성은 통과),
-              한글이 든 칸에 표시가 없거나 번역 · 자리({"{0}"})가 빠지면 실패
+              번역이 빠지지 않게 테스트를 두었습니다. 코드를 읽어 번역 함수로 감싸지 않은 한글 문장을 찾고(개발용 로그와 인스펙터 설명은 제외),
+              애셋의 한글 칸 중 번역 대상인지 표시가 없는 칸, 번역이 없는 원문이 있으면 실패합니다.
             </NumItem>
             <NumItem n={3}>
-              함정 — 설정 도구가 이름을 읽어 애셋에 다시 쓰는데, 영어 상태면 <strong style={{ color: "#f0f0f0" }}>원문이 영어로 덮인다</strong>
-              <ul style={{ listStyle: "none", padding: 0, margin: "6px 0 0" }}>
-                <SubItem>에디터(플레이 중 아님)는 항상 원문, 플레이를 끝내면 고른 언어를 잊게 막음</SubItem>
-              </ul>
+              만들다가 위험을 하나 발견했습니다. 몇몇 에디터 도구는 아이템 이름을 읽어 다른 애셋에 다시 쓰는데, 언어가 영어로 되어 있으면
+              <strong style={{ color: "#f0f0f0" }}> 한국어 원문 자리에 영어가 저장됩니다.</strong> 그래서 게임을 실행하지 않은 에디터에서는 항상 원문을 돌려주고,
+              플레이를 끝내면 고른 언어를 잊게 했습니다.
             </NumItem>
           </ul>
 
           <h3 style={SUB_TITLE}>⑤ 세이브 보호 — 암호화 · 위변조 검사 · 안전한 쓰기</h3>
-          <CodeBlock>{`파일 = "FGS1" + IV + HMAC-SHA256 + AES-256 암호문      (HMAC 이 전체를 덮어 한 바이트만 바뀌어도 거부)
-쓰기   임시 파일에 다 쓴 뒤 바꿔 끼우기 · 바로 앞 세이브는 .prev   (쓰다가 꺼져도 세이브가 남음)
-읽기   검사 실패 → 원본은 .bad 로 남기고 .prev 로 · 그것도 없으면 빈 세계 대신 새 게임
-       옛 평문 세이브는 그대로 읽고 다음 저장부터 암호화`}</CodeBlock>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            세이브 파일이 그냥 글자(JSON)라 메모장으로 소지금을 고칠 수 있었고, 저장하는 순간 게임이 꺼지면 파일이 반만 써져 세이브를 통째로 잃을 수 있었습니다.
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>파일 내용을 암호화(AES-256)하고, 내용 전체로 계산한 서명(HMAC-SHA256)을 함께 저장합니다. 파일이 한 바이트만 바뀌어도 서명이 맞지 않아 불러오지 않습니다.</NumItem>
+            <NumItem n={2}>저장은 임시 파일에 끝까지 쓴 다음 원래 파일과 바꿔 끼웁니다. 쓰는 도중에 꺼져도 원래 세이브가 남고, 바로 앞 세이브는 따로 하나 보관합니다.</NumItem>
+            <NumItem n={3}>불러올 때 서명이 맞지 않으면 그 파일은 지우지 않고 따로 남겨 둔 뒤 바로 앞 세이브를 불러옵니다. 앞 세이브도 없으면, 예전처럼 빈 세계가 열리는 대신 새 게임으로 시작합니다.</NumItem>
+            <NumItem n={4}>예전 평문 세이브도 그대로 읽고, 다음에 저장할 때 새 형식으로 바뀝니다.</NumItem>
+          </ul>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, margin: "0 0 12px" }}>
-            키가 실행 파일 안에 있으니 작정한 해킹은 못 막습니다 — 메모장으로 돈을 고치는 것과 파일 손상을 막는 장치로 범위를 정했습니다.
-            개발용으로는 세이브를 읽을 수 있는 JSON 으로 꺼내고 다시 넣는 메뉴를 두었습니다.
+            암호 키가 실행 파일 안에 들어 있으므로 작정하고 분석하는 사람까지 막지는 못합니다. 메모장으로 고치는 것과 파일 손상을 막는 것으로 목표를 정했습니다.
+            개발 중에는 세이브를 읽을 수 있는 JSON 으로 꺼내고 고친 뒤 다시 넣는 메뉴를 씁니다.
           </p>
           <Card style={{ background: "rgba(74,222,128,0.06)", border: `1px solid ${GREEN}30`, marginBottom: 0 }}>
             <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.75, opacity: 0.85 }}>
               <span style={{ color: GREEN, fontWeight: 700 }}>확인 — </span>
-              자동 플레이 테스트에서 소지금 111 → 222 로 두 번 저장한 뒤 파일을 한 바이트 고치면 111 로 불러오고, 앞 세이브까지 지우면 새 게임으로 시작.
-              다섯 가지를 더한 뒤 EditMode 76 · PlayMode 7 통과.
+              자동 플레이 테스트에서 소지금을 111로 한 번, 222로 한 번 저장한 뒤 파일을 한 바이트 고쳤더니 바로 앞 세이브인 111로 불러왔고,
+              앞 세이브까지 지우자 새 게임으로 시작했습니다. 다섯 가지를 모두 넣은 뒤 EditMode 테스트 76개와 자동 플레이 테스트 7개가 통과했습니다.
             </p>
           </Card>
         </section>
