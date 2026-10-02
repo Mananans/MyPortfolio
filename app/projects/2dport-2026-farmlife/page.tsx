@@ -750,7 +750,7 @@ export default function FarmLifePage() {
 
         {/* ── 의존성 주입 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>의존성 주입 — GameManager</h2>
+          <h2 style={SECTION_TITLE}>GameManager 의존성 주입</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             시스템이 서로를 인스펙터에서 찾지 않고 한 곳에서 주입받도록 배선을 집중시켰습니다.
             연결이 한 파일에 모여 있어 의존 관계를 코드로 읽을 수 있습니다.
@@ -879,7 +879,7 @@ export default function FarmLifePage() {
 
         {/* ── 광산 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>광산 — 절차 생성</h2>
+          <h2 style={SECTION_TITLE}>광산 절차 생성</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             층을 미리 만들어 두지 않고 내려갈 때마다 생성합니다.
             생성 방식과 테마를 데이터로 두고, 층 상태는 통째로 저장하지 않습니다.
@@ -897,7 +897,7 @@ MineTilePainter     5개 레이어에 배치(Ground / Floor / Layer_1 / Interact
        ↓
 MineManager         층 상태 · 층 이동 · 진행도 · 저장`}</CodeBlock>
 
-          <h3 style={SUB_TITLE}>저장 — 시드 + 변경분</h3>
+          <h3 style={SUB_TITLE}>시드와 변경분 저장</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             생성된 맵 전체를 저장하면 층마다 수십 KB가 쌓입니다.
             시드와 <strong style={{ color: "#f0f0f0" }}>플레이어가 바꾼 부분만</strong> 기록해 층당 1~2KB로 맞췄습니다.
@@ -924,7 +924,7 @@ MineManager         층 상태 · 층 이동 · 진행도 · 저장`}</CodeBlock
 
         {/* ── 광산 몬스터 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>광산 몬스터 — 데이터 한 장이 그림과 공격을 고른다</h2>
+          <h2 style={SECTION_TITLE}>광산 몬스터</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             애셋 팩에 있는 몬스터 그림 31종을 모두 광산에 넣었습니다. 깊이 내려갈수록 더 흉악해 보이는 몬스터가 더 강한 능력치로 나옵니다.
             몬스터를 늘리는 동안 광산 · 스포너 코드는 종류를 몰라도 되게 만드는 것이 목표였습니다.
@@ -965,7 +965,7 @@ MineManager         층 상태 · 층 이동 · 진행도 · 저장`}</CodeBlock
             <NumItem n={2}>드롭 아이템 종류도 깊이에 따라 구분됩니다. — 슬라임 핵 → 석탄 · 철광석 → 금광석 · 보석</NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>구조 — 몬스터를 늘려도 코드는 그대로</h3>
+          <h3 style={SUB_TITLE}>구조</h3>
           <CodeBlock>{`MonsterData(SO)        스탯 · 드롭 · 그림(프리팹) · 붙박이 여부 · 투사체 · 사거리
       ⇅ 서로 가리킴
 몬스터 프리팹           방향(아래 · 위 · 왼 · 오) × 동작(대기 · 걷기 · 피격 · 사망 · 공격) 그림 + 몸에 맞춘 충돌체
@@ -994,7 +994,7 @@ MonsterProjectile      화살(직선) · 폭탄 · 가시 침(포물선) · 독 
           <img src={MONSTERS_RANGED} alt="원거리 공격 4종" style={{ width: "100%", borderRadius: "8px", border: "1px solid rgba(74,222,128,0.15)", imageRendering: "pixelated", marginBottom: "8px" }} />
           <p style={{ fontSize: "12px", opacity: 0.45, margin: "0 0 20px" }}>광산 30층 실행 화면 — 궁수 고블린의 화살 · 폭탄 고블린의 폭탄 · 가시 두더지의 침 · 플레이어 발밑에서 솟는 독꽃의 가시</p>
 
-          <h3 style={SUB_TITLE}>그림의 발을 칸 바닥에</h3>
+          <h3 style={SUB_TITLE}>스프라이트 기준점</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             몬스터 그림의 기준점이 몸 한가운데여서, 몬스터가 칸 아래로 반쯤 내려와 그려지고 프레임마다 몸이 조금씩 흔들렸습니다.
             몬스터마다 &lsquo;가장 낮은 발끝&rsquo;을 찾아 모든 프레임의 기준점을 그 선에 맞추는 스크립트로 101장을 한 번에 고쳤습니다.
@@ -1018,7 +1018,7 @@ MonsterProjectile      화살(직선) · 폭탄 · 가시 침(포물선) · 독 
 
         {/* ── 제작 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>제작 — 지급 방식 교체</h2>
+          <h2 style={SECTION_TITLE}>제작 시스템</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             게임마다 제작 결과를 주는 방식이 다릅니다. 그 차이를 로직에서 떼어내
             컴포넌트 하나만 바꾸면 전환되도록 만들었습니다.
@@ -1034,7 +1034,7 @@ CraftDeliveryBase           추상 MonoBehaviour — 지급 방식의 계약
 
 전환은 CraftingSystem.delivery 하나만 교체`}</CodeBlock>
 
-          <h3 style={SUB_TITLE}>역참조를 만들지 않은 방법</h3>
+          <h3 style={SUB_TITLE}>역참조 방지</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             Delivery와 Worker는 <code>CraftingSystem</code>을 참조하지 않습니다.
             결과물 지급은 <code>Func&lt;CraftingRecipe, int&gt; give</code> 콜백을 받아 처리해,
@@ -1060,7 +1060,7 @@ CraftDeliveryBase           추상 MonoBehaviour — 지급 방식의 계약
 
         {/* ── 레시피 해금 사슬 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>레시피 해금 사슬 — 광석에서 무기까지</h2>
+          <h2 style={SECTION_TITLE}>레시피 해금 사슬</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             던전에서 광석을 얻는 순간부터 무기를 손에 쥐기까지, 해금과 지급을 모두 <strong style={{ color: "#e0e0e0" }}>아이템 획득 이벤트 하나</strong>에 태웠습니다.
           </p>
@@ -1089,7 +1089,7 @@ InventorySystem.Add ─ IItemAcquireHandler ─▶ ToolInventory: 도구 칸에 
 
         {/* ── 방어구 · 피해 계산 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>방어구 · 받는 피해 — 무기와 같은 사슬 위에</h2>
+          <h2 style={SECTION_TITLE}>방어구와 피해 계산</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             방어구 40종(투구 · 갑옷 · 각반 · 신발 × 나무 ~ 흑요석 10단계)을 무기와 같은 제작 · 해금 사슬에 얹었습니다.
             캐릭터 겉모습은 바꾸지 않고, 인벤토리의 부위 칸과 방어력으로 드러납니다.
@@ -1097,7 +1097,7 @@ InventorySystem.Add ─ IItemAcquireHandler ─▶ ToolInventory: 도구 칸에 
           <img src={ARMOR_INVENTORY} alt="인벤토리 방어구 칸" style={{ width: "100%", maxWidth: "420px", display: "block", margin: "0 auto 8px", borderRadius: "8px", border: "1px solid rgba(74,222,128,0.15)", imageRendering: "pixelated" }} />
           <p style={{ fontSize: "12px", opacity: 0.45, margin: "0 0 20px", textAlign: "center" }}>초상 아래 부위 칸(금 투구 · 갑옷 착용) · 가방의 방어구 · 이름 · 성별</p>
 
-          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>받는 피해 — 빼기에서 비율로</h3>
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>받는 피해 공식</h3>
           <CodeBlock>{`받는 피해 = 반올림( 공격력 × 50 / (50 + 방어력) ),  최소 1
 
 방어력 = 기본 + 입은 방어구 합      전신 나무 5 (−9%) … 금 20 (−29%) … 흑요석 50 (−50%)`}</CodeBlock>
@@ -1121,7 +1121,7 @@ InventorySystem.Add ─ IItemAcquireHandler ─▶ ToolInventory: 도구 칸에 
 
         {/* ── 가구 배치 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>가구 배치 — 타일맵 위의 모델과 뷰</h2>
+          <h2 style={SECTION_TITLE}>가구 배치</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             애셋 팩의 가구 시트 28장(약 1,600 스프라이트)을 규칙 스크립트로 묶어 가구 1,173종을 만들고,
             새 저장 · 렌더링 경로를 만들지 않고 기존 타일 데이터 저장소에 태웠습니다.
@@ -1134,7 +1134,7 @@ Interactable Tilemap         런타임 FurnitureTile(정지 / 애니, 발자국 
 FurnitureSystem              Light2D 광원 · 불꽃 겹침 스프라이트 · 앉기/눕기 자세
 SaveSystem                   ObjectKind.Furniture (앵커만) → 불러온 뒤 발자국 · 광원 재구성`}</CodeBlock>
 
-          <h3 style={SUB_TITLE}>“그림이 있을 때만 상호작용”</h3>
+          <h3 style={SUB_TITLE}>상호작용 판정</h3>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
             <NumItem n={1}>토글 — 벽난로(불꽃 4프레임 겹침 + 흔들리는 광원), 커튼 · 옷장 · 냉장고(열림/닫힘 그림), 모니터 · 트리(켜짐 그림 + 빛)</NumItem>
             <NumItem n={2}>앉기 · 눕기 — 가구가 아니라 <strong style={{ color: "#f0f0f0" }}>캐릭터의 동작</strong>. 캐릭터 시트의 앉기 · 수면 폴더를 파츠 애니메이션에 추가해 재생</NumItem>
@@ -1160,12 +1160,12 @@ SaveSystem                   ObjectKind.Furniture (앵커만) → 불러온 뒤 
 
         {/* ── 숙련도 · 가공 기계 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>숙련도 · 가공 기계 — 기존 경로에 얹기</h2>
+          <h2 style={SECTION_TITLE}>숙련도와 가공 기계</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             새 기능을 넣으면서 기존 도메인을 고치지 않는 것을 목표로 했습니다.
             숙련도는 <strong style={{ color: "#e0e0e0" }}>이미 있는 이벤트를 구독만</strong> 하고, 가공 기계는 <strong style={{ color: "#e0e0e0" }}>가구가 쓰는 타일 저장 경로</strong>를 그대로 탑니다.
           </p>
-          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>숙련도 — 도메인은 숙련도를 모른다</h3>
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>숙련도</h3>
           <CodeBlock>{`FarmManager.OnHarvested            ─┐
 LivestockController.OnAnyHarvested ─┤
 MachineSystem.OnCollected          ─┼─▶ SkillPerks (규칙) ─▶ SkillSystem.AddXp (상태 · 저장)
@@ -1179,7 +1179,7 @@ MonsterHealth.OnAnyDied            ─┘                               ▼
             <NumItem n={2}>보너스는 도메인에 <strong style={{ color: "#f0f0f0" }}>값 하나만</strong> 열어 두고(공격력 · 낚시 구간) 숙련도가 채움 — 도메인 쪽 분기 없음</NumItem>
             <NumItem n={3}>기계 레시피는 처음엔 잠겨 있고, 해금은 기존 <code>CraftingSystem</code>의 해금 경로를 그대로 사용</NumItem>
           </ul>
-          <h3 style={SUB_TITLE}>가공 기계 — 가구와 같은 모델 / 뷰</h3>
+          <h3 style={SUB_TITLE}>가공 기계</h3>
           <CodeBlock>{`MachineData (ItemData)     공정[] = 재료 · 개수 → 결과 · 개수 · 시간  /  자동 산출(벌통) · 겨울 쉼
        ▼  놓기(바깥 빈칸만)
 TileDataStore              MachineTileData(앵커: 공정 · 남은 시간 · 완성) + MachinePartData(나머지 칸)
@@ -1281,7 +1281,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
             <NumItem n={4}>둘이 배타적이므로 복원값이 Start에 덮일 경로 자체가 사라짐</NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>불러오기 순서 — 맵과 세이브 합치기</h3>
+          <h3 style={SUB_TITLE}>불러오기 순서</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             원칙은 <strong style={{ color: "#f0f0f0" }}>바뀌는 것은 세이브를 따르고, 바뀌지 않는 것은 맵을 따른다.</strong> 입니다.
             나무 · 바위 · 밭은 플레이하며 바뀌므로 세이브대로, 낚시터는 바뀌지 않으므로 저장하지 않고 맵에서 가져옵니다.
@@ -1299,7 +1299,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
             <NumItem n={4}>여러 칸짜리 가구 · 기계의 나머지 칸과 조명을 다시 만든다(세이브에는 기준 칸 하나만 저장)</NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>세이브 버전 — 옛 세이브를 한 단계씩 최신으로</h3>
+          <h3 style={SUB_TITLE}>세이브 버전 관리</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             게임을 업데이트해도 플레이어의 세이브가 깨지면 안 됩니다. 세이브에 형식 버전을 적고, 옛 버전은 불러올 때 <strong style={{ color: "#f0f0f0" }}>변환 단계를 차례로</strong> 거쳐 최신으로 바꿉니다.
           </p>
@@ -1313,7 +1313,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
             <NumItem n={4}>실제 옛 세이브 사본을 테스트 샘플로 — 변환 뒤 칸 · 시스템 수가 같고 모든 칸이 지금 게임 데이터로 풀리는지. 이 테스트가 위의 &lsquo;나무 · 바위가 사라지는 버그&rsquo;를 처음 드러냈다</NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>NPC 저장 — 위임 방식</h3>
+          <h3 style={SUB_TITLE}>NPC 저장</h3>
           <CodeBlock>{`NpcSaveManager
   └ NpcController.CaptureState()
        ├ NpcShop.CaptureInto()      // 상점 재고는 상점이 직렬화
@@ -1347,7 +1347,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
             </p>
           </Card>
 
-          <h3 style={SUB_TITLE}>중복 제거 — 공통 유틸로 모은 것</h3>
+          <h3 style={SUB_TITLE}>중복 제거</h3>
           <div style={{ overflowX: "auto", marginBottom: "16px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
               <thead>
@@ -1424,7 +1424,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
 
         {/* ── 성능 계측 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>성능 — 재고, 고치고, 다시 재기</h2>
+          <h2 style={SECTION_TITLE}>성능 측정과 개선</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             추측으로 고치지 않고, 같은 조건을 다시 돌릴 수 있는 측정 시나리오부터 만들었습니다.
             무거울 만한 곳에 프로파일러 마커를 달고, 프레임 시간 · 프레임당 GC 할당 · 마커별 시간과 호출 수를 기록합니다.
@@ -1543,7 +1543,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
 
         {/* ── 맵 제작 파이프라인 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>맵 제작 — 텍스트 그리드 베이커</h2>
+          <h2 style={SECTION_TITLE}>텍스트 그리드 맵 베이커</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             바깥 맵 · 실내 · 축제장 16개를 손으로 칠하지 않고 <strong style={{ color: "#e0e0e0" }}>글자 격자로 쓰고 굽습니다.</strong>
             파이썬 스크립트가 격자를 만들고, 에디터 베이커가 레이어마다 타일맵에 칠합니다.
@@ -1655,7 +1655,7 @@ MapCapture               역방향: 손으로 칠한 씬 → 텍스트 격자`}<
 
         {/* ── Addressables ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>Addressables — 원격 콘텐츠 배포</h2>
+          <h2 style={SECTION_TITLE}>Addressables 원격 콘텐츠 배포</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             처음엔 빌드 크기를 줄이려고 Scene 을 번들로 나눴고(701MB → 124.3MB), 이어서 서버에서 콘텐츠를 받는 구조로 넓혔습니다.
             축제 Scene 은 <strong style={{ color: "#e0e0e0" }}>앱을 다시 내지 않고</strong> 서버의 번들만 바꿔 업데이트합니다.
@@ -1700,13 +1700,13 @@ Bootstrap ─ ContentUpdater: 카탈로그 확인 → 바뀐 번들만 받기(�
 
         {/* ── 개발 환경 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>개발 환경 — 규칙은 컴파일러가, 빌드는 메뉴 한 번</h2>
+          <h2 style={SECTION_TITLE}>개발 환경</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             스크립트가 350개 가까이 되자 두 가지가 불편해졌습니다. 설계 규칙은 문서로만 지켜지고, 플레이 버튼을 누를 때마다 30초씩 기다렸습니다.
             코드를 어셈블리로 나누고, 플레이 진입을 줄이고, 빌드를 한 번에 돌게 묶었습니다.
           </p>
 
-          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>① 어셈블리 분리 — &lsquo;UI 는 구독만&rsquo;을 컴파일러가 지킨다</h3>
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>① 어셈블리 분리</h3>
           <CodeBlock>{`FarmGame.Core         도메인 · 데이터 · 조정자 · 입력          (UI 를 모른다)
      ▲
 FarmGame.UI           화면 · 슬롯 · 알림                        Core 만 참조
@@ -1731,7 +1731,7 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
             </NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>② 플레이 진입 30초 → 14초</h3>
+          <h3 style={SUB_TITLE}>② 플레이 진입 시간 단축</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             플레이를 누를 때마다 스크립트 전체를 다시 올리던 단계(도메인 리로드)를 건너뛰게 했습니다.
             대신 <strong style={{ color: "#f0f0f0" }}>전역(static) 값이 이전 플레이의 것을 그대로 들고 온다</strong>는 문제가 생깁니다 — 계절 · 비 · 등록 목록 · 이벤트 구독.
@@ -1757,7 +1757,7 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
             <NumItem n={2}>업로드는 파이프라인에 넣지 않았다 — 밖으로 나가는 일이라 리포트를 보고 사람이 누른다</NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>어셈블리를 바꾸면 서버 콘텐츠도 바뀐다</h3>
+          <h3 style={SUB_TITLE}>어셈블리 변경과 원격 콘텐츠</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             번들은 안에 든 스크립트를 &lsquo;어셈블리 이름 + 클래스&rsquo;로 기억합니다. 어셈블리를 나눈 뒤의 앱은 서버에 있던 옛 축제 번들을 제대로 읽을 수 없어서,
             앱과 콘텐츠를 <strong style={{ color: "#f0f0f0" }}>짝으로</strong> 다시 빌드해 CDN 에 올렸습니다(축제 번들 4개 교체, 옛 번들은 되돌릴 수 있게 남김).
@@ -1773,13 +1773,13 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
 
         {/* ── 현업 파이프라인(2026-09-30) ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>현업 파이프라인 — 데이터 표 · 아틀라스 · 입력 · 현지화 · 세이브 보호</h2>
+          <h2 style={SECTION_TITLE}>현업 파이프라인</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             새 게임 기능이 아니라, 여러 사람이 이 게임을 계속 만들고 출시할 때 필요한 기반 다섯 가지를 붙였습니다.
             각 항목마다 도구만 만들지 않고, 규칙이 깨지면 실패하는 자동 테스트를 함께 두었습니다.
           </p>
 
-          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>① 기획 데이터 표 — 수치는 엑셀 표에서 고친다</h3>
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>① 기획 데이터 표</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             몬스터 체력이나 방어구 방어력을 바꾸려면 지금까지는 유니티에서 애셋을 하나씩 열어야 했습니다.
             이 수치들을 CSV 표 세 개(몬스터 31종 · 방어구 40종 · 도구 91종)로 꺼내, 기획자가 엑셀에서 고치고 메뉴 한 번으로 게임에 들여오게 했습니다.
@@ -1793,7 +1793,7 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
             <NumItem n={2}>값 하나를 고치면 연결된 곳(광산 층별 등장표, 방어구 설명 글, 제작 레시피 재료)까지 함께 바뀝니다.</NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>② 스프라이트 아틀라스 — 화면 한 장을 그리는 횟수 줄이기</h3>
+          <h3 style={SUB_TITLE}>② 스프라이트 아틀라스</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             그림이 서로 다른 텍스처 파일에 흩어져 있으면, 그래픽 카드는 텍스처가 바뀔 때마다 그리기 명령을 따로 받습니다(이 명령 수가 아래 표의 &lsquo;배치 수&rsquo;).
             아틀라스는 여러 그림을 큰 텍스처 한 장에 모아 두는 것으로, 같은 장에 있는 그림들은 한 번에 그릴 수 있습니다.
@@ -1839,7 +1839,7 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
             </NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>③ 새 Input System · 키 바꾸기</h3>
+          <h3 style={SUB_TITLE}>③ Input System 전환과 키 설정</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             키 입력이 스크립트 21개에 &lsquo;I 키가 눌렸나&rsquo;처럼 직접 적혀 있어서, 플레이어가 키를 바꿀 방법이 없었습니다.
             유니티의 새 입력 시스템으로 옮겨 &lsquo;인벤토리 열기&rsquo; 같은 조작 이름으로 입력을 읽게 했고, 어떤 키가 그 조작인지는 설정 한 곳에서만 정합니다.
@@ -1851,7 +1851,7 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
             <NumItem n={4}>테스트에서 가상 키보드로 실제 키를 누릅니다. I 로 인벤토리가 열리는지, 키를 P 로 바꾸면 I 는 더 이상 안 먹고 P 가 먹는지, 설정 창에서 바꾸기가 끝나는지 확인합니다. 옛 방식의 입력 코드가 다시 들어오면 실패하는 검사도 두었습니다.</NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>④ 현지화 — 한국어 · 영어 2,689줄</h3>
+          <h3 style={SUB_TITLE}>④ 현지화</h3>
           <img src={LOCALIZATION_SETTINGS} alt="설정 창 한국어 / 영어" style={{ width: "100%", maxWidth: "640px", display: "block", margin: "0 auto 8px", borderRadius: "8px", border: "1px solid rgba(74,222,128,0.15)", imageRendering: "pixelated" }} />
           <p style={{ fontSize: "12px", opacity: 0.45, margin: "0 0 16px", textAlign: "center" }}>설정 창 맨 위의 언어 버튼. 누르면 열려 있는 창과 화면 글자가 바로 바뀐다.</p>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
@@ -1880,7 +1880,7 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
             </NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>⑤ 세이브 보호 — 암호화 · 위변조 검사 · 안전한 쓰기</h3>
+          <h3 style={SUB_TITLE}>⑤ 세이브 보호</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             세이브 파일이 그냥 글자(JSON)라 메모장으로 소지금을 고칠 수 있었고, 저장하는 순간 게임이 꺼지면 파일이 반만 써져 세이브를 통째로 잃을 수 있었습니다.
           </p>
@@ -1905,13 +1905,13 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
 
         {/* ── 개발 도구(2026-10-02) ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>개발 도구 — 버그를 남기고, 다시 일으키고, 규칙은 컴파일러가</h2>
+          <h2 style={SECTION_TITLE}>개발 도구</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             QA 와 개발자가 같은 버그를 두고 이야기하려면, 버그가 난 순간의 정보가 빠짐없이 남아야 하고 같은 상황을 다시 만들 수 있어야 합니다.
             그 흐름에 필요한 도구 다섯 가지를 붙였습니다. 모두 개발 빌드와 에디터에서만 동작하고, 출시 빌드에서는 스스로 꺼집니다.
           </p>
 
-          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>① 버그 리포트 — 키 하나로 그 순간을 파일 하나에</h3>
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>① 버그 리포트</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             &lsquo;상자가 가끔 안 열린다&rsquo; 같은 보고만으로는 원인을 찾기 어렵습니다. 그래서 F8 을 누르면 그 순간의 정보를 zip 파일 하나로 묶어 남기게 했습니다.
           </p>
@@ -1920,7 +1920,7 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
             <NumItem n={2}>화면 캡처, 버그 직전의 로그 400줄(경고와 에러는 호출 위치까지), 그리고 그 순간의 게임 상태를 세이브 형식으로 함께 담습니다. 이 상태 사본은 세이브 파일에 쓰지 않고 따로 만들어서, 리포트를 남긴다고 플레이어의 세이브가 바뀌지 않습니다.</NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>② 입력 녹화 · 재생 — &lsquo;가끔 생기는 버그&rsquo;를 다시 일으키기</h3>
+          <h3 style={SUB_TITLE}>② 입력 녹화와 재생</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             녹화를 시작하면 그 순간의 게임 상태와 무작위 값의 씨앗을 저장하고, 이후의 키보드 · 마우스 입력을 프레임 단위로 기록합니다(Input System 의 이벤트 기록 기능).
             재생하면 저장한 상태로 씬을 다시 열고, 같은 씨앗을 넣은 뒤 기록한 입력을 프레임마다 그대로 흘려 넣습니다.
@@ -1931,7 +1931,7 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
             <NumItem n={3}>프레임 시간 차이나 씬을 여는 동안 쓰이는 무작위 값까지 똑같이 맞출 수는 없습니다. 그래서 완전한 재현이 아니라 &lsquo;같은 입력 순서로 다시 해 보기&rsquo;를 자동으로 해 주는 도구로 범위를 정했습니다.</NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>③ 개발자 콘솔 — 흩어진 디버그 키를 이름 있는 명령으로</h3>
+          <h3 style={SUB_TITLE}>③ 개발자 콘솔</h3>
           <img src={DEV_CONSOLE} alt="개발자 콘솔" style={{ width: "100%", maxWidth: "480px", display: "block", margin: "0 auto 8px", borderRadius: "8px", border: "1px solid rgba(74,222,128,0.15)", imageRendering: "pixelated" }} />
           <p style={{ fontSize: "12px", opacity: 0.45, margin: "0 0 16px", textAlign: "center" }}>help 목록, 아이템 넣기, 오타를 냈을 때의 추천</p>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
@@ -1944,7 +1944,7 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
             <NumItem n={3}>처음에는 목록의 설명 열이 들쭉날쭉했습니다. 글자 폭이 제각각인 글꼴에서 공백 개수로 칸을 맞췄기 때문입니다. 사용법과 설명을 탭으로 나누고, 화면이 설명 열의 시작 위치를 패널 폭의 비율로 고정하게 바꿨습니다. 입력한 글자는 화면 태그로 해석되지 않게 막았습니다.</NumItem>
           </ul>
 
-          <h3 style={SUB_TITLE}>④ 성능 예산 — 느려지면 테스트가 실패한다</h3>
+          <h3 style={SUB_TITLE}>④ 성능 예산</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             앞에서 성능을 고친 결과가 이후 작업으로 다시 나빠지지 않도록, 측정하는 네 화면마다 상한을 정했습니다.
             상한은 최근 측정값에 여유를 둔 값(시간과 메모리 할당은 1.5배)이라 측정할 때마다 생기는 작은 흔들림으로는 실패하지 않고, 층 전환이 0.35초 걸리던 때 같은 큰 퇴보는 잡습니다.
@@ -1978,7 +1978,7 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
             기능이 늘어 기준이 정당하게 바뀌면 메뉴 한 번으로 상한을 다시 정합니다. 이때 바뀐 값이 &lsquo;옛 값 → 새 값&rsquo;으로 남아서, 느려진 것을 슬쩍 덮는 데 쓰였는지 확인할 수 있습니다.
           </p>
 
-          <h3 style={SUB_TITLE}>⑤ 코드 분석기 — 테스트로 지키던 규칙을 컴파일 에러로</h3>
+          <h3 style={SUB_TITLE}>⑤ 코드 분석기</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             &lsquo;옛 Input 을 쓰지 않는다&rsquo;, &lsquo;화면에 보일 한글은 번역 함수로 감싼다&rsquo;, &lsquo;바뀌는 static 은 플레이를 시작할 때 비운다&rsquo;는 규칙은
             지금까지 테스트를 돌려야 위반을 알 수 있었습니다. C# 컴파일러(Roslyn)에 끼우는 분석기를 직접 만들어, 코드를 치는 순간 IDE 에 빨간 줄이 뜨고 빌드가 막히게 했습니다.
@@ -2048,7 +2048,7 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
               </tbody>
             </table>
           </div>
-          <h3 style={SUB_TITLE}>자동 플레이 테스트 — 실제 게임을 띄워서</h3>
+          <h3 style={SUB_TITLE}>자동 플레이 테스트</h3>
           <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
             사람이 하던 플레이 확인을 PlayMode 테스트로 옮겼습니다. 메인 Scene 을 띄우고 시나리오를 돌리며, 도중에 에러가 찍히면 실패입니다.
             세이브는 테스트 전용 파일에 써서 <strong style={{ color: "#f0f0f0" }}>플레이어의 세이브는 건드리지 않습니다</strong>(전후 해시 동일).
