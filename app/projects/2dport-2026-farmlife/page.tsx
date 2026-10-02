@@ -25,6 +25,7 @@ import Link from "next/link";
 //      ├── monsters-ranged.png  ← 원거리 공격 4종 (화살 · 폭탄 · 가시 침 · 독 가시, 광산 30층 실행 캡처)
 //      ├── armor-inventory.png  ← 인벤토리 — 초상 아래 방어구 칸(금 투구 · 갑옷 착용), 가방의 방어구, 이름 · 성별 (2026-09-29)
 //      ├── localization-settings.png ← 설정 창 한국어 | 영어 나란히 — 언어 버튼 · 키 바꾸기 (2026-09-30)
+//      ├── dev-console.png      ← 개발자 콘솔 — help 목록 · give · 오타 추천 (2026-10-02)
 //      └── diagram-affinity.png ← 호감도 마일스톤 판정 다이어그램
 //  📁 public/images/thumb/farmlife-2026.png  ← 메인 카드 썸네일
 // ─────────────────────────────────────────────
@@ -38,6 +39,7 @@ const MONSTERS = "/images/farmlife-2026/monsters.png";
 const MONSTERS_RANGED = "/images/farmlife-2026/monsters-ranged.png";
 const ARMOR_INVENTORY = "/images/farmlife-2026/armor-inventory.png";
 const LOCALIZATION_SETTINGS = "/images/farmlife-2026/localization-settings.png";
+const DEV_CONSOLE = "/images/farmlife-2026/dev-console.png";
 
 const GALLERY = [
   { src: "/images/farmlife-2026/gallery-1.png", label: "경작 — 물 주기", tall: true },
@@ -584,13 +586,14 @@ function Roadmap() {
       "낚시 — 미니게임 + 물고기 도감", "커뮤니티 센터 / 번들", "봄 축제 — 별도 Scene", "캐릭터 외형 · 외형 도감",
       "작물 계절 · 가축 7종 · 외양간", "대장장이 · 도구/무기 레시피 해금 사슬", "집 가구 배치 · 카탈로그 · 가구 조명",
       "사계절 축제 · 미니게임 4종 · 축제 한정 상품 · 날짜에 맞춰 열기", "가축 상점 · 암수 · 번식 · 도축 · 사료통", "탈것(말 · 타조) · 탁자 위 소품",
-      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 76 · 자동 플레이 테스트 7",
+      "가공 기계 8종 · 숙련도 5종", "곤충 채집 · 반려동물 · 비", "다 자란 가축 판매", "EditMode 87 · 자동 플레이 테스트 11",
       "플레이어 자택 · 플레이어 상점 · 보관함", "실내 배치 규칙(상호작용 / 막힘 / 바닥 깔개) · 통행 점검 도구",
       "Addressables 원격 콘텐츠 배포 — S3 + CloudFront, 콘텐츠 업데이트 빌드 · 업로드 도구",
       "광산 몬스터 31종 · 원거리 공격 4종 · 적 그림 기준점을 발로",
       "어셈블리 4개로 분리(UI 역참조를 컴파일 에러로) · 플레이 진입 30초 → 14초 · 빌드 파이프라인 · CDN 콘텐츠 재배포",
       "자동 플레이 테스트(버그 3개 발견) · 세이브 버전 관리 · 성능 계측(층 전환 353 → 14ms, 전투 GC −80%)",
       "방어구 40종(무기와 같은 10단계) · 받는 피해 비율 계산 · 캐릭터 이름 · 성별 저장",
+      "개발 도구 — F8 버그 리포트 · 입력 녹화와 재생 · 개발자 콘솔 · 성능 예산 테스트 · 프로젝트 규칙을 컴파일 에러로 만드는 코드 분석기",
       "현업 파이프라인 — 기획 데이터 표(CSV → 애셋) · 스프라이트 아틀라스(인벤토리 화면을 그리는 명령 약 3분의 1 감소) · 새 Input System + 키 바꾸기 · 한국어/영어 현지화 2,689줄 · 세이브 암호화 + 위변조 검사",
       "점검 후 정리 — 7곳에 흩어진 ‘바깥 범위’를 OutdoorArea 하나로, 2시에 쓰러지면 집 침대로(탈것 · 광산 정리 이벤트)",
     ] },
@@ -692,10 +695,10 @@ export default function FarmLifePage() {
             {[
               "엔진: Unity 6 (2D URP · Renderer 2D / Light 2D) / 언어: C#",
               "네임스페이스: FarmGame.Core (에디터: FarmGame.EditorTools)",
-              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 보관함 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 23종 (런타임 스크립트 296개 + 에디터 70개 + 테스트 13개)",
+              "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 보관함 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 23종 (런타임 스크립트 304개 + 에디터 72개 + 테스트 16개)",
               "맵: 바깥 · 실내 · 축제장 16개를 텍스트 그리드로 쓰고 에디터 베이커로 굽는다",
               "배포: Addressables — 축제 Scene 을 원격 콘텐츠로(AWS S3 + CloudFront), 앱 재배포 없이 콘텐츠 업데이트",
-              "검증: EditMode 테스트 76개 (규칙 · 저장 계약 · 세이브 변환 · 데이터 무결성 · 씬 배선 · 데이터 표 · 입력 · 현지화 · 세이브 봉투) + 자동 플레이 테스트 7개 + 모든 빌드 직전 자동 검사 + 성능 측정 시나리오",
+              "검증: 코드 분석기 3규칙(컴파일 에러) + EditMode 테스트 87개 (규칙 · 저장 계약 · 세이브 변환 · 데이터 무결성 · 씬 배선 · 데이터 표 · 입력 · 현지화 · 세이브 봉투 · 개발 도구) + 자동 플레이 테스트 11개 + 모든 빌드 직전 자동 검사 + 성능 예산",
               "설계 문서: PROJECT_STATUS.md / ARCHITECTURE.md",
             ].map(t => (
               <p key={t} style={{ fontSize: "14px", color: TEAL, opacity: 0.9, margin: 0 }}>• {t}</p>
@@ -1524,7 +1527,7 @@ SaveSystem                 ObjectKind.Machine (앵커만) → 불러온 뒤 Rebu
               "세이브 대상 24칸 누락 · 중복 키 0",
               "저장 → 불러오기 실행 확인",
               "문서의 클래스 · 메서드 이름 = 코드",
-              "EditMode 76 · PlayMode 7 통과",
+              "EditMode 87 · PlayMode 11 통과",
             ].map(t => (
               <span key={t} style={{
                 display: "inline-flex", alignItems: "center", gap: "7px",
@@ -1710,8 +1713,8 @@ FarmGame.UI           화면 · 슬롯 · 알림                        Core 만
      ▲
 FarmGame.EditorTools  맵 베이커 · 설정 도구 · 빌드 · 업로드      에디터 전용
      ▲
-FarmGame.Tests        EditMode 테스트 76개
-FarmGame.PlayTests    자동 플레이 테스트 7개 + 성능 측정 시나리오 4개`}</CodeBlock>
+FarmGame.Tests        EditMode 테스트 87개
+FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리오 4개(예산 검사)`}</CodeBlock>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
             <NumItem n={1}>로직이 UI 를 부르면 이제 <strong style={{ color: "#f0f0f0" }}>컴파일 에러</strong> — 문서의 규칙이 코드의 경계가 됐다</NumItem>
             <NumItem n={2}>
@@ -1741,7 +1744,7 @@ FarmGame.PlayTests    자동 플레이 테스트 7개 + 성능 측정 시나리�
 
           <h3 style={SUB_TITLE}>③ 빌드 파이프라인</h3>
           <CodeBlock>{`메뉴 한 번 (Dev / Release)
-  테스트 76개 ── 실패면 멈춤
+  테스트 87개 ── 실패면 멈춤
        ↓
   콘텐츠 주소 전환(Dev = 로컬 서버 / Release = CDN) → 앱 + 원격 콘텐츠 빌드 → 주소 원래대로
        ↓
@@ -1900,12 +1903,111 @@ FarmGame.PlayTests    자동 플레이 테스트 7개 + 성능 측정 시나리�
           </Card>
         </section>
 
+        {/* ── 개발 도구(2026-10-02) ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>개발 도구 — 버그를 남기고, 다시 일으키고, 규칙은 컴파일러가</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            QA 와 개발자가 같은 버그를 두고 이야기하려면, 버그가 난 순간의 정보가 빠짐없이 남아야 하고 같은 상황을 다시 만들 수 있어야 합니다.
+            그 흐름에 필요한 도구 다섯 가지를 붙였습니다. 모두 개발 빌드와 에디터에서만 동작하고, 출시 빌드에서는 스스로 꺼집니다.
+          </p>
+
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>① 버그 리포트 — 키 하나로 그 순간을 파일 하나에</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            &lsquo;상자가 가끔 안 열린다&rsquo; 같은 보고만으로는 원인을 찾기 어렵습니다. 그래서 F8 을 누르면 그 순간의 정보를 zip 파일 하나로 묶어 남기게 했습니다.
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
+            <NumItem n={1}>요약 파일에는 QA 가 채울 칸(무엇을 하다가 · 기대한 결과 · 실제 결과)과 자동으로 모은 정보(앱 · 콘텐츠 버전, 기기와 그래픽 카드, 화면 크기와 FPS, 게임 날짜, 플레이어 위치, 언어, 바꾼 키 설정)가 들어갑니다.</NumItem>
+            <NumItem n={2}>화면 캡처, 버그 직전의 로그 400줄(경고와 에러는 호출 위치까지), 그리고 그 순간의 게임 상태를 세이브 형식으로 함께 담습니다. 이 상태 사본은 세이브 파일에 쓰지 않고 따로 만들어서, 리포트를 남긴다고 플레이어의 세이브가 바뀌지 않습니다.</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>② 입력 녹화 · 재생 — &lsquo;가끔 생기는 버그&rsquo;를 다시 일으키기</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            녹화를 시작하면 그 순간의 게임 상태와 무작위 값의 씨앗을 저장하고, 이후의 키보드 · 마우스 입력을 프레임 단위로 기록합니다(Input System 의 이벤트 기록 기능).
+            재생하면 저장한 상태로 씬을 다시 열고, 같은 씨앗을 넣은 뒤 기록한 입력을 프레임마다 그대로 흘려 넣습니다.
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
+            <NumItem n={1}>재생 중의 저장은 별도 파일로만 가게 해서, 재현하다가 실제 세이브가 덮이는 일이 없게 했습니다. 녹화 중에 버그 리포트를 남기면 지금까지의 녹화도 리포트에 함께 들어갑니다.</NumItem>
+            <NumItem n={2}>낚시가 자기만의 무작위 값을 따로 쓰고 있어서, 같은 입력을 넣어도 다른 물고기가 걸릴 수 있었습니다. 이 무작위 값도 게임 전체의 씨앗에서 시작하도록 바꿨습니다.</NumItem>
+            <NumItem n={3}>프레임 시간 차이나 씬을 여는 동안 쓰이는 무작위 값까지 똑같이 맞출 수는 없습니다. 그래서 완전한 재현이 아니라 &lsquo;같은 입력 순서로 다시 해 보기&rsquo;를 자동으로 해 주는 도구로 범위를 정했습니다.</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>③ 개발자 콘솔 — 흩어진 디버그 키를 이름 있는 명령으로</h3>
+          <img src={DEV_CONSOLE} alt="개발자 콘솔" style={{ width: "100%", maxWidth: "480px", display: "block", margin: "0 auto 8px", borderRadius: "8px", border: "1px solid rgba(74,222,128,0.15)", imageRendering: "pixelated" }} />
+          <p style={{ fontSize: "12px", opacity: 0.45, margin: "0 0 16px", textAlign: "center" }}>help 목록, 아이템 넣기, 오타를 냈을 때의 추천</p>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            작물 키우기 · 다음 날 · 레시피 해금 같은 테스트 기능이 스크립트마다 다른 키(G · N · F9 …)로 흩어져 있어서, 어떤 키가 무엇인지 코드를 봐야 알 수 있었습니다.
+            이것을 게임 안 명령 창 하나로 모았습니다. 명령 목록과 사용법은 등록된 명령에서 자동으로 만들어집니다.
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
+            <NumItem n={1}>아이템은 한국어 · 영어 · 애셋 이름 중 아무것으로나, 일부만 써도 하나로 정해지면 찾습니다. 여러 개가 맞으면 후보를 보여 주고, 명령 이름에 오타를 내면 비슷한 명령을 추천합니다.</NumItem>
+            <NumItem n={2}>콘솔이 열려 있는 동안에는 게임 조작을 꺼 둡니다. 그렇지 않으면 입력칸에 &lsquo;give&rsquo; 의 i 를 치는 순간 인벤토리가 열립니다.</NumItem>
+            <NumItem n={3}>처음에는 목록의 설명 열이 들쭉날쭉했습니다. 글자 폭이 제각각인 글꼴에서 공백 개수로 칸을 맞췄기 때문입니다. 사용법과 설명을 탭으로 나누고, 화면이 설명 열의 시작 위치를 패널 폭의 비율로 고정하게 바꿨습니다. 입력한 글자는 화면 태그로 해석되지 않게 막았습니다.</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>④ 성능 예산 — 느려지면 테스트가 실패한다</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            앞에서 성능을 고친 결과가 이후 작업으로 다시 나빠지지 않도록, 측정하는 네 화면마다 상한을 정했습니다.
+            상한은 최근 측정값에 여유를 둔 값(시간과 메모리 할당은 1.5배)이라 측정할 때마다 생기는 작은 흔들림으로는 실패하지 않고, 층 전환이 0.35초 걸리던 때 같은 큰 퇴보는 잡습니다.
+          </p>
+          <div style={{ overflowX: "auto", marginBottom: "12px" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "480px" }}>
+              <thead>
+                <tr>
+                  {["화면", "측정값", "상한"].map(h => (
+                    <th key={h} style={{ textAlign: "left", padding: "8px 12px", borderBottom: `1px solid ${TEAL}40`, color: TEAL, fontWeight: 700, fontSize: "12px", whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["마을", "프레임 9.6ms · 그리기 명령 27", "13.7ms · 34"],
+                  ["마을 + 인벤토리 창", "프레임 9.7ms · 그리기 명령 29", "13.6ms · 35"],
+                  ["광산 · 몬스터 20마리", "프레임 10.2ms · 그리기 명령 60", "15.0ms · 72"],
+                  ["광산 층 전환", "평균 10.3ms · 최대 13.7ms", "16.2ms · 24.9ms"],
+                ].map(row => (
+                  <tr key={row[0]}>
+                    <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", color: GREEN, fontWeight: 700, whiteSpace: "nowrap" }}>{row[0]}</td>
+                    <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", opacity: 0.9 }}>{row[1]}</td>
+                    <td style={{ padding: "8px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", opacity: 0.55 }}>{row[2]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, margin: "0 0 20px" }}>
+            기능이 늘어 기준이 정당하게 바뀌면 메뉴 한 번으로 상한을 다시 정합니다. 이때 바뀐 값이 &lsquo;옛 값 → 새 값&rsquo;으로 남아서, 느려진 것을 슬쩍 덮는 데 쓰였는지 확인할 수 있습니다.
+          </p>
+
+          <h3 style={SUB_TITLE}>⑤ 코드 분석기 — 테스트로 지키던 규칙을 컴파일 에러로</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            &lsquo;옛 Input 을 쓰지 않는다&rsquo;, &lsquo;화면에 보일 한글은 번역 함수로 감싼다&rsquo;, &lsquo;바뀌는 static 은 플레이를 시작할 때 비운다&rsquo;는 규칙은
+            지금까지 테스트를 돌려야 위반을 알 수 있었습니다. C# 컴파일러(Roslyn)에 끼우는 분석기를 직접 만들어, 코드를 치는 순간 IDE 에 빨간 줄이 뜨고 빌드가 막히게 했습니다.
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>규칙마다 &lsquo;잡아야 하는 코드&rsquo;와 &lsquo;통과해야 하는 코드&rsquo;(로그 문장, 개발용 표시를 붙인 줄 등)를 단위 테스트로 고정했습니다.</NumItem>
+            <NumItem n={2}>넣기 전에 실제 프로젝트 코드 전체에 돌려, 멀쩡한 코드를 잘못 잡는 경우가 하나도 없는지 확인하는 검사 도구를 만들었습니다. 유니티 없이 유니티 라이브러리를 참조해 게임 · 에디터 · 테스트 코드와 출시 빌드 설정까지 컴파일해 봅니다.</NumItem>
+            <NumItem n={3}>
+              그런데도 실제로 넣자 <strong style={{ color: "#f0f0f0" }}>에디터 전체가 컴파일되지 않는 사고</strong>가 났습니다. 유니티는 프로젝트에 넣은 분석기를 유니티 자체 UI 패키지에도 적용하는데,
+              그 패키지가 옛 Input 을 쓰고 있어서 에러가 났고, 그것에 기대는 다른 패키지와 게임 코드까지 함께 멈췄습니다.
+              규칙이 우리 어셈블리에서만 돌게 고치고, 다른 어셈블리에서는 진단이 나오지 않는다는 테스트를 추가했습니다.
+            </NumItem>
+          </ul>
+          <Card style={{ background: "rgba(74,222,128,0.06)", border: `1px solid ${GREEN}30`, marginBottom: 0 }}>
+            <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.75, opacity: 0.85 }}>
+              <span style={{ color: GREEN, fontWeight: 700 }}>확인 — </span>
+              규칙 세 개를 모두 어긴 임시 파일을 넣어 유니티에서 세 에러가 실제로 뜨는 것을 보고 지웠습니다.
+              자동 플레이 테스트로 콘솔 명령과 입력 차단, 버그 리포트 파일과 세이브 무변경, 녹화 → 씬 다시 열기 → 재생으로 인벤토리가 열리는 것까지 확인했고,
+              EditMode 테스트 87개와 자동 플레이 테스트 11개가 통과했습니다.
+            </p>
+          </Card>
+        </section>
+
         {/* ── 자동 테스트 ── */}
         <section style={{ marginBottom: "40px" }}>
           <h2 style={SECTION_TITLE}>자동 테스트</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             이 구조에서 가장 흔한 실패는 예외가 아니라 <strong style={{ color: "#e0e0e0" }}>아무 일도 일어나지 않는 것</strong>입니다.
-            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 76개로 고정했고, 빌드할 때마다 먼저 돌게 했습니다. 실제 게임을 띄워 확인하던 것은 자동 플레이 테스트로 옮겼습니다.
+            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 87개로 고정했고, 빌드할 때마다 먼저 돌게 했습니다. 실제 게임을 띄워 확인하던 것은 자동 플레이 테스트로 옮겼습니다.
           </p>
           <div style={{ overflowX: "auto", marginBottom: "16px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
