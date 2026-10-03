@@ -698,7 +698,7 @@ export default function FarmLifePage() {
               "구성: 농사 · 채집 · 전투 · NPC · 호감도 · 광산 · 제작 · 낚시 · 가축 · 가구 · 보관함 · 축제 · 탈것 · 가공 · 숙련도 · 곤충 · 반려동물 · 날씨 등 도메인 시스템 + IPersistentSystem 23종 (런타임 스크립트 304개 + 에디터 72개 + 테스트 16개)",
               "맵: 바깥 · 실내 · 축제장 16개를 텍스트 그리드로 쓰고 에디터 베이커로 굽는다",
               "배포: Addressables — 축제 Scene 을 원격 콘텐츠로(AWS S3 + CloudFront), 앱 재배포 없이 콘텐츠 업데이트",
-              "검증: 코드 분석기 3규칙(컴파일 에러) + EditMode 테스트 87개 (규칙 · 저장 계약 · 세이브 변환 · 데이터 무결성 · 씬 배선 · 데이터 표 · 입력 · 현지화 · 세이브 봉투 · 개발 도구) + 자동 플레이 테스트 11개 + 모든 빌드 직전 자동 검사 + 성능 예산",
+              "검증: 코드 분석기 3규칙(컴파일 에러) + EditMode 테스트 93개 (규칙 · 저장 계약 · 세이브 변환 · 데이터 무결성 · 씬 배선 · 데이터 표 · 입력 · 현지화 · 글자 넘침 · 세이브 봉투 · 개발 도구 · 원격 설정) + 자동 플레이 테스트 22개(메모리 누수 포함) + 커밋마다 CI(GitHub Actions) + 모든 빌드 직전 자동 검사 + 성능 예산 + 코드 커버리지 줄 52.7%",
               "설계 문서: PROJECT_STATUS.md / ARCHITECTURE.md",
             ].map(t => (
               <p key={t} style={{ fontSize: "14px", color: TEAL, opacity: 0.9, margin: 0 }}>• {t}</p>
@@ -1713,8 +1713,8 @@ FarmGame.UI           화면 · 슬롯 · 알림                        Core 만
      ▲
 FarmGame.EditorTools  맵 베이커 · 설정 도구 · 빌드 · 업로드      에디터 전용
      ▲
-FarmGame.Tests        EditMode 테스트 87개
-FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리오 4개(예산 검사)`}</CodeBlock>
+FarmGame.Tests        EditMode 테스트 93개
+FarmGame.PlayTests    자동 플레이 테스트 22개 + 성능 측정 시나리오 4개(예산 검사)`}</CodeBlock>
           <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
             <NumItem n={1}>로직이 UI 를 부르면 이제 <strong style={{ color: "#f0f0f0" }}>컴파일 에러</strong> — 문서의 규칙이 코드의 경계가 됐다</NumItem>
             <NumItem n={2}>
@@ -1744,7 +1744,7 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
 
           <h3 style={SUB_TITLE}>③ 빌드 파이프라인</h3>
           <CodeBlock>{`메뉴 한 번 (Dev / Release)
-  테스트 87개 ── 실패면 멈춤
+  테스트 93개 ── 실패면 멈춤
        ↓
   콘텐츠 주소 전환(Dev = 로컬 서버 / Release = CDN) → 앱 + 원격 콘텐츠 빌드 → 주소 원래대로
        ↓
@@ -2002,12 +2002,77 @@ FarmGame.PlayTests    자동 플레이 테스트 11개 + 성능 측정 시나리
           </Card>
         </section>
 
+        {/* ── 품질 관리(2026-10-02 ~ 03) ── */}
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={SECTION_TITLE}>품질 관리</h2>
+          <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
+            기능이 늘어날수록 사람이 화면을 하나씩 넘겨 보며 확인하기는 어려워집니다. 번역문이 칸을 넘치는지, 씬을 오가며 메모리가 쌓이는지,
+            테스트가 코드의 어디까지 닿는지를 숫자로 확인하는 도구를 만들고, 커밋할 때마다 테스트가 자동으로 돌게 했습니다.
+            출시 뒤에 앱을 다시 배포하지 않고도 값을 고칠 수 있는 원격 설정도 이 단계에서 붙였습니다.
+          </p>
+
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>① 글자 넘침 검사</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            영어 번역은 대체로 한국어보다 길어서, 한국어에 맞춰 만든 칸에서 잘리거나 읽을 수 없을 만큼 작아집니다. 화면을 하나씩 열어 보는 대신,
+            글자가 들어가는 모든 칸에 실제로 들어갈 수 있는 가장 긴 글 25개씩을 넣고 레이아웃을 다시 계산해 재는 검사를 만들었습니다.
+            고정된 글자뿐 아니라 아이템 이름 · 대사 · 툴팁처럼 코드가 채우는 칸도 함께 잽니다.
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
+            <NumItem n={1}>칸 밖으로 나가는 글, 말줄임표로 잘린 글, 자동 크기 조절로 화면에서 6pt 보다 작아진 글을 문제로 봅니다. 글자 크기는 부모 캔버스의 확대 배율까지 곱해 실제 화면 크기로 판단합니다.</NumItem>
+            <NumItem n={2}>처음 돌렸을 때 영어에서 13건이 나왔습니다. 가구 설명 번역을 짧게 다듬고, 외형 창의 부위 이름표는 라틴 글꼴의 줄 높이가 칸보다 커서 자동 크기로 바꿨습니다.</NumItem>
+            <NumItem n={3}>한국어에서도 이미 문제였던 칸이 세 곳 드러났습니다. 가방 툴팁의 설명은 화면에서 4pt 까지 줄어 읽을 수 없었고, 상점 상품 이름은 사실상 보이지 않는 높이 2짜리 칸에 들어 있었습니다. 툴팁을 1.5배로 키우고 글자색을 배경에 맞게 바꿨으며, 상품 이름은 가격 띠 위 빈자리로 옮겼습니다.</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>② 메모리 누수 검사</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "20px" }}>
+            씬을 오갈 때마다 해제되지 않은 텍스처나 오브젝트가 남으면 오래 플레이할수록 메모리가 늘어납니다. 원격으로 받는 축제 씬을 네 번 오가고, 광산을 8층까지 네 번 드나든 뒤
+            텍스처 · 머티리얼 · 메시 · 오브젝트 수와 관리 메모리를 첫 회차와 마지막 회차에서 비교하는 자동 테스트를 만들었습니다.
+            축제 왕복은 네 번 모두 수가 같았고, 광산은 처음 만드는 오브젝트 풀 때문에 첫 회차에만 3개가 늘고 그 뒤로는 그대로여서 누수가 없음을 확인했습니다.
+            에디터에서는 원격 콘텐츠를 번들 파일이 아닌 프로젝트 애셋에서 바로 읽기 때문에, 번들 해제 여부는 빌드에서만 확인할 수 있다는 한계도 함께 기록했습니다.
+          </p>
+
+          <h3 style={SUB_TITLE}>③ 코드 커버리지</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "20px" }}>
+            코드 커버리지는 테스트를 돌리는 동안 실행된 코드가 전체의 몇 퍼센트인지를 나타내는 값입니다. Unity Code Coverage 패키지로 게임 코드만 골라 EditMode 와 PlayMode 테스트를 합산해 측정했습니다.
+            처음에는 줄 기준 48.2%, 메서드 기준 53.3%였고, 핵심 흐름인데 테스트가 닿지 않던 낚시(성공 · 놓침 · 입력 잠금 해제)와 NPC 대화 열기 · 닫기에 테스트를 더해
+            <strong style={{ color: "#f0f0f0" }}> 줄 52.7% · 메서드 58.8%</strong>로 올렸습니다. 아직 낮은 곳은 입력 라우팅과 축제 미니게임, 가공 기계이며 다음 테스트 대상으로 남겨 두었습니다.
+          </p>
+
+          <h3 style={SUB_TITLE}>④ 원격 설정</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            출시 뒤에 몬스터가 너무 세거나 가축 판매가가 과하다는 것을 알게 되면, 보통은 앱을 다시 빌드해 배포해야 합니다. 그래서 CDN(전 세계에 파일을 빠르게 나눠 주는 서버)에 올린 JSON 파일 하나로
+            몬스터 체력 · 공격력 배율, 가축 판매가 배율, 시작 화면 공지를 바꿀 수 있게 했습니다. 게임은 시작 화면에서 이 파일을 받아 적용합니다.
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px" }}>
+            <NumItem n={1}>미리 정한 이름과 범위(배율 0.25~4배 등)의 값만 받습니다. 모르는 이름이나 범위 밖의 값은 경고만 남기고 무시해서, 파일을 잘못 올려도 게임이 망가지지 않습니다.</NumItem>
+            <NumItem n={2}>받는 데는 4초 제한을 두고, 실패해도 시작을 막지 않습니다. 받은 설정은 세이브와 같은 방식으로 암호화해 기기에 저장해 두었다가 다음 실행이나 오프라인일 때 씁니다.</NumItem>
+            <NumItem n={3}>올리기 메뉴는 파일 검사를 통과해야만 올리고, 올린 뒤 게임과 같은 방식으로 다시 받아 원본과 같은지 확인합니다. 처음에는 CDN 이 403 을 돌려줬는데, 저장소 접근 정책이 플랫폼별 콘텐츠 폴더만 열어 두었기 때문이어서 파일을 그 폴더 아래로 옮겼습니다.</NumItem>
+          </ul>
+
+          <h3 style={SUB_TITLE}>⑤ CI</h3>
+          <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.8, marginBottom: "12px" }}>
+            CI(지속적 통합)는 코드를 올릴 때마다 서버가 자동으로 빌드하고 테스트하는 것을 말합니다. 비공개 GitHub 저장소에 GitHub Actions 를 붙이고,
+            유니티와 라이선스가 설치된 작업용 PC 를 실행기로 등록했습니다. 올릴 때마다 분석기 규칙 테스트, EditMode 테스트, 분석기 실제 코드 검사, PlayMode 테스트가 차례로 돌고,
+            결과 파일과 로그가 실행 기록에 남습니다. 수동으로 실행할 때는 성능 예산 검사와 개발 빌드를 고를 수 있습니다.
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }}>
+            <NumItem n={1}>처음 실행에서는 코드 검사 단계가 멈췄습니다. 새로 받은 사본에는 유니티가 만드는 Library 폴더가 아직 없는데, 검사 도구가 그 안의 패키지 라이브러리를 참조했기 때문입니다. 검사를 유니티가 한 번 실행되는 EditMode 테스트 뒤로 옮기고, Library 가 없으면 원인을 알리고 끝나게 했습니다.</NumItem>
+            <NumItem n={2}>두 번째 실행에서는 버그 리포트 테스트 하나가 실패했습니다. CI 는 화면 없이 유니티를 돌려 프레임을 그리지 않기 때문에, &lsquo;이번 프레임을 다 그린 뒤 화면을 캡처한다&rsquo;는 대기가 끝나지 않았습니다. 에디터에서는 드러나지 않던 문제로, 화면 없이 돌 때는 카메라를 직접 그려 캡처하도록 고쳤습니다.</NumItem>
+          </ul>
+          <Card style={{ background: "rgba(74,222,128,0.06)", border: `1px solid ${GREEN}30`, marginBottom: 0 }}>
+            <p style={{ margin: 0, fontSize: "13px", lineHeight: 1.75, opacity: 0.85 }}>
+              <span style={{ color: GREEN, fontWeight: 700 }}>확인 — </span>
+              두 번째 수정 뒤 실행에서 모든 단계가 통과했습니다. EditMode 테스트 93개와 자동 플레이 테스트 22개가 모두 통과했고, 분석기 진단과 컴파일 오류는 0건이었습니다. Library 를 처음 만든 첫 실행은 10분 가까이 걸렸지만, 작업 폴더를 남겨 두기 때문에 그 뒤로는 전체가 약 8분 만에 끝납니다.
+            </p>
+          </Card>
+        </section>
+
         {/* ── 자동 테스트 ── */}
         <section style={{ marginBottom: "40px" }}>
           <h2 style={SECTION_TITLE}>자동 테스트</h2>
           <p style={{ fontSize: "14px", opacity: 0.6, lineHeight: 1.7, marginBottom: "20px" }}>
             이 구조에서 가장 흔한 실패는 예외가 아니라 <strong style={{ color: "#e0e0e0" }}>아무 일도 일어나지 않는 것</strong>입니다.
-            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 87개로 고정했고, 빌드할 때마다 먼저 돌게 했습니다. 실제 게임을 띄워 확인하던 것은 자동 플레이 테스트로 옮겼습니다.
+            인스펙터 칸 하나, SO 필드 하나가 비면 에러 없이 기능이 사라집니다. 그 지점을 EditMode 테스트 93개로 고정했고, 빌드할 때와 코드를 올릴 때마다(CI) 먼저 돌게 했습니다. 실제 게임을 띄워 확인하던 것은 자동 플레이 테스트로 옮겼습니다.
           </p>
           <div style={{ overflowX: "auto", marginBottom: "16px" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", minWidth: "520px" }}>
