@@ -5,6 +5,16 @@ import { useRouter } from "next/navigation";
 
 // ── 프로젝트 데이터 ──────────────────────────────────────────
 const PROJECTS = [
+  {
+    id: "fmv-2026",
+    title: "2DPort_2026_FMV",
+    desc: "검은방식 FMV 탈출 어드벤처 「자정의 하숙집」",
+    period: "2026.10 ~ Present",
+    highlight: "조건부 이벤트 테이블 + 명령 시퀀스 기반 데이터 주도 구조",
+    tags: ["Unity", "C#", "Editor"],
+    img: "/images/thumb/fmv-2026.png",
+    link: "/projects/2dport-2026-fmv",
+  },
    {
     id: "farmlife-2026",
     title: "2DPort_2026_FarmLife",
