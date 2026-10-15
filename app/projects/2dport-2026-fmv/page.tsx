@@ -62,7 +62,6 @@ const TAG = {
 };
 
 const BODY = { lineHeight: 1.85, fontSize: "14.5px", opacity: 0.85, marginBottom: "16px" };
-const STRONG = { color: "#f0f0f0", fontWeight: 700 };
 const MONO = "var(--font-geist-mono), monospace";
 
 function NumItem({ n, children }) {
@@ -128,19 +127,19 @@ const LAYERS = [
   {
     level: "Fmv.Editor",
     color: "#fbbf24",
-    desc: "CSV → ScriptableObject 임포트 · 씬 생성 메뉴 · 텍스처 임포트 규칙",
+    desc: "CSV → ScriptableObject Import, Scene 생성 메뉴, Texture Import 설정",
     items: ["ContentImporter", "FmvSceneMenu", "PackTexturePostprocessor"],
   },
   {
     level: "Fmv.Runtime",
     color: "#60a5fa",
-    desc: "Unity 쪽 — 명령 실행 · 영상 · 월드 뷰 · 퍼즐 부품 · UI",
+    desc: "Command 실행, 영상, World View, Puzzle Part, UI",
     items: ["FmvGame", "EventRunner", "VideoDirector", "CutsceneLibrary", "WorldView", "FlashlightRig", "PuzzleAssembler", "PuzzleModule", "*Presenter", "ResourcePack", "SaveSlot"],
   },
   {
     level: "Fmv.Core",
     color: TEAL,
-    desc: "noEngineReferences — 상태 · 규칙 · 데이터만, UnityEngine 참조 없음",
+    desc: "noEngineReferences, 상태 / 규칙 / 데이터만 보유",
     items: ["Blackboard", "Condition", "EventResolver", "EventSequence", "GameData", "ContentTables", "PuzzleLogic", "InteractionRules", "GraphRules", "ItemRules", "HeadlessGame"],
   },
 ];
@@ -176,11 +175,11 @@ function LayerDiagram() {
 
 // ── 명령 실행 순서 ──
 const STEPS = [
-  { name: "상태", code: "ApplyState", desc: "플래그 · 변수 · 아이템 변경" },
-  { name: "대사", code: "Dialogue", desc: "대사 줄 출력 (이미 본 진입 대사는 건너뜀)" },
-  { name: "카드", code: "Card", desc: "챕터 카드 · 일기장" },
-  { name: "영상", code: "Clip", desc: "컷신 재생 → 끝나면 clip_end 발생" },
-  { name: "이동", code: "Goto", desc: "뷰 전환 → 도착하면 enter_view 발생" },
+  { name: "상태", code: "ApplyState", desc: "Flag / Var / Item 변경" },
+  { name: "대사", code: "Dialogue", desc: "대사 출력 (확인한 진입 대사 생략)" },
+  { name: "카드", code: "Card", desc: "Chapter 카드 / 일기장 출력" },
+  { name: "영상", code: "Clip", desc: "컷신 재생, 종료 시 clip_end" },
+  { name: "이동", code: "Goto", desc: "View 전환, 도착 시 enter_view" },
 ];
 
 function StepFlow() {
@@ -242,17 +241,17 @@ function PuzzleTable() {
 
 // ── 자동 테스트 ──
 const TESTS = [
-  { name: "LoadsAllTables", desc: "모든 CSV를 읽고 조건 문법 · ID 중복 검사" },
-  { name: "PlaythroughReachesEnding ×2", desc: "헤드리스 실행기로 엔딩 A(필수만) · 엔딩 B(일기 5조각) 끝까지 자동 진행" },
-  { name: "EveryInputPuzzleSolvesWithItsAnswer", desc: "모든 입력 퍼즐이 정답 입력으로 풀린다" },
-  { name: "ImportedContentAssetMatchesCsv", desc: "ScriptableObject 에셋이 지금 CSV와 같은 내용인지" },
-  { name: "ConsumedItemsCanBeReacquiredForEveryUse", desc: "여러 곳에 쓰는 아이템은 쓸 때마다 다시 얻을 수 있는지" },
-  { name: "EveryFlagCanBeSetAndEveryViewIsReachable", desc: "의존 그래프 — 세울 수 없는 플래그 · 갈 수 없는 뷰" },
-  { name: "LoopsPointAtLoopingClipsAndExistingStates", desc: "반복 영상 표가 실제 반복 클립 · 상태를 가리키는지" },
-  { name: "FlashlightRowsPointAtExistingStates", desc: "손전등 표가 있는 뷰 상태를 가리키는지" },
-  { name: "EveryInputPuzzleHasPartLayout", desc: "모든 입력 퍼즐에 puzzle_parts.csv 배치가 있는지" },
-  { name: "TiesResolveToUpperRow", desc: "우선순위가 같으면 위쪽 행이 이긴다" },
-  { name: "UnknownHotspotFallsBack", desc: "정의 안 된 대상은 * 안전망 이벤트로" },
+  { name: "LoadsAllTables", desc: "전체 CSV Load, 조건 문법 / ID 중복 검사" },
+  { name: "PlaythroughReachesEnding ×2", desc: "HeadlessGame으로 Ending A(필수 진행) / Ending B(일기 5조각) 자동 진행" },
+  { name: "EveryInputPuzzleSolvesWithItsAnswer", desc: "모든 입력 Puzzle의 정답 입력 시 해결 확인" },
+  { name: "ImportedContentAssetMatchesCsv", desc: "ScriptableObject Asset과 CSV 일치 확인" },
+  { name: "ConsumedItemsCanBeReacquiredForEveryUse", desc: "여러 곳에 사용하는 아이템의 재획득 가능 여부 확인" },
+  { name: "EveryFlagCanBeSetAndEveryViewIsReachable", desc: "설정 불가 Flag / 도달 불가 View 검출" },
+  { name: "LoopsPointAtLoopingClipsAndExistingStates", desc: "반복 영상 Table의 Clip / 상태 존재 확인" },
+  { name: "FlashlightRowsPointAtExistingStates", desc: "손전등 Table의 View 상태 존재 확인" },
+  { name: "EveryInputPuzzleHasPartLayout", desc: "모든 입력 Puzzle의 puzzle_parts.csv 배치 존재 확인" },
+  { name: "TiesResolveToUpperRow", desc: "Priority 동일 시 상단 Event 선택 확인" },
+  { name: "UnknownHotspotFallsBack", desc: "정의되지 않은 Target의 * 공통 Event 처리 확인" },
 ];
 
 export default function FmvPage() {
@@ -293,68 +292,68 @@ export default function FmvPage() {
 
         {/* Tags */}
         <div style={{ marginBottom: "18px" }}>
-          {["Unity 6", "C#", "Data-Driven", "ScriptableObject", "UniTask", "TextMeshPro", "Editor", "NUnit"].map(t => (
+          {["Unity 6", "C#", "ScriptableObject", "CSV", "UniTask", "TextMeshPro", "Editor", "NUnit"].map(t => (
             <span key={t} style={TAG}>{t}</span>
           ))}
         </div>
 
         <h1 style={{ fontSize: "30px", fontWeight: 800, marginBottom: "8px", lineHeight: 1.3, color: "#f0f0f0" }}>
-          2DPort_2026_FMV — 자정의 하숙집
+          2DPort_2026_FMV
         </h1>
         <p style={{ fontSize: "16px", fontWeight: 700, color: TEAL, marginBottom: "36px" }}>
-          검은방식 FMV 탈출 어드벤처
+          자정의 하숙집 — FMV 탈출 어드벤처 게임
         </p>
 
         {/* ── Project Info ── */}
         <section style={{ marginBottom: "40px" }}>
           <h2 style={SECTION_TITLE}>Project Info</h2>
           <p style={BODY}>
-            하숙집 다락방에서 깨어난 주인공이 방을 하나씩 조사하며 탈출하는 포인트 앤 클릭 어드벤처.<br />
-            영상 컷신 · 정지 화면 탐색 · 퍼즐이 번갈아 나오는 &lsquo;검은방&rsquo; 방식입니다.
-            먼저 쓴 설계서(블랙보드 + 조건부 이벤트 테이블 + 명령 시퀀스 + 영상 중재자)를 그대로 구현하는 것이 목표였고,
-            <strong style={STRONG}> 게임 진행은 전부 CSV 데이터가 정하고 코드는 그 데이터를 실행만 하게</strong> 만들었습니다.
+            하숙집 다락방에서 시작하여 방을 하나씩 조사하며 탈출하는 포인트 앤 클릭 어드벤처 게임.<br />
+            영상 컷신, 화면 탐색, 퍼즐이 번갈아 진행되는 검은방 방식으로 구성하였다.<br />
+            사전에 작성한 설계서를 기준으로 구현하였으며, 게임 진행은 CSV 데이터로 정의하고 코드는 데이터 실행만 담당하도록 설계.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             {[
-              "엔진: Unity 6 (6000.0.36f1, 2D URP · Light 2D · Pixel Perfect Camera) / 언어: C# / 비동기: UniTask",
-              "구성: 어셈블리 3개 — Fmv.Core 10파일 · Fmv.Runtime 25파일 · Fmv.Editor 3파일 (약 4,800줄)",
-              "콘텐츠: 이벤트 248 · 대사 287 · 뷰 26 · 핫스팟 126 · 퍼즐 20 · 플래그 80 · 영상 클립 22 · 엔딩 2종",
-              "데이터: CSV 19종 → 에디터 임포터가 ScriptableObject 하나로 굽는다",
-              "검증: EditMode 테스트 12개 (헤드리스 엔딩 A/B 자동 진행 · 의존 그래프 · 데이터 무결성)",
+              "엔진: Unity 6 (2D URP / Light 2D / Pixel Perfect Camera) / 언어: C#",
+              "패키지: UniTask, TextMeshPro",
+              "구조: Fmv.Core / Fmv.Runtime / Fmv.Editor 3개 Assembly 분리",
+              "데이터: CSV 19종 → ScriptableObject Import",
+              "콘텐츠: Event 248 / 대사 287 / View 26 / Hotspot 126 / Puzzle 20 / Ending 2종",
             ].map(t => (
               <p key={t} style={{ fontSize: "14px", color: TEAL, opacity: 0.9, margin: 0 }}>• {t}</p>
             ))}
           </div>
         </section>
 
-        {/* ── 설계 원칙 ── */}
+        {/* ── 핵심 기능 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>설계 원칙</h2>
+          <h2 style={SECTION_TITLE}>핵심 기능</h2>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <NumItem n={1}><strong style={STRONG}>블랙보드가 곧 세이브</strong> — 플래그 · 변수 · 인벤토리 · 본 이벤트만 저장하면 어디서든 복원된다.</NumItem>
-            <NumItem n={2}><strong style={STRONG}>진행은 표가 정한다</strong> — &ldquo;무엇을 눌렀을 때 어떤 조건이면 무슨 일이 일어나는가&rdquo;를 이벤트 표 한 줄로 쓴다.</NumItem>
-            <NumItem n={3}><strong style={STRONG}>실행 순서는 하나</strong> — 상태 → 대사 → 카드 → 영상 → 이동. 게임과 테스트 실행기가 같은 순서 정의를 쓴다.</NumItem>
-            <NumItem n={4}><strong style={STRONG}>규칙은 엔진 밖에</strong> — Core 어셈블리는 UnityEngine을 참조하지 않아 Unity 없이 dotnet 콘솔로도 돌릴 수 있다.</NumItem>
-            <NumItem n={5}><strong style={STRONG}>중재자는 얇게</strong> — VideoDirector는 영상 상태만 맡고, 판정 · 저장 · UI는 각자 따로 둬서 God Object가 되지 않게 한다.</NumItem>
+            <NumItem n={1}>Blackboard(Flag, Var, Inventory)로 진행 상태 관리 및 Save 데이터 일원화.</NumItem>
+            <NumItem n={2}>조건부 Event Table로 Interaction 결과 분기, Priority 기준 Event 1개만 실행.</NumItem>
+            <NumItem n={3}>Event 실행 순서 State → Dialogue → Card → Clip → Goto 고정.</NumItem>
+            <NumItem n={4}>Core Assembly의 UnityEngine 참조 제거, Unity 없이 규칙 검증 가능.</NumItem>
+            <NumItem n={5}>VideoDirector는 영상 상태 관리만 담당, 판정 / 저장 / UI 역할 분리.</NumItem>
+            <NumItem n={6}>Puzzle 규칙(Strategy)과 화면 Part 분리, CSV로 Puzzle 화면 조립.</NumItem>
           </ul>
         </section>
 
-        {/* ── 어셈블리 구조 ── */}
+        {/* ── Assembly 구조 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>어셈블리 구조</h2>
+          <h2 style={SECTION_TITLE}>Assembly 구조</h2>
           <p style={BODY}>
-            참조는 위에서 아래로만 흐릅니다. Core는 <code style={{ fontFamily: MONO, color: TEAL }}>noEngineReferences</code>로
-            묶여 있어서, 실수로 MonoBehaviour나 Debug.Log를 끌어오면 컴파일이 실패합니다.
+            참조 방향은 Editor → Runtime → Core 단방향.<br />
+            Core는 <code style={{ fontFamily: MONO, color: TEAL }}>noEngineReferences</code> 설정으로 MonoBehaviour, Debug 등 Unity API 사용 시 컴파일 에러 발생.
           </p>
           <LayerDiagram />
         </section>
 
-        {/* ── 조건부 이벤트 테이블 ── */}
+        {/* ── Event Table ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>조건부 이벤트 테이블</h2>
+          <h2 style={SECTION_TITLE}>조건부 Event Table</h2>
           <p style={BODY}>
-            플레이어 행동은 모두 <strong style={STRONG}>트리거 + 대상 + (아이템)</strong>으로 바뀌어 표에서 찾아집니다.
-            같은 다락방 트렁크라도 손전등을 켰는지, 자물쇠를 열었는지에 따라 다른 행이 고릅니다.
+            플레이어 Interaction을 Trigger + Target + Item 조합으로 변환하여 Event Table에서 조회.<br />
+            동일한 Object라도 Flag 상태에 따라 다른 Event 실행.
           </p>
           <CodeBlock>{`event_id          trigger   target            condition                               priority  effects
 CH1_TRUNK_DARK    examine   attic_main.trunk  !flag:attic_lit                         20        (대사만)
@@ -364,49 +363,54 @@ CH1_TRUNK_SOLVED  puzzle_solved  P03          -                                 
 CH1_SCREW0_LAST   use_item  attic_hatch.screw0  … & var:screws_removed>=3             10        take screwdriver`}</CodeBlock>
           <h3 style={SUB_TITLE}>판정 규칙</h3>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <NumItem n={1}>조건 문법: <code style={{ fontFamily: MONO, color: AMBER }}>flag:</code> · <code style={{ fontFamily: MONO, color: AMBER }}>has:</code> · <code style={{ fontFamily: MONO, color: AMBER }}>var:&gt;= &lt;= == &gt; &lt;</code> · <code style={{ fontFamily: MONO, color: AMBER }}>!</code> · <code style={{ fontFamily: MONO, color: AMBER }}>&amp;</code> — 임포트 때 파싱해서 문법 오류는 빌드 전에 잡힌다.</NumItem>
-            <NumItem n={2}>조건을 만족하는 행 중 priority가 가장 높은 것 하나만 실행한다.</NumItem>
-            <NumItem n={3}>우선순위가 같으면 표에서 위쪽 행이 이긴다 (기획자가 행 순서로 의도를 표현할 수 있게).</NumItem>
-            <NumItem n={4}>대상이 <code style={{ fontFamily: MONO, color: AMBER }}>*</code>인 공통 행이 안전망 — 정의 안 된 조합 · 아이템 사용에도 반드시 반응이 나온다.</NumItem>
+            <NumItem n={1}>조건 문법 <code style={{ fontFamily: MONO, color: AMBER }}>flag:</code> / <code style={{ fontFamily: MONO, color: AMBER }}>has:</code> / <code style={{ fontFamily: MONO, color: AMBER }}>var:</code> / <code style={{ fontFamily: MONO, color: AMBER }}>!</code> / <code style={{ fontFamily: MONO, color: AMBER }}>&amp;</code> 지원. Import 시 Parsing하여 문법 오류 사전 검출.</NumItem>
+            <NumItem n={2}>조건을 만족하는 Event 중 Priority가 가장 높은 Event 1개만 실행.</NumItem>
+            <NumItem n={3}>Priority 동일 시 Table 상단 Event 우선.</NumItem>
+            <NumItem n={4}>Target이 <code style={{ fontFamily: MONO, color: AMBER }}>*</code> 인 공통 Event로 정의되지 않은 Interaction 대응.</NumItem>
           </ul>
         </section>
 
-        {/* ── 명령 시퀀스 ── */}
+        {/* ── Command Sequence ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>명령 시퀀스</h2>
+          <h2 style={SECTION_TITLE}>Command Sequence</h2>
           <p style={BODY}>
-            고른 이벤트 행은 <code style={{ fontFamily: MONO, color: TEAL }}>EventSequence.Steps</code>가 정한 순서의 명령(Command)으로 펼쳐집니다.
-            영상이 끝나면 <code style={{ fontFamily: MONO, color: TEAL }}>clip_end</code>, 뷰에 도착하면 <code style={{ fontFamily: MONO, color: TEAL }}>enter_view</code>가
-            다시 표로 들어가서 컷신 → 화면 → 진입 대사가 표만으로 이어집니다.
+            선택된 Event를 <code style={{ fontFamily: MONO, color: TEAL }}>EventSequence.Steps</code> 순서에 따라 Command로 변환 후 실행.<br />
+            영상 종료 시 <code style={{ fontFamily: MONO, color: TEAL }}>clip_end</code>, View 도착 시 <code style={{ fontFamily: MONO, color: TEAL }}>enter_view</code>를 다시 Table에 전달하여
+            컷신 → 화면 → 진입 대사를 데이터만으로 연결.
           </p>
           <StepFlow />
           <Card>
-            <p style={{ fontSize: "14px", fontWeight: 700, color: "#f0f0f0", margin: "0 0 8px" }}>순서 정의를 한 곳에</p>
-            <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.75, margin: 0 }}>
-              처음에는 Unity의 EventRunner와 테스트용 HeadlessGame이 실행 순서를 각자 갖고 있었습니다.
-              둘이 어긋나면 &ldquo;테스트는 통과하는데 게임은 다르게 도는&rdquo; 상황이 생기므로,
-              순서를 Core의 <code style={{ fontFamily: MONO }}>EventSequence</code>로 옮겨 두 실행기가 같은 정의에서 명령을 만들게 했습니다.
+            <p style={{ fontSize: "14.5px", lineHeight: "1.75", margin: "0 0 12px" }}>
+              <span style={{ fontWeight: 700, color: "#f87171" }}>문제: </span>
+              <br />게임용 EventRunner와 테스트용 HeadlessGame이 실행 순서를 각각 보유.
+              <br />한쪽만 수정할 경우 테스트 결과와 실제 게임 동작 불일치 발생.
+            </p>
+            <p style={{ fontSize: "14.5px", lineHeight: "1.75", margin: 0 }}>
+              <span style={{ fontWeight: 700, color: TEAL }}>해결: </span>
+              <br />실행 순서를 Core의 EventSequence로 통합.
+              <br />두 실행기가 동일한 정의에서 Command를 생성하도록 수정.
             </p>
           </Card>
         </section>
 
         {/* ── 영상 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>VideoDirector와 ICutscene</h2>
+          <h2 style={SECTION_TITLE}>VideoDirector / ICutscene</h2>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <NumItem n={1}><strong style={STRONG}>VideoDirector</strong>는 Idle / Playing / Transition 세 상태만 가진 중재자. 재생 중 입력 차단 · 건너뛰기만 책임진다.</NumItem>
-            <NumItem n={2}>컷신은 <code style={{ fontFamily: MONO, color: TEAL }}>ICutscene</code> 뒤에 숨긴다. 실제 VideoClip(미리 준비 가능한 <code style={{ fontFamily: MONO }}>IPreparableCutscene</code>)과 영상이 아직 없는 장면용 Placeholder가 같은 자리에 들어간다.</NumItem>
-            <NumItem n={3}>VideoPlayer 두 개를 번갈아 써서, 뷰에 들어가면 지금 조건으로 나올 수 있는 다음 영상을 미리 Prepare해 둔다 (재생 시작 지연 대응). 반복 배경 영상은 view_loops.csv로 붙인다.</NumItem>
-            <NumItem n={4}>Esc는 재생 중이면 영상 건너뛰기, 아니면 일시정지 메뉴(메인 화면 / 게임 종료).</NumItem>
+            <NumItem n={1}>VideoDirector는 Idle / Playing / Transition 3가지 상태만 관리. 재생 중 Input 차단 및 Skip 처리.</NumItem>
+            <NumItem n={2}><code style={{ fontFamily: MONO, color: TEAL }}>ICutscene</code>으로 컷신 추상화. VideoClip(<code style={{ fontFamily: MONO }}>IPreparableCutscene</code>)과 영상 미제작 장면용 Placeholder를 동일하게 처리.</NumItem>
+            <NumItem n={3}>VideoPlayer 2개 교대 사용. View 진입 시 다음에 재생될 수 있는 영상을 미리 Prepare하여 재생 지연 감소.</NumItem>
+            <NumItem n={4}>View별 반복 배경 영상은 view_loops.csv로 관리.</NumItem>
+            <NumItem n={5}>Esc Key 입력 시 영상 재생 중이면 Skip, 그 외에는 일시정지 메뉴(메인 화면 / 게임 종료) 출력.</NumItem>
           </ul>
         </section>
 
         {/* ── 퍼즐 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>퍼즐 — 규칙과 부품 분리</h2>
+          <h2 style={SECTION_TITLE}>Puzzle</h2>
           <p style={BODY}>
-            퍼즐은 <strong style={STRONG}>상태만 가진 규칙(Core)</strong>과 <strong style={STRONG}>그걸 보여 주는 부품(Runtime)</strong>으로 나눴습니다.
-            규칙은 퍼즐 종류마다 Strategy 하나, 화면은 <code style={{ fontFamily: MONO, color: TEAL }}>puzzle_parts.csv</code>의 행마다 부품 하나를 붙여 조립합니다.
+            Puzzle을 상태만 보유하는 규칙(Core)과 화면에 출력하는 Part(Runtime)로 분리.<br />
+            규칙은 Puzzle Type별 Strategy로 구현, 화면은 <code style={{ fontFamily: MONO, color: TEAL }}>puzzle_parts.csv</code>의 행 단위로 Part 생성 및 조립.
           </p>
           <PuzzleTable />
           <figure style={{ margin: "0 0 16px" }}>
@@ -416,61 +420,61 @@ CH1_SCREW0_LAST   use_item  attic_hatch.screw0  … & var:screws_removed>=3     
               onError={e => { e.currentTarget.style.display = "none"; }}
             />
             <figcaption style={{ fontSize: "12px", opacity: 0.45, marginTop: "8px", textAlign: "center", lineHeight: 1.6 }}>
-              코드 수정 없이 CSV 36행으로 조립한 퍼즐 화면 9종
+              puzzle_parts.csv 36행으로 조립한 Puzzle 화면 9종
             </figcaption>
           </figure>
-          <h3 style={SUB_TITLE}>부품 조립</h3>
+          <h3 style={SUB_TITLE}>Part 조립</h3>
           <CodeBlock>{`puzzle,kind,index,x,y,file,cell,option,order
-P07,buttons,,,,,,ripple,            ← 시계: 누른 자리에 고리
+P07,buttons,,,,,,ripple,
 P07,clock_hand,,100,14,sprites/ch2_clock_hands/hour_hand_60.png,121,hour,0
 P07,clock_hand,,100,14,sprites/ch2_clock_hands/minute_hand_12.png,121,minute,1
-P10,buttons,,,,sprites/ch2_safe/key_pressed.png,,sprite,   ← 금고: 눌린 키 그림
-P10,digit,0,192,33,sprites/ch2_safe/seg_{0}.png,,,        ← 7세그 표시창
+P10,buttons,,,,sprites/ch2_safe/key_pressed.png,,sprite,
+P10,digit,0,192,33,sprites/ch2_safe/seg_{0}.png,,,
 P19,gauge,,120,22,sprites/ch5_boiler/gauge_needle_11.png,81,10,`}</CodeBlock>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <NumItem n={1}>버튼은 그 뷰의 <code style={{ fontFamily: MONO }}>puzzle_input</code> 핫스팟에서 자동 생성. 누름 반응은 Rect · Sprite · Ripple · None 중 표에서 고른다.</NumItem>
-            <NumItem n={2}>kind → 조립 함수 사전이라, 새 부품 종류는 <code style={{ fontFamily: MONO }}>PuzzleAssembler.Register</code> 한 줄로 추가된다.</NumItem>
-            <NumItem n={3}>손으로 꾸민 퍼즐이 필요하면 Resources에 같은 이름의 프리팹을 두면 데이터 조립 대신 그것을 쓴다.</NumItem>
+            <NumItem n={1}>각 View의 <code style={{ fontFamily: MONO }}>puzzle_input</code> Hotspot 기준으로 Button 자동 생성. 누름 반응은 Rect / Sprite / Ripple / None 중 선택.</NumItem>
+            <NumItem n={2}>kind별 조립 함수를 Dictionary로 구성. 신규 Part는 <code style={{ fontFamily: MONO }}>PuzzleAssembler.Register</code>로 추가.</NumItem>
+            <NumItem n={3}>Resources에 동일한 이름의 Prefab이 존재할 경우 데이터 조립 대신 Prefab 사용.</NumItem>
           </ul>
         </section>
 
         {/* ── 콘텐츠 파이프라인 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>CSV → ScriptableObject 임포트</h2>
+          <h2 style={SECTION_TITLE}>CSV → ScriptableObject Import</h2>
           <p style={BODY}>
-            기획은 스프레드시트에서 CSV로 쓰고, 게임은 CSV를 직접 읽지 않습니다. 에디터의
-            <code style={{ fontFamily: MONO, color: TEAL }}> ContentImporter</code>(AssetPostprocessor)가 CSV를 검사한 뒤 하나의 ScriptableObject로 굽습니다.
+            기획 데이터는 CSV로 작성하고, 게임은 CSV 대신 ScriptableObject를 참조.<br />
+            Editor의 <code style={{ fontFamily: MONO, color: TEAL }}>ContentImporter</code>(AssetPostprocessor)가 CSV 검사 후 ScriptableObject 1개로 변환.
           </p>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <NumItem n={1}>data 폴더의 CSV가 바뀌면 자동으로 다시 임포트 (메뉴 FMV/Import Content로 직접 실행도 가능).</NumItem>
-            <NumItem n={2}>조건 문법 오류 · ID 중복이 있으면 임포트를 멈추고 <strong style={STRONG}>기존 에셋을 그대로 둔다</strong> — 잘못된 데이터가 게임에 들어가지 않는다.</NumItem>
-            <NumItem n={3}>테스트가 에셋과 CSV를 JSON으로 비교해서, CSV만 고치고 임포트를 잊으면 실패한다.</NumItem>
-            <NumItem n={4}>행 클래스는 Core에 <code style={{ fontFamily: MONO }}>[Serializable]</code>로 두고, 파싱한 조건은 <code style={{ fontFamily: MONO }}>[NonSerialized]</code>로 로드 때 다시 만든다.</NumItem>
+            <NumItem n={1}>data 폴더의 CSV 변경 시 자동 Import. 메뉴 FMV/Import Content로 수동 실행 가능.</NumItem>
+            <NumItem n={2}>조건 문법 오류, ID 중복 발생 시 Import 중단 및 기존 Asset 유지.</NumItem>
+            <NumItem n={3}>Asset과 CSV를 JSON으로 비교하는 Test 작성, Import 누락 검출.</NumItem>
+            <NumItem n={4}>Row Class는 Core에 <code style={{ fontFamily: MONO }}>[Serializable]</code>로 정의, Parsing된 조건은 <code style={{ fontFamily: MONO }}>[NonSerialized]</code>로 두고 Load 시 재생성.</NumItem>
           </ul>
         </section>
 
         {/* ── 세이브와 텍스트 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>세이브 · 텍스트</h2>
-          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>블랙보드 세이브</h3>
+          <h2 style={SECTION_TITLE}>Save / Text</h2>
+          <h3 style={{ ...SUB_TITLE, marginTop: 0 }}>Blackboard Save</h3>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <NumItem n={1}>플래그 · 변수 · 인벤토리 · 현재 뷰 · 본 이벤트(seenEvents)를 저장. 연출 중이 아닐 때 자동 저장한다.</NumItem>
-            <NumItem n={2}>대사가 끝까지 나온 이벤트만 &lsquo;봤음&rsquo;으로 기록 → 이어하기 때 이미 본 진입 대사는 다시 나오지 않는다. 조사 · 아이템 반응은 매번 나온다.</NumItem>
+            <NumItem n={1}>Flag / Var / Inventory / 현재 View / 확인한 Event(seenEvents) 저장. 연출이 끝난 Idle 상태에서 자동 저장.</NumItem>
+            <NumItem n={2}>대사 출력이 끝난 Event만 확인 처리. 이어하기 시 확인한 진입 대사는 생략, 조사 / 아이템 반응은 매번 출력.</NumItem>
           </ul>
-          <h3 style={SUB_TITLE}>TextMeshPro + 내장 한글 폰트</h3>
+          <h3 style={SUB_TITLE}>TextMeshPro / 한글 폰트</h3>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <NumItem n={1}>나눔고딕(SIL OFL)을 넣고 런타임 동적 TMP 폰트로 만든다 — 쓰인 글자만 아틀라스에 구워 11,172자를 미리 굽지 않는다.</NumItem>
-            <NumItem n={2}>타자 효과는 문장 전체를 먼저 배치하고 보이는 글자 수만 늘려서, 타자 도중 줄바꿈 위치가 바뀌지 않는다.</NumItem>
-            <NumItem n={3}>일기장은 줄 간격을 픽셀로 환산해 괘선(12px)에 글줄을 맞춘다.</NumItem>
+            <NumItem n={1}>나눔고딕(SIL OFL) 내장, Runtime Dynamic TMP Font로 사용. 사용된 글자만 Atlas에 추가.</NumItem>
+            <NumItem n={2}>Text Animation 시 전체 문장을 먼저 배치하고 출력 글자 수만 증가. 출력 도중 줄바꿈 위치 고정.</NumItem>
+            <NumItem n={3}>일기장 줄 간격을 Pixel 단위로 환산하여 괘선(12px)에 맞춤.</NumItem>
           </ul>
         </section>
 
         {/* ── 테스트 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>자동 테스트와 검증</h2>
+          <h2 style={SECTION_TITLE}>Test</h2>
           <p style={BODY}>
-            Core가 엔진과 분리돼 있어서 <strong style={STRONG}>HeadlessGame</strong>이 화면 없이 이벤트 표를 그대로 실행합니다.
-            엔딩까지의 클릭 순서를 넣으면 게임 전체를 몇 초 만에 끝까지 진행해, 데이터 한 줄을 잘못 고쳐 진행이 막히면 바로 알 수 있습니다.
+            Core가 Unity와 분리되어 HeadlessGame으로 화면 없이 Event Table 실행 가능.<br />
+            Ending까지의 Click 순서를 입력하여 게임 전체를 자동 진행, 데이터 수정으로 인한 진행 불가 상황 검출.
           </p>
           <div style={{
             border: "1px solid rgba(255,255,255,0.08)", borderRadius: "10px",
@@ -489,25 +493,25 @@ P19,gauge,,120,22,sprites/ch5_boiler/gauge_needle_11.png,81,10,`}</CodeBlock>
           <Card>
             <p style={{ fontSize: "14px", fontWeight: 700, color: "#f0f0f0", margin: "0 0 8px" }}>의존 그래프 검사 (GraphRules)</p>
             <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.75, margin: 0 }}>
-              설계서에 &lsquo;아직 없는 것&rsquo;으로 남겨 둔 항목입니다. 모든 이벤트의 조건과 효과로 그래프를 만들어,
-              조건에는 쓰이는데 어디서도 세우지 않는 플래그와 어느 이벤트로도 갈 수 없는 뷰를 찾아냅니다.
+              설계서에서 미구현으로 남아 있던 항목.<br />
+              전체 Event의 조건과 결과로 그래프를 구성하여 설정되지 않는 Flag, 도달할 수 없는 View 검출.
             </p>
           </Card>
           <Card>
             <p style={{ fontSize: "14px", fontWeight: 700, color: "#f0f0f0", margin: "0 0 8px" }}>테스트 단축키</p>
             <p style={{ fontSize: "13.5px", opacity: 0.7, lineHeight: 1.75, margin: 0 }}>
-              에디터 · 개발 빌드에서 F8을 누르면 지금 화면의 퍼즐을 푼 것으로 처리하고 puzzle_solved를 보냅니다.
-              연출을 확인할 때 매번 퍼즐을 풀 필요가 없고, 릴리스 빌드에는 들어가지 않습니다.
+              Editor / Development Build 한정. F8 입력 시 현재 Puzzle 해결 처리 및 puzzle_solved 전달.<br />
+              연출 확인 시 Puzzle을 반복해서 풀 필요 없음.
             </p>
           </Card>
         </section>
 
-        {/* ── 남은 과제 ── */}
+        {/* ── 확장 방향성 ── */}
         <section style={{ marginBottom: "40px" }}>
-          <h2 style={SECTION_TITLE}>남은 과제</h2>
+          <h2 style={SECTION_TITLE}>확장 방향성</h2>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <NumItem n={1}>자동 저장이 연출이 끝난 뒤에만 일어나서, 연출 도중 종료하면 그 이벤트를 처음부터 다시 본다.</NumItem>
-            <NumItem n={2}>아이템 획득 전용 팝업은 아직 없고 대화창으로 대신한다.</NumItem>
+            <NumItem n={1}>연출 도중 저장 지원 (현재 연출 중 종료 시 해당 Event 처음부터 재시작).</NumItem>
+            <NumItem n={2}>아이템 획득 전용 팝업 추가 (현재 대화창으로 대체).</NumItem>
           </ul>
         </section>
 

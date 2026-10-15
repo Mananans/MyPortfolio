@@ -8,9 +8,9 @@ const PROJECTS = [
   {
     id: "fmv-2026",
     title: "2DPort_2026_FMV",
-    desc: "검은방식 FMV 탈출 어드벤처 「자정의 하숙집」",
+    desc: "FMV 탈출 어드벤처 게임",
     period: "2026.10 ~ Present",
-    highlight: "조건부 이벤트 테이블 + 명령 시퀀스 기반 데이터 주도 구조",
+    highlight: "조건부 Event Table 기반 데이터 주도 구조 설계",
     tags: ["Unity", "C#", "Editor"],
     img: "/images/thumb/fmv-2026.png",
     link: "/projects/2dport-2026-fmv",
